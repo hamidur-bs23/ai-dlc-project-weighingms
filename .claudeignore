@@ -1,0 +1,56 @@
+#### Node & dependencies
+node_modules/
+dist/
+build/
+.next/
+out/
+coverage/
+.turbo/
+.tsbuildinfo
+
+# Alternative package manager locks (Keep package-lock.json, but block others if they exist)
+yarn.lock
+pnpm-lock.yaml
+bun.lockb
+
+#### AI-DLC internal runs
+.specsmd/cache/
+.specsmd/runs/
+.copilot/
+
+#### Evidence, Media, and Reports (Save Tokens!)
+evidence/
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.svg
+*.ico
+*.mp4
+*.webm
+*.mov
+# *.pdf
+playwright-report/
+test-results/
+.nyc_output/
+
+#### Security & Environment (CRITICAL)
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.cert
+.git/
+
+#### System & IDE files
+.DS_Store
+Thumbs.db
+*.log
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp

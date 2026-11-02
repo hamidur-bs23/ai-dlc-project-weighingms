@@ -1,0 +1,13 @@
+# Node & dependencies
+node_modules/
+dist/
+build/
+coverage/
+
+# Claude local cache/history
+.claude/
+!.claude/settings.json
+
+# System & temporary files
+.DS_Store
+*.log

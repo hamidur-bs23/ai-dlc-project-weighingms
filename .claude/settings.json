@@ -1,0 +1,13 @@
+{
+  "defaultMode": "auto",
+  "thinking": true,
+  "fastMode": false,
+  "permissions": {
+    "bash": {
+      "allow": ["npm test", "npm run build", "git status"],
+      "ask": ["npm install", "composer install"]
+    }
+  },
+  "cleanupPeriod": "3d"
+}
+
