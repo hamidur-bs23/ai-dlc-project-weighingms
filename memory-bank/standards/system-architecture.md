@@ -16,7 +16,7 @@ High-level architecture for WeighingMS. It is a **Clean modular monolith** (Weig
 │ Application    use cases (commands/queries) · ports · validators · mapping  │
 │ Domain         Batch · Recipe · Component · ToleranceBand · ScaleSelection  │
 │                WeighingRecord · Override · domain errors (pure, no I/O)     │
-│ Infrastructure EF Core/Postgres · outbox dispatcher · typed HttpClient       │
+│ Infrastructure EF Core/Postgres · write-back (PD-01) · typed HttpClient     │
 │                adapters (OrgaTEX, Scale, Printer, Scanner) + resilience     │
 └───────┬───────────────────────────────────────────┬─────────────────────────┘
         │ EF Core / Npgsql                          │ HTTP (OTLP-traced)
@@ -31,7 +31,7 @@ High-level architecture for WeighingMS. It is a **Clean modular monolith** (Weig
 
 **Modules (capabilities) inside the monolith** are organised as folders per capability in each layer (Batches, Weighing, Scales, Tickets). The final Unit decomposition comes in Inception (STEP 10) and may refine them.
 
-**Simulator host** is a separate deployable. It owns the training data and contracts (`/api/batches…`, `/api/scales…`, `/api/tickets`, scanner TBD) and fault injection. It is **product code** and is tested like product code.
+**Simulator host** is a separate deployable. It owns the training data and contracts (`/api/batches…`, `/api/scales…`, `/api/tickets`, scanner contract *pending PD-03*) and fault injection. It is **product code** and is tested like product code.
 
 ## API Design
 - **REST over HTTP/JSON with ASP.NET Core Controllers**, documented with OpenAPI (`/openapi/v1.json`, Scalar UI). The full rules are in `api-conventions.md`
@@ -42,7 +42,7 @@ High-level architecture for WeighingMS. It is a **Clean modular monolith** (Weig
 ## State Management
 | Layer | Approach |
 |---|---|
-| Domain | Aggregates enforce invariants: a component cannot be confirmed outside tolerance (unless a supervisor override is granted); components progress in recipe order; a batch completes only when every component is confirmed |
+| Domain | Aggregates enforce invariants: a component cannot be confirmed outside tolerance (unless a supervisor override is granted); the weighing order of components is *pending PD-07 (decide in STEP 7)*; a batch completes only when every component is confirmed |
 | Persistence | Postgres is the source of truth for weighing sessions and records; optimistic concurrency (`xmin`) |
 | Frontend: weighing session | **NgRx SignalStore** (`WeighingSessionStore`): explicit status union (`idle → taring → weighing → in-tolerance / under / over → confirmed`, `error`), current component, live reading, tare, lot/container, confirmations |
 | Frontend: elsewhere | Plain signal services (`BatchQueueService`, `TicketService`, `ScannerService`, auth/session) |
@@ -69,10 +69,10 @@ High-level architecture for WeighingMS. It is a **Clean modular monolith** (Weig
 | Failure | Architectural response |
 |---|---|
 | Scale unavailable / timeout | Adapter returns `IntegrationErrors.ScaleUnavailable` (503); UI shows a safe "scale offline" state; confirm disabled; no record written |
-| OrgaTEX unavailable at batch completion | Completion and consumption are committed locally; the **outbox** retries delivery with backoff; UI shows "write-back pending" until confirmed; no re-keying, no duplicates (idempotency key) |
-| OrgaTEX unavailable at batch load | Batch queue shows an unavailable state with retry; no stale invented data |
-| Printer unavailable | Ticket is stored and marked "print pending"; reprint possible; batch completion is not rolled back |
-| Invalid / out-of-range reading | Rejected by domain rules; never recorded as successful without an authorised override |
+| OrgaTEX unavailable at batch completion | *Proposed default, pending PD-01 (decide in STEP 7):* completion and consumption committed locally; an **outbox** retries delivery with backoff; UI shows "write-back pending"; no re-keying, no duplicates (idempotency key). Alternatives under discussion: stop the station, or local save + manual retry |
+| OrgaTEX unavailable at batch load | Batch queue shows an unavailable state with retry; never invented data. Whether locally held batch/recipe data may be used (brief FR-30) is *pending PD-01* |
+| Printer unavailable | *Proposed default, pending PD-02 (decide in STEP 7):* ticket stored as "print pending", printable later, reprints marked (brief FR-28); completion not rolled back. Alternatives: auto-print on recovery, or block completion |
+| Invalid / out-of-range reading | Rejected by domain rules; never recorded as successful without an explicit, authorised exception (PDF §6 Step 7). Overshoot recovery policy is *pending PD-05 (decide in STEP 24)* |
 | Unexpected exception | Global `IExceptionHandler` → 500 ProblemDetails with traceId; logged and traced |
 
 All adapters use `Microsoft.Extensions.Http.Resilience` (timeout, retry with jitter for idempotent calls, circuit breaker). The final behaviours are confirmed in Requirements (STEP 7), and the failure tests are in STEP 30.
@@ -84,5 +84,5 @@ All adapters use `Microsoft.Extensions.Http.Resilience` (timeout, retry with jit
 ## Decision Relationships
 - Ports in Application + adapters in Infrastructure + an out-of-process simulator make "replace mocks with real systems" a configuration and adapter change, as the PDF requires
 - The pure Domain + ErrorOr makes the tolerance and completion invariants testable in isolation (DDD bolts); UI and integration work fits Simple bolts
-- The outbox + idempotency keys implement the brief's outage tolerance without distributed transactions
+- If PD-01 confirms store-and-forward, the outbox + idempotency keys implement the brief's outage tolerance without distributed transactions
 - No business-data caching + server-side re-validation guarantee a failed weighing is never recorded as successful

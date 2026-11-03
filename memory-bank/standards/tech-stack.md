@@ -42,7 +42,7 @@ Rationale: C# gives a strongly typed domain model with nullable reference types 
 | Forms | Typed Reactive Forms |
 | Styling | **SCSS + CSS custom properties** (the mockup's 22 tokens) + **Angular CDK** (Dialog, A11y, Overlay) + our own components. **No Tailwind** |
 | Printing | Print-preview route + print CSS + **JsBarcode** (Code128) |
-| Scanner | `ScannerService` keyboard-wedge capture + Dummy Scanner API |
+| Scanner | `ScannerService` abstraction + Dummy Scanner. Mode (keyboard-wedge / device API / both) and scan scope *pending PD-03* |
 
 ### Runtime topology
 ```text
@@ -58,7 +58,7 @@ Angular SPA ──/api──▶ WeighingMS.Api (:5080) ──HTTP──▶ Weigh
 
 ## Authentication
 **Badge sign-in + supervisor PIN**, using ASP.NET Core cookie authentication with role-based authorization policies.
-- The operator signs in by scanning or typing a badge (`badge_id`, assumption **A-09**) through the scanner abstraction.
+- The operator signs in with a badge (`badge_id`, assumption **A-09**), typed or scanned. Badge scanning is part of scan scope *pending PD-03*.
 - Roles: `OPERATOR` and `SUPERVISOR`.
 - Privileged actions require supervisor re-authentication (badge + PIN, stored hashed) for each action, with a recorded reason. These actions are supervisor override, manual scale reselection and calibration bypass (**FR-35, NFR-12**, brief l.1395).
 - Rationale: suits a shared station terminal used by gloved operators, and can be replaced by AD/SSO later. Training-grade: the PINs and badges are seed data.
@@ -100,7 +100,7 @@ The Collector owns the cross-cutting telemetry policy: it filters healthy scale-
 | Supply chain | **Dependabot** (NuGet, npm, Docker, GitHub Actions); CI runs `dotnet list package --vulnerable --include-transitive` and `npm audit --audit-level=high` |
 
 ## Package Manager
-- **npm** (v12.2.1) with **npm workspaces** (`web/`, `playwright/`). Node **v26.13.0** pinned in `.nvmrc` and `engines`. It is checked against the Angular CLI's supported `engines` range at scaffold time; if it isn't supported, we stop and ask.
+- **npm** (v12.2.1) with **npm workspaces** (`web/`, `playwright/`). Node **v26.13.0 via nvm only**, pinned in `.nvmrc`, `engines` and `.npmrc` (`engine-strict=true`); `~/.zshenv` loads nvm so non-interactive shells (IDE tasks, git hooks, Claude Code) use it too. Homebrew's node (24.4.1, below Angular CLI 22's `^24.15.0` minimum) is **not** used for the project. Angular CLI 22.2.5 supports `>=26.0.0` (verified 2026-11-04).
 - **NuGet** with **Central Package Management** (`Directory.Packages.props`).
 - **dotnet local tools** (`.config/dotnet-tools.json`): `dotnet-ef`, `Mapster.Tool`.
 

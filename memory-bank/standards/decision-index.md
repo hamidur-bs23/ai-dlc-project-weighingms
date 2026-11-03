@@ -1,11 +1,11 @@
 ---
-last_updated: 2026-11-03T20:03:53Z
-total_decisions: 14
+last_updated: 2026-11-03T21:13:25Z
+total_decisions: 15
 ---
 
 # Decision Index
 
-This index tracks all Architecture Decision Records (ADRs). ADR-001..014 were decided during **project-init** (Tech Stack Standard, 2026-11-03) and point to the standard that holds the full rationale; later ADRs are created during Construction bolts under `bolts/{bolt-id}/`.
+This index tracks all Architecture Decision Records (ADRs). ADR-001..015 were decided during **project-init** (Tech Stack Standard, 2026-11-03) and point to the standard that holds the full rationale; later ADRs are created during Construction bolts under `bolts/{bolt-id}/`.
 
 ## How to Use
 
@@ -18,6 +18,14 @@ This index tracks all Architecture Decision Records (ADRs). ADR-001..014 were de
 ## Decisions
 
 <!-- Entries are appended below in reverse chronological order (newest first) -->
+
+### ADR-015: Source precedence for requirements
+- **Status**: accepted
+- **Date**: 2026-11-03
+- **Bolt**: project-init (standards)
+- **Path**: `../../docs/project-requirement.md` (Reference notes §C)
+- **Summary**: The PDF (project requirement) is silent on write-back, printer/ticket, scanner, outage and time zone, which workbook.md mandates and brief.md details on unconfirmed assumptions. The PDF and workbook.md define mandatory scope; brief.md fills gaps only where both are silent, citing its IDs and assumption IDs (A-xx), marked unconfirmed; the HTML mockup defines visual and interaction patterns.
+- **Read when**: deriving requirements, resolving conflicts between sources, citing brief.md, scope questions
 
 ### ADR-014: Separate frontend telemetry stages: traceparent first, OTel Web SDK later
 - **Status**: accepted
@@ -80,7 +88,7 @@ This index tracks all Architecture Decision Records (ADRs). ADR-001..014 were de
 - **Date**: 2026-11-03
 - **Bolt**: project-init (standards)
 - **Path**: `standards/data-stack.md`
-- **Summary**: WeighingMS needs transactional, reviewable weighing records. Postgres 17 with EF Core code-first, numeric quantities, UTC timestamptz and a transactional outbox are chosen; dummy OrgaTEX data stays in the simulator.
+- **Summary**: WeighingMS needs transactional, reviewable weighing records. Postgres 17 with EF Core code-first, numeric quantities and UTC timestamptz are chosen; dummy OrgaTEX data stays in the simulator. (The outbox for write-back is pending PD-01.)
 - **Read when**: persistence, migrations, quantities, outbox, write-back, seed data
 
 ### ADR-006: Mapster with Mapster.Tool code generation
@@ -130,3 +138,21 @@ This index tracks all Architecture Decision Records (ADRs). ADR-001..014 were de
 - **Path**: `standards/tech-stack.md`
 - **Summary**: A full-stack web app is needed for the operator terminal. Angular (standalone, signals, zoneless) + ASP.NET Core .NET 10 LTS + PostgreSQL 17, npm/Node 26 and Playwright E2E are chosen.
 - **Read when**: any technology choice, adding dependencies
+
+---
+
+## Pending Decisions (resolve in Inception/Construction)
+
+Behaviours that are **not decided**. Standards that mention them say *"pending PD-0x"*; any text there is a proposed default only. Each is resolved at the step shown, then converted into requirements (and an ADR where architectural) and marked `resolved` here.
+
+| ID | Topic | Decide at | PDF | workbook.md | brief.md (unconfirmed) | Mockup | Options discussed | Referenced in |
+|---|---|---|---|---|---|---|---|---|
+| PD-01 | OrgaTEX unavailable: consumption write-back, sync, locally held batch/recipe data | STEP 7 | silent | STEP 26 POST consumption; STEP 30 "defined behaviour" | FR-26, FR-30–33, BR-16/17 (Must), BR-18 (Should), A-03; l.1211 alternative | status strip | store-and-forward outbox · stop the station · local save + manual retry | system-architecture, data-stack, api-conventions |
+| PD-02 | Printer unavailable at completion | STEP 7 | silent | STEP 27 dummy printer, print/preview; STEP 30 | FR-27, FR-28, IR-16, A-04 | ticket view (Print F1) | print pending + manual print · print pending + auto-print · block completion | system-architecture, api-conventions |
+| PD-03 | Scanner mode and scan scope | STEP 7 | silent | §0 Dummy Scanner required; contract undefined | FR-02, FR-09, FR-10, IR-15 (wedge or serial), A-09, A-10 | — | wedge + device API · device API only · wedge only; scope candidates: badge, batch, dyestuff/lot, container | tech-stack, api-conventions, ux-guide, system-architecture |
+| PD-04 | Ticket: paper size, layout, configurability, barcode content, override marking | STEP 7 | silent (completed-job summary, §6 Step 9) | STEP 27 fields: batch, order, machine, shade, date, operator, components, target, actual, barcode | FR-27, FR-28, IR-16 ("configurable without code change"), A-04 | ticket mock; content marked "invented" | fixed V1 layout · configurable template; 80 mm / A6 / A4 | ux-guide |
+| PD-05 | Overshoot / surplus handling | **STEP 24** (workbook mandate) | warn (Step 6); no success without explicit authorised exception (Step 7) | STEP 24: present 2–3 options, human decides; do not copy prototype calculation | FR-17–24, A-08 | overshoot + override behaviour | (presented at STEP 24) | ux-guide, system-architecture, coding-standards |
+| PD-06 | Time zone for displayed and printed timestamps | STEP 7 | silent ("confirmation timestamp") | ticket "date" | silent | ticket shows local time | configured IANA zone · station OS time · UTC | data-stack, ux-guide, coding-standards |
+| PD-07 | Chemical weighing order | STEP 7 | operator selects a chemical (Steps 4, 8) | STEP 23 fixed progression | FR-06 "present in recipe sequence" | any non-done chemical selectable | free selection (sequence shown) · strict sequence · sequence + supervisor skip | system-architecture, ux-guide, coding-standards |
+
+All PD items: **status `pending`**, registered 2026-11-03.

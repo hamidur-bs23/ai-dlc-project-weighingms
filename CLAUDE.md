@@ -34,17 +34,23 @@ The tech stack was approved during project-init. It is recorded in `memory-bank/
 
 Replace this table with the real commands once Bolt 1 scaffolds the solution.
 
+Available now (root `package.json`): `npm run specsmd:validate` (memory-bank naming, frontmatter and cross-references) and `npm run specsmd:integrity` (status consistency). **Use Node 26.13.0 from nvm** (`.nvmrc`, `engine-strict`). Non-interactive shells get it via `~/.zshenv`; Homebrew's node 24.4.1 is too old for Angular CLI 22 and must not be used.
+
 ## Source material (read before generating artifacts)
 
 - `docs/brief.md`: despite the filename, this is a draft Business Requirements Document (v1.1). Requirements have IDs like `FR-xx` and `DR-xx` and cite assumptions `A-01`…`A-15` (the register is in §12). **FCI has confirmed none of it.** Keep the assumption citations when deriving requirements, and don't treat assumptions as facts.
 - `docs/customize-weighing-station.html`: the UI/UX prototype ("Operator Terminal Mockup"). It has three views: 1 · Select batch, 2 · Weigh, 3 · Confirm & print. The built app must reproduce its functional experience. Read its embedded JS to find states and rules, but **do not copy its implementation**.
-- `docs/project-requirement.pdf`: the project requirement ("Dyeing Chemical Precision Weighing System"). Its rules are summarised under "Project requirement rules" below.
+- `docs/project-requirement.pdf`: the project requirement ("Dyeing Chemical Precision Weighing System"). **Read the verbatim Markdown transcription `docs/project-requirement.md`** (its appendix maps terminology and cross-source coverage). Its rules are summarised under "Project requirement rules" below.
 - `workbook.md`: the step-by-step process (STEP 0–35) and the evidence each step expects.
 
 How the sources rank (from the PDF):
 1. The product brief and requirement define the business intent.
 2. The HTML mockup defines the visual experience and interaction patterns.
 3. The working app must connect the two through real business logic, mock integrations and a complete workflow.
+
+Source precedence (ADR-015): **the PDF and `workbook.md` define mandatory scope.** `brief.md` fills gaps only where both are silent; cite its IDs and assumption IDs (A-xx) and mark them unconfirmed.
+
+**Pending decisions PD-01…PD-07** are registered in `memory-bank/standards/decision-index.md`: OrgaTEX outage, printer down, scanner mode/scope, ticket layout, time zone, chemical weighing order (all decided in STEP 7) and overshoot (STEP 24). Don't implement or state any of them as decided until they're resolved there.
 
 **The top acceptance criterion is that the whole workflow works end to end**, not that the screens look like the mockup.
 
@@ -103,7 +109,7 @@ Minimum dummy endpoints:
 ## Training scenario and key business rules
 
 - The seed batch is `B-24187`, with order `SO-9931`, machine `JET-04` and shade `Teal 4C`. The batch queue also shows B-24188, B-24190 and B-24191.
-- The recipe has five components, weighed in this order: Remazol Brill. Blue RSPL → Remazol Red RB → Remazol Yellow RGB → Sodium Sulphate → Soda Ash.
+- The recipe has five components, listed in this order (whether weighing must follow it is pending PD-07): Remazol Brill. Blue RSPL → Remazol Red RB → Remazol Yellow RGB → Sodium Sulphate → Soda Ash.
   - Each component has its own unit and scale.
   - For example, Yellow RGB uses the 3 kg precision scale and Sodium Sulphate uses the 32 kg floor scale. These are the prototype's names for the PDF's Precision and Heavy-Duty scales.
 - Tolerance is inclusive. Example: Yellow RGB has target 94.0 g ± 0.5 g.

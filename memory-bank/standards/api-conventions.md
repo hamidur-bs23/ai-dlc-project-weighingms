@@ -14,7 +14,7 @@ API design conventions and response formats for **WeighingMS.Api** (consumed by 
 | OrgaTEX | `GET /api/batches` · `GET /api/batches/{batchId}` · `GET /api/batches/{batchId}/recipe` · `POST /api/batches/{batchId}/consumption` |
 | Scale | `GET /api/scales` · `GET /api/scales/{scaleId}/status` · `GET /api/scales/{scaleId}/weight` · `POST /api/scales/{scaleId}/tare` |
 | Printer | `POST /api/tickets` |
-| Scanner | **contract TBD** (defined during Requirements/System Context) |
+| Scanner | **contract pending PD-03** (mode: keyboard-wedge / device API / both; scan scope; decide in STEP 7) |
 
 - WeighingMS-specific operations are additional resources/sub-resources defined during Inception (e.g. weighing sessions and component confirmations). Their names are not fixed here
 - Methods: `GET` safe/idempotent; `POST` for commands/creation; `PUT`/`PATCH` only for true updates; `DELETE` not used for business records (records are append-only)
@@ -80,7 +80,7 @@ Example: `GET /api/scales/scale-3kg/weight`
 **None in V1.** The batch queue and recipes are small (station-scoped). If needed later: cursor-based (`?cursor=&limit=`) returning `{ items, nextCursor }`, added as an additive change.
 
 ## Idempotency & Concurrency
-- `POST /api/batches/{batchId}/consumption` and `POST /api/tickets` accept an **`Idempotency-Key`** header (UUID). Retries with the same key return the original result and never duplicate a write-back or a print. The outbox reuses the key on every retry
+- `POST /api/batches/{batchId}/consumption` and `POST /api/tickets` accept an **`Idempotency-Key`** header (UUID). Retries with the same key return the original result and never duplicate a write-back or a print. This holds for any retry (user or automatic); whether automatic retry/outbox exists is *pending PD-01/PD-02*
 - Mutable aggregates expose an `ETag`/version where concurrent edits are possible; mismatches return 409 `Concurrency.Conflict`
 
 ## Headers
@@ -96,6 +96,6 @@ Example: `GET /api/scales/scale-3kg/weight`
   - `POST /_sim/reset`: reload the JSON seed (scenario B-24187 …)
   - `POST /_sim/faults`: `{ "target": "orgatex|scale:{id}|printer|scanner", "mode": "unavailable|timeout|error500|slow", "durationMs"?: n }`; `DELETE /_sim/faults` clears them
   - `POST /_sim/scales/{scaleId}/scenario`: `{ "scenario": "rising|belowRange|enterRange|overshoot|stable", "target": {…} }` (PDF simulation scenarios; readings respect the scale resolution)
-  - `POST /_sim/scanner/scan`: emit a scan (`{ "code": "…" }`)
+  - `POST /_sim/scanner/scan`: emit a scan (`{ "code": "…" }`). *Proposed, pending PD-03*
   - `GET /_sim/orgatex/consumption` and `GET /_sim/printer/tickets`: inspect what was received (evidence for STEP-26/27)
 - Simulator responses use the same JSON, quantity and ProblemDetails conventions

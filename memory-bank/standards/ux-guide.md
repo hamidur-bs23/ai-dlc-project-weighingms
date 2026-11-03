@@ -12,7 +12,7 @@ UI/UX standards for the WeighingMS operator terminal. **The supplied prototype `
   - Page chrome: `--page-bg`, `--page-panel`, `--page-ink`, `--page-muted`, `--page-line`, `--page-accent`, `--page-accent-soft` (light + dark set)
   - Type: `--mono`, `--sans`
 - The prototype's **annotation pins** (`--pin`, `--pin-ink`, "hover a pin to read its question") are design-review chrome. They are **not** product UI and are not reproduced
-- Core components (`web/src/app/shared/ui/`, selector prefix `wms-`): `wms-panel`, `wms-button` (primary/secondary/danger), `wms-status-pill`, `wms-weight-readout` (large mono digits), `wms-tolerance-gauge` (target band + live marker), `wms-progress` (component n/5), `wms-component-list`, `wms-batch-table`, `wms-banner` (error/info with "Ref"), `wms-dialog` (CDK Dialog: supervisor override, quit confirmation), `wms-ticket` (print layout + barcode)
+- Core components (`web/src/app/shared/ui/`, selector prefix `wms-`): `wms-panel`, `wms-button` (primary/secondary/danger), `wms-status-pill`, `wms-weight-readout` (large mono digits), `wms-tolerance-gauge` (target band + live marker), `wms-progress` (completed / current / outstanding, PDF Step 8), `wms-component-list`, `wms-batch-table`, `wms-banner` (error/info with "Ref"), `wms-dialog` (CDK Dialog: supervisor override, quit confirmation), `wms-ticket` (print layout + barcode)
 - CDK usage: `Dialog`, `A11yModule` (focus trap, live announcer), `Overlay`; no Angular Material, no Tailwind
 
 ## Styling Approach
@@ -28,7 +28,7 @@ UI/UX standards for the WeighingMS operator terminal. **The supplied prototype `
 | Underweight (below lower bound) | `--warn` | Keep dispensing | Disabled |
 | Within tolerance | `--ok` | Acceptable; may confirm | **Enabled** |
 | Target achieved (≈ target) | `--ok` + emphasis | Distinct from "within" (PDF rule) | **Enabled** |
-| Overweight (above upper bound) | `--over` | Overshoot handling (rule TBD in STEP 24) | Disabled (unless an authorised override applies) |
+| Overweight (above upper bound) | `--over` | Warn that the quantity is excessive (PDF §6 Step 6); recovery policy *pending PD-05 (STEP 24)* | Disabled; success only via an explicit, authorised exception (PDF §6 Step 7) |
 | Scale unstable / offline | `--hmi-dim` / `--over` banner | Reading not usable | Disabled |
 | Confirmed | `--ok` check | Component recorded | — |
 
@@ -39,7 +39,7 @@ UI/UX standards for the WeighingMS operator terminal. **The supplied prototype `
 ## Accessibility
 - Target **WCAG 2.2 AA**: contrast ≥ 4.5:1 for text (verify `--hmi-muted`/`--hmi-dim` on dark panels), focus visible on all interactive elements
 - **Touch targets ≥ 44 × 44 px** (gloved operators); primary actions (OK/Confirm, Re-tare, Quit) are larger and spaced to avoid mis-taps
-- Fully operable by **keyboard and scanner**: scanner input (keyboard wedge) never steals focus from dialogs; Enter confirms only when Confirm is enabled
+- Fully operable by **keyboard and scanner**: scanner input never steals focus from dialogs or text/PIN fields (scanner mode *pending PD-03*); Enter confirms only when Confirm is enabled
 - Live updates (weight, status) are announced politely via CDK `LiveAnnouncer` at status changes, not every reading
 - Destructive actions (Quit with an unfinished batch) require confirmation
 - Enforced by angular-eslint template a11y rules and `@axe-core/playwright` checks in E2E
@@ -48,13 +48,13 @@ UI/UX standards for the WeighingMS operator terminal. **The supplied prototype `
 - **Station terminal first**: landscape, desktop-class screen; layout designed for ≥ 1280 × 800, content max-width ~1180 px (prototype). It scales up to 1920 × 1080 without stretching readouts
 - Below 1024 px wide: supported for supervisors viewing progress (stacked panels), not optimised for weighing
 - No hover-only interactions (touch screens)
-- Print: the ticket view has dedicated `@media print` styles (A6/receipt width TBD in Requirements), black-on-white, barcode at scannable size
+- Print: the ticket view has dedicated `@media print` styles (paper size, layout and configurability *pending PD-04*), black-on-white, barcode at scannable size
 
 ## Content, Numbers & Language
 - All operator text via **Transloco** keys (see coding-standards → i18n); English in V1; concise imperative labels as in the prototype ("OK", "Re-tare", "Quit", "Supervisor override")
 - Weights are shown with the **unit and the decimals of the active scale's resolution** (`WeightPipe`); never mix g and kg in one value
 - Identifiers (batch, order, machine, shade, lot, container) are shown in mono and are copyable
-- Dates and times are shown in the plant's time zone (configured); stored in UTC
+- Dates and times are stored in UTC; the display/print time zone is *pending PD-06 (decide in STEP 7)*
 
 ## Decision Relationships
 - Reusing the prototype's token names makes the visual comparison (STEP 28) direct, while the component implementation stays our own

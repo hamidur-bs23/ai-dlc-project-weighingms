@@ -101,7 +101,7 @@ playwright/                     # npm workspace: config, fixtures, tests/*.e2e.t
 
 | Type | Tool | When to Use |
 |------|------|-------------|
-| Domain unit | xUnit v3 + Shouldly | Every rule: tolerance classification (incl. boundaries 93.4/93.5/94.0/94.5/94.6), scale selection (≤ 3 kg vs > 3 kg incl. exactly 3 kg), progression, completion, overshoot rule |
+| Domain unit | xUnit v3 + Shouldly | Every rule: tolerance classification (incl. boundaries 93.4/93.5/94.0/94.5/94.6), scale selection (≤ 3 kg vs > 3 kg incl. exactly 3 kg), weighing order (per PD-07), completion, overshoot rule (per PD-05) |
 | Application unit | xUnit + hand-written fakes of ports | Use-case orchestration and error paths (device unavailable, already confirmed) |
 | API integration | WebApplicationFactory + Testcontainers Postgres + Respawn; simulator replaced by an in-process fake or a `Simulators.Host` test server | HTTP contract, ProblemDetails mapping, persistence, auth policies |
 | Simulator | xUnit + WebApplicationFactory | Dummy contracts, scenarios (rising, below range, in range, overshoot, scale precision), fault injection |
@@ -185,7 +185,7 @@ public ErrorOr<WeighingRecord> Confirm(Reading r, OperatorId op, TimeProvider cl
 - **No literal operator-facing text in templates or TS.** Every string goes through Transloco (`{{ 'weigh.actions.confirm' | transloco }}` / `*transloco="let t"`)
 - Key format: `<feature>.<element>.<action|label>` (lower camel segments), e.g. `batchQueue.table.shade`, `weigh.status.overTolerance`
 - English (`en.json`) is the only V1 language; missing keys fail tests in CI (`missingHandler` throws in test mode)
-- Numbers, units and dates are formatted with locale-aware pipes (`WeightPipe`, Angular `DatePipe` with the plant time zone), never string concatenation
+- Numbers, units and dates are formatted with locale-aware pipes (`WeightPipe`, Angular `DatePipe` with the time zone decided in PD-06), never string concatenation
 - Backend error `title`/`detail` are developer-facing; the UI maps ProblemDetails `type` (error code) to a translated operator message
 
 ## Security Rules
@@ -201,6 +201,6 @@ public ErrorOr<WeighingRecord> Confirm(Reading r, OperatorId op, TimeProvider cl
 - **Branching**: `main` is protected; one branch per bolt, `bolt/<bolt-id>-<unit-name>` (e.g. `bolt/001-dummy-integrations`); documentation-only work on `docs/<topic>`
 - **Commits**: Conventional Commits: `feat(weighing): …`, `fix(api): …`, `test(domain): …`, `docs(memory-bank): …`, `chore: …`; reference story/requirement IDs in the body (`Refs: S-003, FR-12`)
 - **Pull requests**: the template requires bolt id, stories, requirement IDs, test evidence (commands + results), screenshots for UI changes, and a checklist (no hard-coded scenario data, i18n keys added, tests added)
-- **Pre-commit** (husky + lint-staged): Prettier, ESLint, stylelint, `dotnet format` on staged files
+- **Pre-commit** (husky + lint-staged): Prettier, ESLint, stylelint, `dotnet format` on staged files. Hooks start by loading nvm (`. "$NVM_DIR/nvm.sh" && nvm use`) so they run on Node 26 even from GUI git clients
 - **CI gates** (GitHub Actions): build → lint/format check → unit tests → integration tests (Testcontainers) → coverage threshold → vulnerability scan → Compose `full` + Playwright E2E (report and traces uploaded as artifacts)
 - **Definition of done for a bolt**: all stages complete, tests green locally and in CI, the bolt's evidence files exist under `evidence/`, memory-bank statuses updated, human approval recorded
