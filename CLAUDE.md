@@ -4,9 +4,35 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project state
 
-WeighingMS is an assisted dyestuff weighing station for the client FCI. It sits between the operator and the OrgaTEX MES. The repo is currently **pre-code**: it holds only source material. It is being built as a hands-on lab that follows `workbook.md` (the specs.md AI-DLC flow), so work moves through that file's steps in order.
+WeighingMS is an assisted dyestuff weighing station for the client FCI. It sits between the operator and the OrgaTEX MES. The repo is still **pre-code**: it holds the source material and the AI-DLC memory-bank. It is being built as a hands-on lab that follows `workbook.md` (the specs.md AI-DLC flow), so work moves through that file's steps in order.
 
-There is no stack yet and no build, lint or test commands. The tech stack has to be proposed and approved before Inception (see "Define the Tech Stack Standard" in `workbook.md`). Once it is approved, add the real commands here, including how to run a single test and the Playwright suite.
+The tech stack was approved during project-init. It is recorded in `memory-bank/standards/` (tech-stack, data-stack, coding-standards, system-architecture, api-conventions, ux-guide), and every decision is indexed in `decision-index.md`. **Read the relevant standard before generating code.** In short:
+
+- **Backend:** ASP.NET Core on .NET 10 LTS using Controllers, structured as a Clean modular monolith with the projects `WeighingMS.Domain`, `.Application`, `.Infrastructure` and `.Api`.
+  - Libraries: ErrorOr + ProblemDetails, FluentValidation, Mapster (codegen), Serilog and OpenTelemetry.
+  - Database: EF Core on PostgreSQL 17.
+- **Dummy integrations:** a separate process, `WeighingMS.Simulators.Host`, that the Api calls over HTTP. The UI calls only the Api.
+- **Frontend:** Angular (standalone, signals, zoneless).
+  - NgRx SignalStore for the weighing session and plain signal services elsewhere.
+  - SCSS with the prototype's CSS tokens and Angular CDK (no Tailwind), plus Transloco.
+- **Tests:** xUnit v3 + Shouldly + Testcontainers for the backend, Vitest + Testing Library for the frontend, and Playwright (TS) for E2E.
+- **Tooling:** npm workspaces, Node v26.13.0, Docker Compose profiles (`full`, `observability`).
+
+### Commands (planned; they work only after Construction scaffolds the solution)
+
+| Task | Command |
+|---|---|
+| Start Postgres for dev | `docker compose up -d postgres` |
+| Run everything natively (Api + Simulators + web) | `npm run dev` |
+| Backend tests | `dotnet test` |
+| Single backend test | `dotnet test --filter "FullyQualifiedName~ToleranceBandTests.Contains_UpperBoundary_ReturnsTrue"` |
+| Frontend unit tests | `npm test -w web` (single file: `npm test -w web -- src/app/features/weighing/weighing-session.store.spec.ts`) |
+| Lint / format check | `npm run lint` · `dotnet format --verify-no-changes` |
+| Full stack (demo/E2E/CI) | `docker compose --profile full up --wait` |
+| Playwright suite | `npx playwright test` (single: `npx playwright test playwright/tests/batch-flow.e2e.ts`) |
+| Observability stack | `docker compose --profile observability up -d` (Grafana on :3000) |
+
+Replace this table with the real commands once Bolt 1 scaffolds the solution.
 
 ## Source material (read before generating artifacts)
 
