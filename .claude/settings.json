@@ -1,13 +1,36 @@
 {
-  "defaultMode": "auto",
-  "thinking": true,
-  "fastMode": false,
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "permissions": {
-    "bash": {
-      "allow": ["npm test", "npm run build", "git status"],
-      "ask": ["npm install", "composer install"]
-    }
+    "defaultMode": "default",
+    "allow": [
+      "Bash(git status)",
+      "Bash(git diff *)",
+      "Bash(git log *)",
+      "Bash(npm test)",
+      "Bash(npm test *)",
+      "Bash(npm run build)",
+      "Bash(npm run lint)",
+      "Bash(npm run test:*)",
+      "Bash(npx playwright test *)",
+      "Bash(npx specsmd@latest dashboard)",
+      "Bash(node .specsmd/aidlc/scripts/*)"
+    ],
+    "ask": [
+      "Bash(npm install *)",
+      "Bash(npm i *)",
+      "Bash(npx specsmd@latest install)",
+      "Bash(git commit *)",
+      "Bash(git push *)"
+    ],
+    "deny": [
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Read(./**/*.pem)",
+      "Read(./**/*.key)",
+      "Bash(git push --force *)",
+      "Bash(rm -rf *)"
+    ]
   },
-  "cleanupPeriod": "3d"
+  "alwaysThinkingEnabled": true,
+  "fastMode": false
 }
-

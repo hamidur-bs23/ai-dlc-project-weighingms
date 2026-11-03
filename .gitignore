@@ -5,8 +5,11 @@ build/
 coverage/
 
 # Claude local cache/history
-.claude/
+.claude/*
 !.claude/settings.json
+!.claude/agents/
+!.claude/commands/
+.claude/settings.local.json
 
 # System & temporary files
 .DS_Store
