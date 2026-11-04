@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using WeighingMS.Application.Abstractions;
 using WeighingMS.Application.Access;
 using WeighingMS.Infrastructure.Access;
+using WeighingMS.Infrastructure.Integrations;
 using WeighingMS.Infrastructure.Persistence;
 
 namespace WeighingMS.Infrastructure;
@@ -24,6 +25,7 @@ public static class DependencyInjection
         services.AddSingleton<IPinHasher, PinHasher>();
         services.AddSingleton<IPlantClock, PlantClock>();
         services.AddScoped<DevelopmentUserSeeder>();
+        services.AddDeviceIntegrations(configuration);
         return services;
     }
 }

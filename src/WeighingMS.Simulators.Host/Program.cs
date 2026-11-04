@@ -1,6 +1,10 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.Options;
+using OpenTelemetry;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 using Scalar.AspNetCore;
 using Serilog;
 using WeighingMS.Simulators.Host.Common;
@@ -45,6 +49,18 @@ builder.Services
     .AddJsonOptions(o => o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)));
 builder.Services.AddProblemDetails();
 builder.Services.AddOpenApi();
+
+// OpenTelemetry (OTEL-TIMING): the Api's W3C trace context continues here; healthy weight polls are not traced.
+// Export only when OTEL_EXPORTER_OTLP_ENDPOINT is set.
+var telemetry = builder.Services.AddOpenTelemetry()
+    .ConfigureResource(r => r.AddService("weighingms-simulators"))
+    .WithTracing(t => t.AddAspNetCoreInstrumentation(o => o.Filter = ctx =>
+        !(HttpMethods.IsGet(ctx.Request.Method) && ctx.Request.Path.Value?.EndsWith("/weight", StringComparison.Ordinal) == true)))
+    .WithMetrics(m => m.AddAspNetCoreInstrumentation().AddRuntimeInstrumentation());
+if (!string.IsNullOrWhiteSpace(builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"]))
+{
+    telemetry.UseOtlpExporter();
+}
 
 var app = builder.Build();
 

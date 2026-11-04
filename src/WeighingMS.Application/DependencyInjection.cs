@@ -1,6 +1,7 @@
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using WeighingMS.Application.Access;
+using WeighingMS.Application.Devices;
 
 namespace WeighingMS.Application;
 
@@ -12,6 +13,8 @@ public static class DependencyInjection
     {
         services.AddValidatorsFromAssemblyContaining<IApplicationAssemblyMarker>(ServiceLifetime.Singleton);
         services.AddScoped<StationAccessService>();
+        services.AddSingleton<DeviceHealthTracker>();
+        services.AddScoped<DeviceService>();
         return services;
     }
 }

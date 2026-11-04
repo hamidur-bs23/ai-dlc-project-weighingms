@@ -9,6 +9,7 @@ using Serilog;
 using WeighingMS.Api.Common;
 using WeighingMS.Application;
 using WeighingMS.Application.Access;
+using WeighingMS.Application.Devices;
 using WeighingMS.Infrastructure;
 
 // WeighingMS.Api: the only service the UI calls (B0). Cookie auth + antiforgery + rate limiting (ADR-009),
@@ -27,6 +28,12 @@ builder.Services.AddOptions<StationAccessOptions>()
     .Validate(o => !string.IsNullOrWhiteSpace(o.StationId) && o.StepUpActions.Count > 0, "Station:StationId and Station:StepUpActions are required.")
     .ValidateOnStart();
 builder.Services.AddSingleton(sp => sp.GetRequiredService<IOptions<StationAccessOptions>>().Value);
+
+builder.Services.AddOptions<DevicesOptions>()
+    .Bind(builder.Configuration.GetSection(DevicesOptions.SectionName))
+    .Validate(o => o.ScalePollInterval >= TimeSpan.FromMilliseconds(50), "Devices:ScalePollInterval must be at least 50 ms.")
+    .ValidateOnStart();
+builder.Services.AddSingleton(sp => sp.GetRequiredService<IOptions<DevicesOptions>>().Value);
 
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
@@ -77,6 +84,7 @@ builder.Services
 builder.Services.AddProblemDetails(o => o.CustomizeProblemDetails = ctx =>
     ctx.ProblemDetails.Extensions.TryAdd("traceId", TraceIds.Of(ctx.HttpContext)));
 builder.Services.AddOpenApi();
+builder.Services.AddWeighingTelemetry(builder.Configuration);
 builder.Services.AddHealthChecks()
     .AddNpgSql(builder.Configuration.GetConnectionString("Db")!, name: "postgres", tags: ["ready"]);
 
@@ -89,7 +97,7 @@ if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Test"))
 
 app.UseExceptionHandler();
 app.UseStatusCodePages();
-app.UseSerilogRequestLogging();
+app.UseSerilogRequestLogging(o => o.GetLevel = RequestLogLevels.For);
 app.Use(async (ctx, next) =>
 {
     if (ctx.Request.Path.StartsWithSegments("/api", StringComparison.Ordinal))
