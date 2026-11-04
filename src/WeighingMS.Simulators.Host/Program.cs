@@ -4,8 +4,11 @@ using Microsoft.Extensions.Options;
 using Scalar.AspNetCore;
 using Serilog;
 using WeighingMS.Simulators.Host.Common;
+using WeighingMS.Simulators.Host.Faults;
 using WeighingMS.Simulators.Host.OrgaTex;
+using WeighingMS.Simulators.Host.Printer;
 using WeighingMS.Simulators.Host.Scales;
+using WeighingMS.Simulators.Host.Scanner;
 using WeighingMS.Simulators.Host.Seed;
 
 // WeighingMS.Simulators.Host: training substitutes for OrgaTEX and the station devices (ADR-003).
@@ -31,6 +34,9 @@ builder.Services.AddSingleton(sp =>
 });
 builder.Services.AddSingleton<ConsumptionStore>();
 builder.Services.AddSingleton<ScaleSimulator>();
+builder.Services.AddSingleton<ScanBuffer>();
+builder.Services.AddSingleton<PrintStore>();
+builder.Services.AddSingleton<FaultRegistry>();
 
 var simulationControlEnabled = builder.Environment.IsDevelopment() || builder.Environment.IsEnvironment("Test");
 builder.Services

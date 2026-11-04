@@ -39,4 +39,7 @@ public sealed class ConsumptionStore(TimeProvider clock)
 
     /// <summary>All receipts in the order received.</summary>
     public IReadOnlyList<ConsumptionReceipt> All() => [.. _byKey.Values.OrderBy(r => r.ReceivedAt)];
+
+    /// <summary>Forgets every received post.</summary>
+    public void Reset() => _byKey.Clear();
 }

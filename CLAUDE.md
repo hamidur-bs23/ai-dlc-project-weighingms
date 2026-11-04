@@ -36,7 +36,14 @@ Working now (after bolt 001):
 
 Planned (added by later bolts): `npm run dev` (Api + simulators + web), `npm test -w web` and `npm run lint` (bolt 006), `npx playwright test` (bolt 014), `docker compose --profile observability up -d` (observability bolt).
 
-Simulator control endpoints (`/_sim/*`, Development/Test only): `POST /_sim/scales/{scaleId}/scenario` (`rising`, `belowRange`, `enterRange`, `overshoot`, `stable`), `GET /_sim/orgatex/consumption`. The seed is `src/WeighingMS.Simulators.Host/Seed/seed.json`.
+Simulator control endpoints (`/_sim/*`, Development/Test only):
+- `POST /_sim/scales/{scaleId}/scenario` (`rising`, `belowRange`, `enterRange`, `overshoot`, `stable`)
+- `POST /_sim/scanner/scan {"code":"…"}` (WeighingMS collects with `GET /api/scanner/scans?after={sequence}`)
+- `POST|GET|DELETE /_sim/faults` (`{"target":"orgatex|scale:{scaleId}|printer|scanner","mode":"unavailable|timeout|error500|slow","durationMs":n}`)
+- `POST /_sim/reset` (all dummies back to their start state)
+- `GET /_sim/orgatex/consumption`, `GET /_sim/printer/tickets` (inspect what was received)
+
+The seed is `src/WeighingMS.Simulators.Host/Seed/seed.json`.
 
 Also in root `package.json`: `npm run specsmd:validate` (memory-bank naming, frontmatter and cross-references) and `npm run specsmd:integrity` (status consistency). **Use Node 26.13.0 from nvm** (`.nvmrc`, `engine-strict`). Non-interactive shells get it via `~/.zshenv`; Homebrew's node 24.4.1 is too old for Angular CLI 22 and must not be used.
 

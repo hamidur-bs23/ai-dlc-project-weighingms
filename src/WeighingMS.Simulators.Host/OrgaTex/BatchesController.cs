@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using WeighingMS.Simulators.Host.Common;
+using WeighingMS.Simulators.Host.Faults;
 using WeighingMS.Simulators.Host.Seed;
 
 namespace WeighingMS.Simulators.Host.OrgaTex;
@@ -11,6 +12,7 @@ namespace WeighingMS.Simulators.Host.OrgaTex;
 [ApiController]
 [Route("api/batches")]
 [Produces("application/json")]
+[FaultInjection(FaultTargets.OrgaTex)]
 public sealed class BatchesController(SimulatorSeed seed, ConsumptionStore consumption) : ControllerBase
 {
     /// <summary>Name of the idempotency header required on consumption posts.</summary>

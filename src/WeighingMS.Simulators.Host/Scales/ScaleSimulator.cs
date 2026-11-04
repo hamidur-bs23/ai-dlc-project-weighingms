@@ -11,9 +11,6 @@ namespace WeighingMS.Simulators.Host.Scales;
 /// </summary>
 public sealed class ScaleSimulator
 {
-    /// <summary>Status reported by a working scale.</summary>
-    public const string Ready = "READY";
-
     private readonly TimeProvider _clock;
     private readonly TimeSpan _pourDuration;
     private readonly Dictionary<string, ScaleState> _states;
@@ -105,6 +102,18 @@ public sealed class ScaleSimulator
         }
     }
 
+    /// <summary>Returns every scale to its start state: no tare, empty container, no scenario.</summary>
+    public void Reset()
+    {
+        foreach (var state in _states.Values)
+        {
+            lock (state)
+            {
+                state.Reset();
+            }
+        }
+    }
+
     private sealed class ScaleState(SeedScale definition)
     {
         private decimal _landing;
@@ -120,6 +129,14 @@ public sealed class ScaleSimulator
             _landing = landing;
             _held = 0m;
             _pourStartedAt = now;
+        }
+
+        public void Reset()
+        {
+            Tare = 0m;
+            _landing = 0m;
+            _held = 0m;
+            _pourStartedAt = null;
         }
 
         public void Hold(decimal poured)
