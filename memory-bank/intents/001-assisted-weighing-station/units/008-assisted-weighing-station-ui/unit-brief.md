@@ -2,7 +2,7 @@
 unit: 008-assisted-weighing-station-ui
 intent: 001-assisted-weighing-station
 phase: inception
-status: draft
+status: ready
 unit_type: frontend
 default_bolt_type: simple-construction-bolt
 created: 2026-11-04T15:00:00Z
@@ -64,7 +64,26 @@ Full acceptance criteria: `../../requirements.md`. Unit decomposition: `../../un
 
 ## Story Summary
 
-*To be filled at STEP 11 (stories).*
+- **Total Stories**: 13
+- **Must Have**: 13
+- **Should Have**: 0
+- **Could Have**: 0
+
+### Stories
+
+- [ ] **001-app-shell-top-bar-status-strip**: App shell: top bar, status strip, clock, Transloco, function keys - Must - Planned
+- [ ] **002-sign-in-screen**: Sign-in screen - Must - Planned
+- [ ] **003-select-batch-screen**: Select-batch screen (scan prompt + queue table) - Must - Planned
+- [ ] **004-weigh-screen-rail-and-header**: Weigh screen: recipe rail and component header - Must - Planned
+- [ ] **005-weigh-screen-readout-bar-status**: Weigh screen: readout, progress bar with band and target line, status line - Must - Planned
+- [ ] **006-weigh-actions-and-keys**: Weigh actions and keys: Confirm F1, Re-tare F2, Quit F4, Supervisor override - Must - Planned
+- [ ] **007-lot-and-container-entry**: Lot and container entry - Must - Planned
+- [ ] **008-supervisor-override-dialog**: Supervisor override dialog - Must - Planned
+- [ ] **009-confirm-and-print-screen**: Confirm & print screen: summary, write-back status, Next batch F3 - Must - Planned
+- [ ] **010-ticket-preview-and-print**: Ticket preview and print / reprint - Must - Planned
+- [ ] **011-error-and-offline-states**: Error and offline states across screens - Must - Planned
+- [ ] **012-completed-batch-review-list**: Completed-batch review list - Must - Planned
+- [ ] **013-end-to-end-batch-flow**: End-to-end batch B-24187 (Playwright) - Must - Planned
 
 ---
 

@@ -2,7 +2,7 @@
 unit: 005-weighing-station
 intent: 001-assisted-weighing-station
 phase: inception
-status: draft
+status: ready
 unit_type: backend
 default_bolt_type: ddd-construction-bolt
 created: 2026-11-04T15:00:00Z
@@ -93,7 +93,27 @@ Full acceptance criteria: `../../requirements.md`. Unit decomposition: `../../un
 
 ## Story Summary
 
-*To be filled at STEP 11 (stories).*
+- **Total Stories**: 14
+- **Must Have**: 14
+- **Should Have**: 0
+- **Could Have**: 0
+
+### Stories
+
+- [ ] **001-start-or-resume-weighing-session**: Start or resume a weighing session for a batch - Must - Planned
+- [ ] **002-select-pending-component**: Select any pending component, sequence suggested - Must - Planned
+- [ ] **003-automatic-scale-selection**: Automatic scale selection by the ≤ 3 kg threshold - Must - Planned
+- [ ] **004-capture-lot-and-container**: Capture lot and container for the component - Must - Planned
+- [ ] **005-tare-required-and-re-tare**: Tare required before weighing; re-tare - Must - Planned
+- [ ] **006-classify-reading-four-classes**: Classify each reading into 4 classes, with remaining - Must - Planned
+- [ ] **007-resolve-tolerance-source**: Resolve the tolerance source (recipe → config → blocked) - Must - Planned
+- [ ] **008-confirm-valid-weighing**: Confirm a valid weighing - Must - Planned
+- [ ] **009-progress-to-next-component**: Progress to the next pending component - Must - Planned
+- [ ] **010-overshoot-warn-and-block**: Overshoot: warn and block (no compensation) - Must - Planned
+- [ ] **011-supervisor-override**: Supervisor override of an out-of-tolerance weighing - Must - Planned
+- [ ] **012-quit-and-incomplete-batch**: Quit, leaving the batch incomplete - Must - Planned
+- [ ] **013-complete-batch-all-confirmed**: Complete the batch when all N are confirmed - Must - Planned
+- [ ] **014-weighing-records-and-review**: Weighing records with traceability, and completed-batch review - Must - Planned
 
 ---
 

@@ -2,7 +2,7 @@
 unit: 004-device-integration
 intent: 001-assisted-weighing-station
 phase: inception
-status: draft
+status: ready
 unit_type: backend
 default_bolt_type: simple-construction-bolt
 created: 2026-11-04T15:00:00Z
@@ -65,7 +65,19 @@ Full acceptance criteria: `../../requirements.md`. Unit decomposition: `../../un
 
 ## Story Summary
 
-*To be filled at STEP 11 (stories).*
+- **Total Stories**: 6
+- **Must Have**: 6
+- **Should Have**: 0
+- **Could Have**: 0
+
+### Stories
+
+- [ ] **001-live-scale-reading**: Live scale reading at ≤ 250 ms - Must - Planned
+- [ ] **002-tare-a-scale**: Tare a scale - Must - Planned
+- [ ] **003-scale-offline-and-invalid-readings**: Scale offline and invalid readings handled safely - Must - Planned
+- [ ] **004-scan-delivery-to-station**: Scans delivered from the scanner to the station - Must - Planned
+- [ ] **005-scanner-offline-manual-fallback**: Scanner offline: manual fallback - Must - Planned
+- [ ] **006-device-health-for-status-strip**: Device health for the status strip - Must - Planned
 
 ---
 

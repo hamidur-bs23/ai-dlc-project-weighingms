@@ -2,7 +2,7 @@
 unit: 002-station-access
 intent: 001-assisted-weighing-station
 phase: inception
-status: draft
+status: ready
 unit_type: backend
 default_bolt_type: simple-construction-bolt
 created: 2026-11-04T15:00:00Z
@@ -63,7 +63,17 @@ Full acceptance criteria: `../../requirements.md`. Unit decomposition: `../../un
 
 ## Story Summary
 
-*To be filled at STEP 11 (stories).*
+- **Total Stories**: 4
+- **Must Have**: 3
+- **Should Have**: 1
+- **Could Have**: 0
+
+### Stories
+
+- [ ] **001-operator-badge-sign-in**: Operator badge sign-in and session - Must - Planned
+- [ ] **002-supervisor-pin-step-up**: Supervisor badge + PIN step-up for one action - Must - Planned
+- [ ] **003-immutable-audit-trail**: Immutable audit trail - Should - Planned
+- [ ] **004-plant-time-zone**: Plant time zone for display and print - Must - Planned
 
 ---
 

@@ -2,7 +2,7 @@
 unit: 003-batch-recipe
 intent: 001-assisted-weighing-station
 phase: inception
-status: draft
+status: ready
 unit_type: backend
 default_bolt_type: simple-construction-bolt
 created: 2026-11-04T15:00:00Z
@@ -21,7 +21,7 @@ Present the OrgaTEX batch queue, let the operator select a batch (touch or scann
 - Batch queue (FR-1) and selection (FR-2)
 - Recipe load and snapshot: ordered components, target, unit, optional recipe tolerance (FR-3)
 - Tolerance configuration per chemical + scale (read model for TOL)
-- `IOrgatexBatchReader` adapter (typed HttpClient + resilience)
+- `IOrgatexGateway` read operations: queue, batch, recipe (typed HttpClient + resilience)
 - OrgaTEX unavailable on load: error + Retry; never invented data (FR-24 criterion a)
 
 ### Out of Scope
@@ -65,7 +65,18 @@ Full acceptance criteria: `../../requirements.md`. Unit decomposition: `../../un
 
 ## Story Summary
 
-*To be filled at STEP 11 (stories).*
+- **Total Stories**: 5
+- **Must Have**: 5
+- **Should Have**: 0
+- **Could Have**: 0
+
+### Stories
+
+- [ ] **001-view-batch-queue**: View the OrgaTEX batch queue - Must - Planned
+- [ ] **002-select-batch-by-touch-or-scan**: Select a batch by touch or scanned batch ID - Must - Planned
+- [ ] **003-load-recipe-snapshot**: Load an immutable recipe snapshot - Must - Planned
+- [ ] **004-configured-tolerance-fallback**: Configured tolerance per chemical + scale - Must - Planned
+- [ ] **005-orgatex-unavailable-on-load**: OrgaTEX unavailable while loading: error + Retry - Must - Planned
 
 ---
 

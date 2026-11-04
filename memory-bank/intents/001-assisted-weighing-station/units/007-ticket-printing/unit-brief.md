@@ -2,7 +2,7 @@
 unit: 007-ticket-printing
 intent: 001-assisted-weighing-station
 phase: inception
-status: draft
+status: ready
 unit_type: backend
 default_bolt_type: simple-construction-bolt
 created: 2026-11-04T15:00:00Z
@@ -61,7 +61,17 @@ Full acceptance criteria: `../../requirements.md`. Unit decomposition: `../../un
 
 ## Story Summary
 
-*To be filled at STEP 11 (stories).*
+- **Total Stories**: 4
+- **Must Have**: 4
+- **Should Have**: 0
+- **Could Have**: 0
+
+### Stories
+
+- [ ] **001-compose-ticket**: Compose the 80 mm ticket (STEP 27 fields, Code 128, OVR) - Must - Planned
+- [ ] **002-print-ticket**: Print the ticket - Must - Planned
+- [ ] **003-reprint-marked**: Reprints marked REPRINT - Must - Planned
+- [ ] **004-printer-unavailable-print-pending**: Printer unavailable: print pending - Must - Planned
 
 ---
 

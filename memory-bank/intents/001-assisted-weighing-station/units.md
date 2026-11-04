@@ -1,7 +1,7 @@
 ---
 intent: 001-assisted-weighing-station
 phase: inception
-status: units-decomposed
+status: approved
 updated: 2026-11-04T15:00:00Z
 ---
 
@@ -125,7 +125,7 @@ updated: 2026-11-04T15:00:00Z
 
 There are no cycles. Completion is decoupled by the **`BatchCompleted`** domain event, which goes through the same transaction as the outbox entry (FR-20). Weighing never calls write-back or printing directly.
 
-> **Refinement to `system-architecture.md` (proposed; pending your approval at CP3):** the single port `IOrgatexGateway` is split into **`IOrgatexBatchReader`** (003) and **`IOrgatexConsumptionWriter`** (006), following interface segregation. Both are still backed by one typed OrgaTEX HttpClient, and there is no change to the boundary (B1).
+> **Decision (CHECKPOINT 3, 2026-11-04):** the single `IOrgatexGateway` port (system-architecture) is kept. Unit 003 uses its read operations (queue, batch, recipe); unit 006 uses its consumption operation. Both share one typed OrgaTEX HttpClient behind boundary B1.
 
 ## 5. Execution order
 
@@ -170,7 +170,7 @@ The exact bolts are planned at STEP 12.
   - Selection by touch or scanned batch ID (FR-2).
   - Recipe load and snapshot: ordered components, target, unit, recipe tolerance (FR-3).
   - The tolerance configuration read model.
-  - The `IOrgatexBatchReader` adapter.
+  - The `IOrgatexGateway` read operations (queue, batch, recipe).
   - OrgaTEX-unavailable-on-load behaviour: error + Retry, no invented data (FR-24a).
 - **Dependencies**: 001 (dummy OrgaTEX contract).
 - **Why separate**: OrgaTEX owns this data, and WeighingMS only reads it. It's a read model with a different change cadence and failure mode from the weighing rules. It can be developed and tested against the dummy before any weighing exists.
@@ -218,7 +218,7 @@ The exact bolts are planned at STEP 12.
   - A background dispatcher: `POST /api/batches/:id/consumption` with an `Idempotency-Key`, bounded automatic retry with back-off, then the "sync failed" state and manual retry (FR-20, PD-01).
   - Sync status and the unsynced count for the UI.
   - OrgaTEX-unavailable-at-completion behaviour (FR-24c).
-  - The `IOrgatexConsumptionWriter` adapter.
+  - The `IOrgatexGateway` consumption operation.
 - **Dependencies**: 005 (`BatchCompleted` and the record data), 001 (dummy OrgaTEX consumption endpoint).
 - **Why separate**: a distinct reliability capability (store-and-forward) with its own state machine, background process and failure mode. Separating it removes the inbound/outbound cycle with 003, and it can be tested by injecting OrgaTEX faults without touching the weighing logic.
 - **Bolt type**: **Simple**: integration work. The outbox state machine (pending → sent / failed) is small and fully specified by FR-20; it doesn't need DDD stages.

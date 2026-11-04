@@ -21,8 +21,8 @@ status: in-progress
 | Decisions brief | ✅ approved (STEP 7 decisions + evidence) | decisions-brief.md |
 | UI analysis (STEP 8) | 📝 draft, awaiting review | ui-analysis.md |
 | System Context | 📝 draft (STEP 9), awaiting review | system-context.md |
-| Units | 📝 draft: 8 units (STEP 10), awaiting CHECKPOINT 3 | units.md, units/{UUU}-{unit-name}/unit-brief.md |
-| Stories | ⏳ pending | units/{unit-name}/stories/*.md |
+| Units | ✅ approved: 8 units (CHECKPOINT 3) | units.md, units/{UUU}-{unit-name}/unit-brief.md |
+| Stories | 📝 draft: 56 stories (STEP 11), awaiting review | units/{UUU}-{unit-name}/stories/*.md, memory-bank/story-index.md |
 | Bolt Plan | ⏳ pending | memory-bank/bolts/*/bolt.md |
 
 ## Summary
@@ -32,21 +32,21 @@ status: in-progress
 | Functional Requirements | 28 |
 | Non-Functional Requirements | 6 categories |
 | Units | 8 |
-| Stories | 0 |
+| Stories | 56 |
 | Bolts Planned | 0 |
 
 ## Units Breakdown
 
 | Unit | Stories | Bolts | Priority |
 |------|---------|-------|----------|
-| 001-station-simulators | — | — | Must (foundation) |
-| 002-station-access | — | — | Must (foundation) |
-| 003-batch-recipe | — | — | Must |
-| 004-device-integration | — | — | Must |
-| 005-weighing-station (DDD) | — | — | Must (core) |
-| 006-consumption-writeback | — | — | Must |
-| 007-ticket-printing | — | — | Must |
-| 008-assisted-weighing-station-ui | — | — | Must |
+| 001-station-simulators | 6 | — | Must (foundation) |
+| 002-station-access | 4 | — | Must (foundation) |
+| 003-batch-recipe | 5 | — | Must |
+| 004-device-integration | 6 | — | Must |
+| 005-weighing-station (DDD) | 14 | — | Must (core) |
+| 006-consumption-writeback | 4 | — | Must |
+| 007-ticket-printing | 4 | — | Must |
+| 008-assisted-weighing-station-ui | 13 | — | Must |
 
 ## Decision Log
 
@@ -65,7 +65,8 @@ status: in-progress
 | 2026-11-04T07:30:00Z | OQ-1 container per chemical (typed, suggested value); OQ-2 tare required before confirm; OQ-3 stable reading required; OQ-4 near-target amber is a visual hint only | Proposals accepted by product owner | Yes (CHECKPOINT 2) |
 | 2026-11-04T14:00:00Z | UI analysis of the mockup (STEP 8): 12 sections, line-mapped; 13 gaps vs approved requirements; surplus calculation not adopted (PD-05) | Workbook STEP 8; requirements win over the mockup (ADR-015) | Pending (review) |
 | 2026-11-04T14:30:00Z | System context (STEP 9): actors Operator/Supervisor; OrgaTEX + scale/scanner/printer each shown as real (conceptual) vs training dummy; inbound I1–I8, outbound O1–O5, ownership, boundaries B0–B3, failure boundaries | Workbook STEP 9; FR-20–FR-28; system-architecture ports | Pending (review) |
-| 2026-11-04T15:00:00Z | Units (STEP 10): 8 capability units; Batch + Recipe merged; OrgaTEX split inbound (003) / outbound (006); scale + scanner merged (004); weighing-station is the DDD core; one UI unit for all screens; FR-24 split by criterion; proposed port split IOrgatexGateway → IOrgatexBatchReader + IOrgatexConsumptionWriter | Capability-oriented decomposition; no dependency cycles | Pending (CHECKPOINT 3) |
+| 2026-11-04T15:00:00Z | Units (STEP 10): 8 capability units; Batch + Recipe merged; OrgaTEX split inbound (003) / outbound (006); scale + scanner merged (004); weighing-station is the DDD core; one UI unit for all screens; FR-24 split by criterion; port split proposed, then declined: single IOrgatexGateway kept | Capability-oriented decomposition; no dependency cycles | Yes (CHECKPOINT 3, 2026-11-04) |
+| 2026-11-04T16:00:00Z | Stories (STEP 11): 56 stories across 8 units (55 must, 1 should); every FR-1…FR-28 covered; every mockup element mapped (story-index); demo-only controls replaced by `/_sim/*`; no implementation tasks | Workbook STEP 11; units approved at CP3 | Pending (review) |
 
 ## Scope Changes
 
@@ -90,8 +91,9 @@ status: in-progress
 4. STEP 8: UI analysis written (`ui-analysis.md`), awaiting human review
 5. STEP 9: system context written (`system-context.md`), awaiting human review
 6. STEP 10: units written (`units.md` + 8 unit briefs)
-7. CHECKPOINT 3: human approves the units (`APPROVE UNITS`)
-8. STEP 11: stories
+7. ~~CHECKPOINT 3~~: units approved by human (2026-11-04), single `IOrgatexGateway` kept
+8. STEP 11: 56 stories written, awaiting human review
+9. STEP 12: bolt plan
 
 ## Dependencies
 

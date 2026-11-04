@@ -2,7 +2,7 @@
 unit: 001-station-simulators
 intent: 001-assisted-weighing-station
 phase: inception
-status: draft
+status: ready
 unit_type: backend
 default_bolt_type: simple-construction-bolt
 created: 2026-11-04T15:00:00Z
@@ -68,7 +68,19 @@ Full acceptance criteria: `../../requirements.md`. Unit decomposition: `../../un
 
 ## Story Summary
 
-*To be filled at STEP 11 (stories).*
+- **Total Stories**: 6
+- **Must Have**: 6
+- **Should Have**: 0
+- **Could Have**: 0
+
+### Stories
+
+- [ ] **001-dummy-orgatex-serves-batches-and-recipes**: Dummy OrgaTEX serves the batch queue and recipes from seed - Must - Planned
+- [ ] **002-dummy-orgatex-receives-consumption**: Dummy OrgaTEX receives and exposes consumption - Must - Planned
+- [ ] **003-dummy-scales-with-scenarios**: Two dummy scales with weighing scenarios and resolution - Must - Planned
+- [ ] **004-dummy-scanner-emits-scans**: Dummy scanner emits scans - Must - Planned
+- [ ] **005-dummy-printer-accepts-tickets**: Dummy printer accepts and exposes tickets - Must - Planned
+- [ ] **006-fault-injection-and-seed-reset**: Fault injection and seed reset - Must - Planned
 
 ---
 

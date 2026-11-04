@@ -2,7 +2,7 @@
 unit: 006-consumption-writeback
 intent: 001-assisted-weighing-station
 phase: inception
-status: draft
+status: ready
 unit_type: backend
 default_bolt_type: simple-construction-bolt
 created: 2026-11-04T15:00:00Z
@@ -23,7 +23,7 @@ Deliver the actual consumption of every completed batch to OrgaTEX **exactly onc
 - Bounded automatic retry with back-off, then "sync failed" and manual retry (FR-20)
 - Sync status and unsynced count for the UI
 - OrgaTEX unavailable at completion (FR-24 criterion c)
-- `IOrgatexConsumptionWriter` adapter
+- `IOrgatexGateway` consumption operation (shares the typed OrgaTEX HttpClient)
 
 ### Out of Scope
 - Deciding completion (005)
@@ -60,7 +60,17 @@ Full acceptance criteria: `../../requirements.md`. Unit decomposition: `../../un
 
 ## Story Summary
 
-*To be filled at STEP 11 (stories).*
+- **Total Stories**: 4
+- **Must Have**: 4
+- **Should Have**: 0
+- **Could Have**: 0
+
+### Stories
+
+- [ ] **001-enqueue-consumption-on-completion**: Enqueue consumption atomically with completion - Must - Planned
+- [ ] **002-dispatch-with-idempotency-and-retry**: Dispatch with idempotency and bounded retry - Must - Planned
+- [ ] **003-sync-failed-and-manual-retry**: Sync failed and manual retry - Must - Planned
+- [ ] **004-write-back-status-visible**: Write-back status and unsynced count visible - Must - Planned
 
 ---
 
