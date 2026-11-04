@@ -172,3 +172,4 @@ Decisions marked *resolved* below were taken by the product owner at STEP 7 on 2
 | PD-07 | resolved (STEP 7, approved CP2) | Free selection of any pending chemical; sequence shown and the next one suggested. Completion needs all N chemicals |
 | TOL | resolved (STEP 7, approved CP2) | Recipe tolerance if provided, else configured tolerance per chemical + scale, else weighing is blocked. No universal default. Inclusive bounds, snapshotted on the record |
 | OVR | resolved (STEP 7, approved CP2) | Any out-of-tolerance weighing needs a supervisor badge + PIN step-up (ADR-009) and a mandatory reason. The record keeps its true class and is flagged as overridden |
+| SEED-01 | resolved (CP5, bolt 001) | Dummy OrgaTEX serves training recipes for B-24188, B-24190 and B-24191. They are invented for the lab (no source), flagged `trainingOnly` in the seed, and are not claims about FCI data |

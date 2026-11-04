@@ -14,3 +14,12 @@ coverage/
 # System & temporary files
 .DS_Store
 *.log
+
+# .NET build output
+bin/
+obj/
+TestResults/
+*.user
+
+# Local environment (secrets)
+.env

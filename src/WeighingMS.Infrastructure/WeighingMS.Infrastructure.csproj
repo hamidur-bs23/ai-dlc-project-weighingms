@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="..\WeighingMS.Application\WeighingMS.Application.csproj" />
+    <ProjectReference Include="..\WeighingMS.Domain\WeighingMS.Domain.csproj" />
+  </ItemGroup>
+</Project>

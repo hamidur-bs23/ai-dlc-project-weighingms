@@ -9,7 +9,12 @@
   },
   "scripts": {
     "specsmd:validate": "node .specsmd/aidlc/scripts/artifact-validator.cjs",
-    "specsmd:integrity": "node .specsmd/aidlc/scripts/status-integrity.cjs"
+    "specsmd:integrity": "node .specsmd/aidlc/scripts/status-integrity.cjs",
+    "sim": "dotnet run --project src/WeighingMS.Simulators.Host --launch-profile http",
+    "api": "dotnet run --project src/WeighingMS.Api --launch-profile http",
+    "build:backend": "dotnet build WeighingMS.sln",
+    "test:backend": "dotnet test WeighingMS.sln",
+    "format:backend": "dotnet format WeighingMS.sln --verify-no-changes"
   },
   "devDependencies": {
     "fs-extra": "^11.4.1",

@@ -2,7 +2,7 @@
 unit: 001-station-simulators
 intent: 001-assisted-weighing-station
 created: 2026-11-04T17:55:00Z
-last_updated: 2026-11-04T17:55:00Z
+last_updated: 2026-11-04T18:20:00Z
 ---
 
 # Construction Log: station-simulators
@@ -34,6 +34,7 @@ last_updated: 2026-11-04T17:55:00Z
 | Date | Bolt | Event | Details |
 |------|------|-------|---------|
 | 2026-11-04T17:55:00Z | 001-station-simulators | started | Stage 1: plan |
+| 2026-11-04T18:20:00Z | 001-station-simulators | stage-complete | plan → implement (CHECKPOINT 5: APPROVE PLAN) |
 
 ## Execution Summary
 
@@ -49,3 +50,5 @@ last_updated: 2026-11-04T17:55:00Z
 ## Notes
 
 Bolt 001 also scaffolds the whole solution (first bolt of the intent).
+
+SEED-01 (CHECKPOINT 5): the product owner chose training recipes for B-24188, B-24190 and B-24191. They are invented for the lab, not sourced, and flagged `trainingOnly` in the seed.

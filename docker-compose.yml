@@ -1,0 +1,41 @@
+# WeighingMS local stack (tech-stack → Infrastructure & Deployment).
+#   Development: docker compose up -d postgres   (Api, simulators and web run natively)
+#   Demo/E2E/CI: docker compose --profile full up --wait
+# Later bolts add the migrator, api and observability services.
+name: weighingms
+
+services:
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-weighingms}
+      POSTGRES_USER: ${POSTGRES_USER:-weighingms}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  simulators:
+    profiles: ["full"]
+    build:
+      context: .
+      dockerfile: src/WeighingMS.Simulators.Host/Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${SIMULATORS_ENVIRONMENT:-Development}
+      ASPNETCORE_URLS: http://+:5090
+    ports:
+      - "5090:5090"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:5090/api/scales > /dev/null || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  pgdata:

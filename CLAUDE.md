@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project state
 
-WeighingMS is an assisted dyestuff weighing station for the client FCI. It sits between the operator and the OrgaTEX MES. The repo is still **pre-code**: it holds the source material and the AI-DLC memory-bank. It is being built as a hands-on lab that follows `workbook.md` (the specs.md AI-DLC flow), so work moves through that file's steps in order.
+WeighingMS is an assisted dyestuff weighing station for the client FCI. It sits between the operator and the OrgaTEX MES. Construction has started (bolt 001 scaffolded the .NET solution and the first simulators); the repo also holds the source material and the AI-DLC memory-bank. It is being built as a hands-on lab that follows `workbook.md` (the specs.md AI-DLC flow), so work moves through that file's steps in order.
 
 The tech stack was approved during project-init. It is recorded in `memory-bank/standards/` (tech-stack, data-stack, coding-standards, system-architecture, api-conventions, ux-guide), and every decision is indexed in `decision-index.md`. **Read the relevant standard before generating code.** In short:
 
@@ -18,23 +18,26 @@ The tech stack was approved during project-init. It is recorded in `memory-bank/
 - **Tests:** xUnit v3 + Shouldly + Testcontainers for the backend, Vitest + Testing Library for the frontend, and Playwright (TS) for E2E.
 - **Tooling:** npm workspaces, Node v26.13.0, Docker Compose profiles (`full`, `observability`).
 
-### Commands (planned; they work only after Construction scaffolds the solution)
+### Commands
+
+Working now (after bolt 001):
 
 | Task | Command |
 |---|---|
-| Start Postgres for dev | `docker compose up -d postgres` |
-| Run everything natively (Api + Simulators + web) | `npm run dev` |
-| Backend tests | `dotnet test` |
-| Single backend test | `dotnet test --filter "FullyQualifiedName~ToleranceBandTests.Contains_UpperBoundary_ReturnsTrue"` |
-| Frontend unit tests | `npm test -w web` (single file: `npm test -w web -- src/app/features/weighing/weighing-session.store.spec.ts`) |
-| Lint / format check | `npm run lint` · `dotnet format --verify-no-changes` |
-| Full stack (demo/E2E/CI) | `docker compose --profile full up --wait` |
-| Playwright suite | `npx playwright test` (single: `npx playwright test playwright/tests/batch-flow.e2e.ts`) |
-| Observability stack | `docker compose --profile observability up -d` (Grafana on :3000) |
+| Build the backend (warnings are errors) | `dotnet build WeighingMS.sln` · `npm run build:backend` |
+| Backend tests | `dotnet test WeighingMS.sln` · `npm run test:backend` |
+| Single backend test | `dotnet test --filter "FullyQualifiedName~ScaleScenarioTests"` |
+| Format check | `dotnet format WeighingMS.sln --verify-no-changes` · `npm run format:backend` |
+| Run the simulators (dummy OrgaTEX + scales, :5090) | `npm run sim` (Scalar UI at `/scalar`, Development only) |
+| Run the Api host (:5080, health only so far) | `npm run api` |
+| Start Postgres for dev | `docker compose up -d postgres` (needs `.env`; copy `.env.example`) |
+| Simulators in a container | `docker compose --profile full up --wait` |
 
-Replace this table with the real commands once Bolt 1 scaffolds the solution.
+Planned (added by later bolts): `npm run dev` (Api + simulators + web), `npm test -w web` and `npm run lint` (bolt 006), `npx playwright test` (bolt 014), `docker compose --profile observability up -d` (observability bolt).
 
-Available now (root `package.json`): `npm run specsmd:validate` (memory-bank naming, frontmatter and cross-references) and `npm run specsmd:integrity` (status consistency). **Use Node 26.13.0 from nvm** (`.nvmrc`, `engine-strict`). Non-interactive shells get it via `~/.zshenv`; Homebrew's node 24.4.1 is too old for Angular CLI 22 and must not be used.
+Simulator control endpoints (`/_sim/*`, Development/Test only): `POST /_sim/scales/{scaleId}/scenario` (`rising`, `belowRange`, `enterRange`, `overshoot`, `stable`), `GET /_sim/orgatex/consumption`. The seed is `src/WeighingMS.Simulators.Host/Seed/seed.json`.
+
+Also in root `package.json`: `npm run specsmd:validate` (memory-bank naming, frontmatter and cross-references) and `npm run specsmd:integrity` (status consistency). **Use Node 26.13.0 from nvm** (`.nvmrc`, `engine-strict`). Non-interactive shells get it via `~/.zshenv`; Homebrew's node 24.4.1 is too old for Angular CLI 22 and must not be used.
 
 ## Source material (read before generating artifacts)
 
