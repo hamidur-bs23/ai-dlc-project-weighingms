@@ -14,7 +14,9 @@
     "api": "dotnet run --project src/WeighingMS.Api --launch-profile http",
     "build:backend": "dotnet build WeighingMS.sln",
     "test:backend": "dotnet test --solution WeighingMS.sln",
-    "format:backend": "dotnet format WeighingMS.sln --verify-no-changes"
+    "format:backend": "dotnet format WeighingMS.sln --verify-no-changes",
+    "db:update": "dotnet ef database update --project src/WeighingMS.Infrastructure --startup-project src/WeighingMS.Infrastructure",
+    "db:migrations:add": "dotnet ef migrations add --project src/WeighingMS.Infrastructure --startup-project src/WeighingMS.Infrastructure --output-dir Persistence/Migrations"
   },
   "devDependencies": {
     "fs-extra": "^11.4.1",

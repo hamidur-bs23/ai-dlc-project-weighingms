@@ -34,3 +34,8 @@ indent_size = 2
 
 [*.md]
 trim_trailing_whitespace = false
+
+# EF Core migrations are generated code: analyzers and style rules do not apply.
+[**/Migrations/*.cs]
+generated_code = true
+dotnet_analyzer_diagnostic.severity = none

@@ -1,8 +1,18 @@
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Threading.RateLimiting;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Options;
 using Scalar.AspNetCore;
 using Serilog;
+using WeighingMS.Api.Common;
+using WeighingMS.Application;
+using WeighingMS.Application.Access;
+using WeighingMS.Infrastructure;
 
-// WeighingMS.Api: the only service the UI calls. Business endpoints arrive with bolts 003+;
-// this bolt only scaffolds the host (health, OpenAPI, ProblemDetails, Serilog).
+// WeighingMS.Api: the only service the UI calls (B0). Cookie auth + antiforgery + rate limiting (ADR-009),
+// ErrorOr → ProblemDetails, PostgreSQL via EF Core. Migrations are applied outside start-up (data-stack).
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSerilog((_, logger) => logger
@@ -10,16 +20,89 @@ builder.Services.AddSerilog((_, logger) => logger
     .Enrich.FromLogContext()
     .WriteTo.Console());
 
-builder.Services.AddControllers();
-builder.Services.AddProblemDetails();
+builder.Services.AddSingleton(TimeProvider.System);
+builder.Services.AddOptions<StationAccessOptions>()
+    .Bind(builder.Configuration.GetSection(StationAccessOptions.SectionName))
+    .Validate(o => o.MaxFailedPinAttempts > 0 && o.LockoutDuration > TimeSpan.Zero && o.StepUpGrantLifetime > TimeSpan.Zero, "Station access limits must be positive.")
+    .Validate(o => !string.IsNullOrWhiteSpace(o.StationId) && o.StepUpActions.Count > 0, "Station:StationId and Station:StepUpActions are required.")
+    .ValidateOnStart();
+builder.Services.AddSingleton(sp => sp.GetRequiredService<IOptions<StationAccessOptions>>().Value);
+
+builder.Services.AddApplication();
+builder.Services.AddInfrastructure(builder.Configuration);
+
+// Cookies are Secure with the __Host- prefix everywhere except local Development, which runs over plain HTTP
+// (http://localhost:5080). Test and Production require HTTPS.
+var secureCookies = !builder.Environment.IsDevelopment();
+var cookiePolicy = secureCookies ? CookieSecurePolicy.Always : CookieSecurePolicy.SameAsRequest;
+var cookiePrefix = secureCookies ? "__Host-" : string.Empty;
+
+builder.Services
+    .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(o =>
+    {
+        o.Cookie.Name = cookiePrefix + "wms.session";
+        o.Cookie.HttpOnly = true;
+        o.Cookie.SecurePolicy = cookiePolicy;
+        o.Cookie.SameSite = SameSiteMode.Strict;
+        o.SlidingExpiration = true;
+        o.ExpireTimeSpan = TimeSpan.FromHours(12);
+        o.Events.OnRedirectToLogin = ctx => ProblemResponses.WriteAsync(ctx.HttpContext, StatusCodes.Status401Unauthorized, "Auth.SignInRequired", "Sign in with your badge first.");
+        o.Events.OnRedirectToAccessDenied = ctx => ProblemResponses.WriteAsync(ctx.HttpContext, StatusCodes.Status403Forbidden, "Auth.SupervisorRequired", "A supervisor is required.");
+    });
+builder.Services.AddAuthorizationBuilder()
+    .AddPolicy(StationPolicies.RequireOperator, p => p.RequireAuthenticatedUser().RequireClaim(StationClaims.Badge))
+    .AddPolicy(StationPolicies.RequireSupervisor, p => p.RequireAuthenticatedUser().RequireRole("Supervisor"));
+
+builder.Services.AddAntiforgery(o =>
+{
+    o.HeaderName = "X-XSRF-TOKEN";
+    o.Cookie.Name = cookiePrefix + "wms.af";
+    o.Cookie.SecurePolicy = cookiePolicy;
+    o.Cookie.SameSite = SameSiteMode.Strict;
+});
+
+var authPermitLimit = builder.Configuration.GetValue("RateLimits:AuthPermitLimitPerMinute", 10);
+builder.Services.AddRateLimiter(o =>
+{
+    o.AddPolicy(StationPolicies.AuthRateLimit, ctx => RateLimitPartition.GetFixedWindowLimiter(
+        ctx.Connection.RemoteIpAddress?.ToString() ?? "local",
+        _ => new FixedWindowRateLimiterOptions { PermitLimit = authPermitLimit, Window = TimeSpan.FromMinutes(1), QueueLimit = 0 }));
+    o.OnRejected = (ctx, _) => new ValueTask(ProblemResponses.WriteAsync(ctx.HttpContext, StatusCodes.Status429TooManyRequests, "Auth.TooManyAttempts", "Too many attempts; wait a minute."));
+});
+
+builder.Services
+    .AddControllers(o => o.Filters.Add<AntiforgeryValidationFilter>())
+    .AddJsonOptions(o => o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)));
+builder.Services.AddProblemDetails(o => o.CustomizeProblemDetails = ctx =>
+    ctx.ProblemDetails.Extensions.TryAdd("traceId", TraceIds.Of(ctx.HttpContext)));
 builder.Services.AddOpenApi();
-builder.Services.AddHealthChecks();
+builder.Services.AddHealthChecks()
+    .AddNpgSql(builder.Configuration.GetConnectionString("Db")!, name: "postgres", tags: ["ready"]);
 
 var app = builder.Build();
+
+if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Test"))
+{
+    await DevelopmentSeeding.SeedUsersAsync(app);
+}
 
 app.UseExceptionHandler();
 app.UseStatusCodePages();
 app.UseSerilogRequestLogging();
+app.Use(async (ctx, next) =>
+{
+    if (ctx.Request.Path.StartsWithSegments("/api", StringComparison.Ordinal))
+    {
+        ctx.Response.OnStarting(() =>
+        {
+            ctx.Response.Headers.CacheControl = "no-store";
+            return Task.CompletedTask;
+        });
+    }
+
+    await next();
+});
 
 if (app.Environment.IsDevelopment())
 {
@@ -27,7 +110,12 @@ if (app.Environment.IsDevelopment())
     app.MapScalarApiReference();
 }
 
-app.MapHealthChecks("/health/live");
+app.UseAuthentication();
+app.UseAuthorization();
+app.UseRateLimiter();
+
+app.MapHealthChecks("/health/live", new() { Predicate = _ => false });
+app.MapHealthChecks("/health/ready", new() { Predicate = c => c.Tags.Contains("ready") });
 app.MapControllers();
 await app.RunAsync();
 

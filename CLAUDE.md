@@ -30,9 +30,13 @@ Working now (after bolt 001):
 | Coverage (Cobertura) | `dotnet test --project tests/WeighingMS.Simulators.Tests --coverage --coverage-output-format cobertura` |
 | Format check | `dotnet format WeighingMS.sln --verify-no-changes` · `npm run format:backend` |
 | Run the simulators (dummy OrgaTEX + scales, :5090) | `npm run sim` (Scalar UI at `/scalar`, Development only) |
-| Run the Api host (:5080, health only so far) | `npm run api` |
-| Start Postgres for dev | `docker compose up -d postgres` (needs `.env`; copy `.env.example`) |
+| Run the Api host (:5080) | `npm run api` (needs Postgres + migrations; seeds lab users in Development) |
+| Apply migrations to the dev database | `npm run db:update` (after `docker compose up -d postgres`) |
+| Add a migration | `npm run db:migrations:add -- <Name>` |
+| Start Postgres for dev | `docker compose up -d postgres` (needs `.env`; copy `.env.example`). Host port **5433** (`POSTGRES_PORT`) |
 | Simulators in a container | `docker compose --profile full up --wait` |
+
+Lab users (Development seed, `appsettings.Development.json`): operators `OP-1001` (R. Karim) and `OP-1002`, supervisor `SV-2001` (PIN in that file). Api session endpoints: `GET /api/antiforgery` → `POST|GET|DELETE /api/session`, `POST /api/session/step-up`, `GET /api/station`; state-changing calls need the `X-XSRF-TOKEN` header.
 
 Planned (added by later bolts): `npm run dev` (Api + simulators + web), `npm test -w web` and `npm run lint` (bolt 006), `npx playwright test` (bolt 014), `docker compose --profile observability up -d` (observability bolt).
 
