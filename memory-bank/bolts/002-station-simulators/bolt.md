@@ -3,21 +3,21 @@ id: 002-station-simulators
 unit: 001-station-simulators
 intent: 001-assisted-weighing-station
 type: simple-construction-bolt
-status: planned
+status: in-progress
 stories:
   - 004-dummy-scanner-emits-scans
   - 005-dummy-printer-accepts-tickets
   - 006-fault-injection-and-seed-reset
 created: 2026-11-04T17:00:00Z
-started: null
+started: 2026-11-04T19:10:00Z
 completed: null
-current_stage: null
+current_stage: plan
 stages_completed: []
 
 requires_bolts: [001-station-simulators]
 enables_bolts: [004-device-integration, 005-batch-recipe, 011-consumption-writeback, 012-ticket-printing]
 requires_units: []
-blocks: true
+blocks: false
 
 complexity:
   avg_complexity: 1
@@ -51,7 +51,7 @@ Story files: `memory-bank/intents/001-assisted-weighing-station/units/001-statio
 
 ## Stages
 
-- [ ] **1. plan**: Pending → implementation-plan.md
+- ⏳ **1. plan**: In Progress → implementation-plan.md
 - [ ] **2. implement**: Pending → src/
 - [ ] **3. test**: Pending → test-report.md
 
