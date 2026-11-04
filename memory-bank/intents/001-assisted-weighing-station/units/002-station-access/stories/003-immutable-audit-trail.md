@@ -2,12 +2,15 @@
 id: 003-immutable-audit-trail
 unit: 002-station-access
 intent: 001-assisted-weighing-station
-status: draft
+status: complete
 priority: should
-requirements: [NFR-Security, FR-14, FR-15]
-created: 2026-11-04T16:00:00Z
+requirements:
+  - NFR-Security
+  - FR-14
+  - FR-15
+created: '2026-11-04T16:00:00Z'
 assigned_bolt: 003-station-access
-implemented: false
+implemented: true
 ---
 
 # Story: 003-immutable-audit-trail

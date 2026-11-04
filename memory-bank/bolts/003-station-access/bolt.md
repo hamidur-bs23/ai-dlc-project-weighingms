@@ -3,26 +3,35 @@ id: 003-station-access
 unit: 002-station-access
 intent: 001-assisted-weighing-station
 type: simple-construction-bolt
-status: in-progress
+status: complete
 stories:
   - 001-operator-badge-sign-in
   - 002-supervisor-pin-step-up
   - 003-immutable-audit-trail
   - 004-plant-time-zone
-created: 2026-11-04T17:00:00Z
-started: 2026-11-04T20:00:00Z
-completed: null
-current_stage: implement
+created: '2026-11-04T17:00:00Z'
+started: '2026-11-04T20:00:00Z'
+completed: '2026-11-04T20:04:13Z'
+current_stage: null
 stages_completed:
   - name: plan
-    completed: 2026-11-04T20:20:00Z
+    completed: '2026-11-04T20:20:00Z'
     artifact: implementation-plan.md
-
-requires_bolts: [001-station-simulators]
-enables_bolts: [006-assisted-weighing-station-ui, 007-weighing-station, 009-weighing-station, 012-ticket-printing]
+  - name: implement
+    completed: '2026-11-04T21:00:00Z'
+    artifact: implementation-walkthrough.md
+  - name: test
+    completed: '2026-11-04T21:45:00Z'
+    artifact: test-walkthrough.md
+requires_bolts:
+  - 001-station-simulators
+enables_bolts:
+  - 006-assisted-weighing-station-ui
+  - 007-weighing-station
+  - 009-weighing-station
+  - 012-ticket-printing
 requires_units: []
 blocks: false
-
 complexity:
   avg_complexity: 2
   avg_uncertainty: 1
@@ -57,8 +66,8 @@ Story files: `memory-bank/intents/001-assisted-weighing-station/units/002-statio
 ## Stages
 
 - ✅ **1. plan**: Complete → implementation-plan.md
-- ⏳ **2. implement**: In Progress → src/
-- [ ] **3. test**: Pending → test-report.md
+- ✅ **2. implement**: Complete → src/, implementation-walkthrough.md
+- ✅ **3. test**: Complete → test-walkthrough.md
 
 Every stage stops at a human validation checkpoint (workbook STEP 15, CHECKPOINT 5).
 

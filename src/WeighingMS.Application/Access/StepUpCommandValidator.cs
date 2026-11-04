@@ -9,7 +9,10 @@ public sealed class StepUpCommandValidator : AbstractValidator<StepUpCommand>
     public StepUpCommandValidator(StationAccessOptions options)
     {
         ArgumentNullException.ThrowIfNull(options);
-        RuleFor(c => c.SupervisorBadgeId).NotEmpty().MaximumLength(32).Matches("^[A-Za-z0-9-]+$").WithErrorCode("Request.Invalid");
+        RuleFor(c => c.SupervisorBadgeId)
+            .Must(b => BadgeFormat.IsValid(b))
+            .WithMessage("Badge must be 1 to 32 letters, digits or dashes.")
+            .WithErrorCode("Request.Invalid");
         RuleFor(c => c.Pin).NotEmpty().Matches("^[0-9]{4,8}$").WithMessage("PIN must be 4 to 8 digits.").WithErrorCode("Request.Invalid");
         RuleFor(c => c.Action).Must(a => options.StepUpActions.Contains(a)).WithMessage("Unknown action.").WithErrorCode("Request.Invalid");
     }

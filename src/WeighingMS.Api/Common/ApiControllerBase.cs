@@ -10,7 +10,6 @@ namespace WeighingMS.Api.Common;
 /// <c>type</c> and <c>errorCode</c> carry the stable error code; <c>traceId</c> is always present.
 /// </summary>
 [ApiController]
-[Produces("application/json")]
 public abstract class ApiControllerBase : ControllerBase
 {
     /// <summary>Converts a list of errors into a ProblemDetails result.</summary>

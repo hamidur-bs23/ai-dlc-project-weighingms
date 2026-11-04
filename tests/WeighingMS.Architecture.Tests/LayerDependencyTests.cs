@@ -20,6 +20,8 @@ public sealed class LayerDependencyTests
     [InlineData("WeighingMS.Api")]
     [InlineData("Microsoft.AspNetCore")]
     [InlineData("Microsoft.EntityFrameworkCore")]
+    [InlineData("FluentValidation")]
+    [InlineData("Npgsql")]
     public void Domain_DoesNotDependOn(string forbidden)
     {
         Types.InAssembly(_domain).ShouldNot().HaveDependencyOn(forbidden).GetResult().IsSuccessful.ShouldBeTrue();
@@ -29,10 +31,13 @@ public sealed class LayerDependencyTests
     [Theory]
     [InlineData("WeighingMS.Infrastructure")]
     [InlineData("WeighingMS.Api")]
+    [InlineData("Microsoft.EntityFrameworkCore")]
+    [InlineData("Npgsql")]
+    [InlineData("Microsoft.AspNetCore")]
     public void Application_DoesNotDependOn(string forbidden)
     {
         Types.InAssembly(_application).ShouldNot().HaveDependencyOn(forbidden).GetResult().IsSuccessful.ShouldBeTrue();
-        _application.GetReferencedAssemblies().Select(a => a.Name).ShouldNotContain(forbidden);
+        _application.GetReferencedAssemblies().Select(a => a.Name).ShouldNotContain(n => n != null && n.StartsWith(forbidden, StringComparison.Ordinal));
     }
 
     [Fact]

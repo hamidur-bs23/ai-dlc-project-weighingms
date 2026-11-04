@@ -2,11 +2,11 @@
 unit: 002-station-access
 intent: 001-assisted-weighing-station
 phase: inception
-status: in-progress
+status: complete
 unit_type: backend
 default_bolt_type: simple-construction-bolt
-created: 2026-11-04T15:00:00Z
-updated: 2026-11-04T15:00:00Z
+created: '2026-11-04T15:00:00Z'
+updated: '2026-11-04T15:00:00Z'
 ---
 
 # Unit Brief: Station Access

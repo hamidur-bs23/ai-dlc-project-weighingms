@@ -2,12 +2,14 @@
 id: 002-supervisor-pin-step-up
 unit: 002-station-access
 intent: 001-assisted-weighing-station
-status: draft
+status: complete
 priority: must
-requirements: [FR-15, NFR-Security]
-created: 2026-11-04T16:00:00Z
+requirements:
+  - FR-15
+  - NFR-Security
+created: '2026-11-04T16:00:00Z'
 assigned_bolt: 003-station-access
-implemented: false
+implemented: true
 ---
 
 # Story: 002-supervisor-pin-step-up
