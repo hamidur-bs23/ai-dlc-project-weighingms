@@ -155,4 +155,20 @@ Behaviours that are **not decided**. Standards that mention them say *"pending P
 | PD-06 | Time zone for displayed and printed timestamps | STEP 7 | silent ("confirmation timestamp") | ticket "date" | silent | ticket shows local time | configured IANA zone · station OS time · UTC | data-stack, ux-guide, coding-standards |
 | PD-07 | Chemical weighing order | STEP 7 | operator selects a chemical (Steps 4, 8) | STEP 23 fixed progression | FR-06 "present in recipe sequence" | any non-done chemical selectable | free selection (sequence shown) · strict sequence · sequence + supervisor skip | system-architecture, ux-guide, coding-standards |
 
-All PD items: **status `pending`**, registered 2026-11-03.
+All PD items registered 2026-11-03.
+
+### Status
+
+Decisions marked *resolved* below were taken by the product owner at STEP 7 on 2026-11-03T22:30:00Z, and approved at CHECKPOINT 2 (`APPROVE REQUIREMENTS`) on 2026-11-04T07:30:00Z. Full evidence for each is in `intents/001-assisted-weighing-station/decisions-brief.md`, and the requirements that apply them are in that intent's `requirements.md`. These are project decisions, not FCI confirmations.
+
+| ID | Status | Decision |
+|---|---|---|
+| PD-01 | resolved (STEP 7, approved CP2) | Store-and-forward outbox. Completion and the outbox entry are written in one transaction. Idempotent POST, automatic bounded retry, then a visible "sync failed" state. The unsynced count is shown |
+| PD-02 | resolved (STEP 7, approved CP2) | Completion is not blocked. The ticket is held as print pending and printed manually (F1); prints after the first are marked REPRINT. Accepted risk: BR-15 |
+| PD-03 | resolved (STEP 7, approved CP2) | Device-style HTTP scanner dummy (`POST /_sim/scanner/scan`). It scans batch and lot, with touch or typed fallback. No wedge, badge scan, container scan or identity verification. Deviates from IR-15 and FR-09 |
+| PD-04 | resolved (STEP 7, approved CP2) | Fixed V1 layout, 80 mm, with STEP 27 fields. Code 128 barcode = batch ID; overridden lines marked "OVR"; on-screen preview. Deviates from IR-16 and NFR-14 |
+| PD-05 | **pending** | Overshoot / surplus handling, decided at STEP 24 |
+| PD-06 | resolved (STEP 7, approved CP2) | Stored as UTC; shown and printed in a configured IANA zone (default `Asia/Dhaka`) |
+| PD-07 | resolved (STEP 7, approved CP2) | Free selection of any pending chemical; sequence shown and the next one suggested. Completion needs all N chemicals |
+| TOL | resolved (STEP 7, approved CP2) | Recipe tolerance if provided, else configured tolerance per chemical + scale, else weighing is blocked. No universal default. Inclusive bounds, snapshotted on the record |
+| OVR | resolved (STEP 7, approved CP2) | Any out-of-tolerance weighing needs a supervisor badge + PIN step-up (ADR-009) and a mandatory reason. The record keeps its true class and is flagged as overridden |
