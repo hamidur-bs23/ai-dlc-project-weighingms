@@ -1,7 +1,7 @@
 ---
 intent: 001-assisted-weighing-station
 phase: inception
-status: draft
+status: approved
 created: 2026-11-04T14:00:00Z
 updated: 2026-11-04T14:00:00Z
 ---

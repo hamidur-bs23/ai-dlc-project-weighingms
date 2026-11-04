@@ -6,7 +6,7 @@ status: draft
 priority: must
 requirements: [FR-25, FR-1, FR-3]
 created: 2026-11-04T16:00:00Z
-assigned_bolt: null
+assigned_bolt: 001-station-simulators
 implemented: false
 ---
 

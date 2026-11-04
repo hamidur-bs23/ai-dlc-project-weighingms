@@ -6,7 +6,7 @@ status: draft
 priority: must
 requirements: [FR-13, FR-19]
 created: 2026-11-04T16:00:00Z
-assigned_bolt: null
+assigned_bolt: 008-weighing-station
 implemented: false
 ---
 

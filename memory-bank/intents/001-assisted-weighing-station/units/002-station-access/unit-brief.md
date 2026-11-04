@@ -2,7 +2,7 @@
 unit: 002-station-access
 intent: 001-assisted-weighing-station
 phase: inception
-status: ready
+status: stories-defined
 unit_type: backend
 default_bolt_type: simple-construction-bolt
 created: 2026-11-04T15:00:00Z
@@ -136,8 +136,8 @@ ASP.NET Core cookie auth, policy-based authorization (`RequireOperator`, `Requir
 
 ## Bolt Suggestions
 
-Default bolt type: **Simple**. Final bolts are planned at STEP 12.
+Planned bolts (STEP 12) in `memory-bank/bolts/`:
 
-| Bolt | Type | Objective |
-|---|---|---|
-| bolt-station-access-1 | Simple | Sign-in, roles, step-up, audit, plant time |
+| Bolt | Type | Stories | Workbook |
+|---|---|---|---|
+| 003-station-access | Simple | 001, 002, 003, 004 | STEP 25 preparation |

@@ -2,7 +2,7 @@
 unit: 006-consumption-writeback
 intent: 001-assisted-weighing-station
 phase: inception
-status: ready
+status: stories-defined
 unit_type: backend
 default_bolt_type: simple-construction-bolt
 created: 2026-11-04T15:00:00Z
@@ -136,8 +136,8 @@ Hosted background service, EF Core outbox table, typed HttpClient with resilienc
 
 ## Bolt Suggestions
 
-Default bolt type: **Simple**. Final bolts are planned at STEP 12.
+Planned bolts (STEP 12) in `memory-bank/bolts/`:
 
-| Bolt | Type | Objective |
-|---|---|---|
-| bolt-consumption-writeback-1 | Simple | Outbox + dispatcher + retry + sync status |
+| Bolt | Type | Stories | Workbook |
+|---|---|---|---|
+| 011-consumption-writeback | Simple | 001, 002, 003, 004 | STEP 26 |

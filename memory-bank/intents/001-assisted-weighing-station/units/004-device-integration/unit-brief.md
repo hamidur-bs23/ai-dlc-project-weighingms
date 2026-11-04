@@ -2,7 +2,7 @@
 unit: 004-device-integration
 intent: 001-assisted-weighing-station
 phase: inception
-status: ready
+status: stories-defined
 unit_type: backend
 default_bolt_type: simple-construction-bolt
 created: 2026-11-04T15:00:00Z
@@ -144,9 +144,8 @@ Typed HttpClient adapters with resilience (timeout, retry with jitter, circuit b
 
 ## Bolt Suggestions
 
-Default bolt type: **Simple**. Final bolts are planned at STEP 12.
+Planned bolts (STEP 12) in `memory-bank/bolts/`:
 
-| Bolt | Type | Objective |
-|---|---|---|
-| bolt-device-integration-1 | Simple | Scale adapter + readings + tare + health |
-| bolt-device-integration-2 | Simple | Scanner adapter + scan delivery |
+| Bolt | Type | Stories | Workbook |
+|---|---|---|---|
+| 004-device-integration | Simple | 001, 002, 003, 004, 005, 006 | STEP 21, STEP 30 |

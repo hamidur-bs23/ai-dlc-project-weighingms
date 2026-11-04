@@ -2,7 +2,7 @@
 unit: 005-weighing-station
 intent: 001-assisted-weighing-station
 phase: inception
-status: ready
+status: stories-defined
 unit_type: backend
 default_bolt_type: ddd-construction-bolt
 created: 2026-11-04T15:00:00Z
@@ -182,10 +182,10 @@ Pure Domain project (no I/O), ErrorOr results, Application commands/queries, EF 
 
 ## Bolt Suggestions
 
-Default bolt type: **DDD**. Final bolts are planned at STEP 12.
+Planned bolts (STEP 12) in `memory-bank/bolts/`:
 
-| Bolt | Type | Objective |
-|---|---|---|
-| bolt-weighing-station-1 | DDD | Domain model: Quantity, ToleranceBand, ScaleSelection, classification |
-| bolt-weighing-station-2 | DDD | Session lifecycle: select, tare, confirm, quit, progression |
-| bolt-weighing-station-3 | DDD | Override, completion, summary, records |
+| Bolt | Type | Stories | Workbook |
+|---|---|---|---|
+| 007-weighing-station | DDD | 001, 002, 003, 006, 007 | STEPs 21–22 |
+| 008-weighing-station | DDD | 004, 005, 008, 009, 012 | STEP 23, STEP 25 |
+| 009-weighing-station | DDD | 010, 011, 013, 014 | STEP 24 (decision), STEP 23, STEP 26 preparation |

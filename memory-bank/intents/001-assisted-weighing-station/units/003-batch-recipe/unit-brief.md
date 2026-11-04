@@ -2,7 +2,7 @@
 unit: 003-batch-recipe
 intent: 001-assisted-weighing-station
 phase: inception
-status: ready
+status: stories-defined
 unit_type: backend
 default_bolt_type: simple-construction-bolt
 created: 2026-11-04T15:00:00Z
@@ -142,8 +142,8 @@ Application query handlers, typed HttpClient adapter with `Microsoft.Extensions.
 
 ## Bolt Suggestions
 
-Default bolt type: **Simple**. Final bolts are planned at STEP 12.
+Planned bolts (STEP 12) in `memory-bank/bolts/`:
 
-| Bolt | Type | Objective |
-|---|---|---|
-| bolt-batch-recipe-1 | Simple | OrgaTEX reader + queue + selection + snapshot |
+| Bolt | Type | Stories | Workbook |
+|---|---|---|---|
+| 005-batch-recipe | Simple | 001, 002, 003, 004, 005 | STEP 19 |

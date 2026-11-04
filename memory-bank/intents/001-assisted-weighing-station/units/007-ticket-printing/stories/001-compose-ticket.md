@@ -6,7 +6,7 @@ status: draft
 priority: must
 requirements: [FR-21, FR-22]
 created: 2026-11-04T16:00:00Z
-assigned_bolt: null
+assigned_bolt: 012-ticket-printing
 implemented: false
 ---
 

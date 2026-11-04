@@ -2,7 +2,7 @@
 unit: 008-assisted-weighing-station-ui
 intent: 001-assisted-weighing-station
 phase: inception
-status: ready
+status: stories-defined
 unit_type: frontend
 default_bolt_type: simple-construction-bolt
 created: 2026-11-04T15:00:00Z
@@ -148,10 +148,11 @@ Angular (standalone, signals, zoneless), NgRx SignalStore, SCSS with the prototy
 
 ## Bolt Suggestions
 
-Default bolt type: **Simple**. Final bolts are planned at STEP 12.
+Planned bolts (STEP 12) in `memory-bank/bolts/`:
 
-| Bolt | Type | Objective |
-|---|---|---|
-| bolt-assisted-weighing-station-ui-1 | Simple | Shell, sign-in, queue view |
-| bolt-assisted-weighing-station-ui-2 | Simple | Weigh view + override dialog |
-| bolt-assisted-weighing-station-ui-3 | Simple | Completion, ticket, status strip, E2E |
+| Bolt | Type | Stories | Workbook |
+|---|---|---|---|
+| 006-assisted-weighing-station-ui | Simple | 001, 002, 003 | STEP 19 |
+| 010-assisted-weighing-station-ui | Simple | 004, 005, 006, 007, 008 | STEPs 20–25 (UI) |
+| 013-assisted-weighing-station-ui | Simple | 009, 010, 012 | STEPs 26–28 (UI) |
+| 014-assisted-weighing-station-ui | Simple | 011, 013 | STEPs 28–30 |

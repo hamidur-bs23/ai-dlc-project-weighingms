@@ -6,7 +6,7 @@ status: draft
 priority: must
 requirements: [FR-1, FR-2]
 created: 2026-11-04T16:00:00Z
-assigned_bolt: null
+assigned_bolt: 006-assisted-weighing-station-ui
 implemented: false
 ---
 

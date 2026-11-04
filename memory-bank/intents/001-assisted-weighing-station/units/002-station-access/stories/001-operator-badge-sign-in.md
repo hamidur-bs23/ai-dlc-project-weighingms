@@ -6,7 +6,7 @@ status: draft
 priority: must
 requirements: [FR-19, NFR-Security]
 created: 2026-11-04T16:00:00Z
-assigned_bolt: null
+assigned_bolt: 003-station-access
 implemented: false
 ---
 

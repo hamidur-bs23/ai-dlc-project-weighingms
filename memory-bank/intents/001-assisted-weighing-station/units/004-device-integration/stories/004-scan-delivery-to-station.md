@@ -6,7 +6,7 @@ status: draft
 priority: must
 requirements: [FR-27, FR-2, FR-5]
 created: 2026-11-04T16:00:00Z
-assigned_bolt: null
+assigned_bolt: 004-device-integration
 implemented: false
 ---
 
