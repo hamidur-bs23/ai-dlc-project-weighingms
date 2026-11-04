@@ -19,6 +19,7 @@ status: in-progress
 |----------|--------|------|
 | Requirements | ✅ approved: FR-1..28 + NFRs (CHECKPOINT 2) | requirements.md |
 | Decisions brief | ✅ approved (STEP 7 decisions + evidence) | decisions-brief.md |
+| UI analysis (STEP 8) | 📝 draft, awaiting review | ui-analysis.md |
 | System Context | ⏳ pending | system-context.md |
 | Units | ⏳ pending | units/{unit-name}/unit-brief.md |
 | Stories | ⏳ pending | units/{unit-name}/stories/*.md |
@@ -54,6 +55,7 @@ status: in-progress
 | 2026-11-03T22:30:00Z | OVR Override → any out-of-tolerance weighing, supervisor PIN + mandatory reason | PDF §6 Step 7; ADR-009 | Yes (CHECKPOINT 2) |
 | 2026-11-03T22:30:00Z | External LLM decisions brief rejected as written: PD-05 mislabelled, invented fallback tolerances, IR-16 miscited, scanner mode changed; corrected version saved | Verification against /docs + workbook | Yes (CHECKPOINT 2) |
 | 2026-11-04T07:30:00Z | OQ-1 container per chemical (typed, suggested value); OQ-2 tare required before confirm; OQ-3 stable reading required; OQ-4 near-target amber is a visual hint only | Proposals accepted by product owner | Yes (CHECKPOINT 2) |
+| 2026-11-04T14:00:00Z | UI analysis of the mockup (STEP 8): 12 sections, line-mapped; 13 gaps vs approved requirements; surplus calculation not adopted (PD-05) | Workbook STEP 8; requirements win over the mockup (ADR-015) | Pending (review) |
 
 ## Scope Changes
 
@@ -75,7 +77,8 @@ status: in-progress
 1. ~~CHECKPOINT 1~~: intent approved by human (`APPROVE INTENT`, 2026-11-03T21:57:00Z)
 2. STEP 7: requirements written; PD-01–04, PD-06, PD-07, TOL and OVR decided; PD-05 deferred to STEP 24
 3. ~~CHECKPOINT 2~~: requirements approved by human (`APPROVE REQUIREMENTS`, 2026-11-04T07:30:00Z)
-4. STEP 8: UI analysis and system context (`/specsmd-inception-agent`)
+4. STEP 8: UI analysis written (`ui-analysis.md`), awaiting human review
+5. STEP 9: system context (`/specsmd-inception-agent`)
 
 ## Dependencies
 
