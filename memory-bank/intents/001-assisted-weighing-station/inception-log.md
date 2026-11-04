@@ -21,7 +21,7 @@ status: in-progress
 | Decisions brief | ✅ approved (STEP 7 decisions + evidence) | decisions-brief.md |
 | UI analysis (STEP 8) | 📝 draft, awaiting review | ui-analysis.md |
 | System Context | 📝 draft (STEP 9), awaiting review | system-context.md |
-| Units | ⏳ pending | units/{unit-name}/unit-brief.md |
+| Units | 📝 draft: 8 units (STEP 10), awaiting CHECKPOINT 3 | units.md, units/{UUU}-{unit-name}/unit-brief.md |
 | Stories | ⏳ pending | units/{unit-name}/stories/*.md |
 | Bolt Plan | ⏳ pending | memory-bank/bolts/*/bolt.md |
 
@@ -31,7 +31,7 @@ status: in-progress
 |--------|-------|
 | Functional Requirements | 28 |
 | Non-Functional Requirements | 6 categories |
-| Units | 0 |
+| Units | 8 |
 | Stories | 0 |
 | Bolts Planned | 0 |
 
@@ -39,6 +39,14 @@ status: in-progress
 
 | Unit | Stories | Bolts | Priority |
 |------|---------|-------|----------|
+| 001-station-simulators | — | — | Must (foundation) |
+| 002-station-access | — | — | Must (foundation) |
+| 003-batch-recipe | — | — | Must |
+| 004-device-integration | — | — | Must |
+| 005-weighing-station (DDD) | — | — | Must (core) |
+| 006-consumption-writeback | — | — | Must |
+| 007-ticket-printing | — | — | Must |
+| 008-assisted-weighing-station-ui | — | — | Must |
 
 ## Decision Log
 
@@ -57,6 +65,7 @@ status: in-progress
 | 2026-11-04T07:30:00Z | OQ-1 container per chemical (typed, suggested value); OQ-2 tare required before confirm; OQ-3 stable reading required; OQ-4 near-target amber is a visual hint only | Proposals accepted by product owner | Yes (CHECKPOINT 2) |
 | 2026-11-04T14:00:00Z | UI analysis of the mockup (STEP 8): 12 sections, line-mapped; 13 gaps vs approved requirements; surplus calculation not adopted (PD-05) | Workbook STEP 8; requirements win over the mockup (ADR-015) | Pending (review) |
 | 2026-11-04T14:30:00Z | System context (STEP 9): actors Operator/Supervisor; OrgaTEX + scale/scanner/printer each shown as real (conceptual) vs training dummy; inbound I1–I8, outbound O1–O5, ownership, boundaries B0–B3, failure boundaries | Workbook STEP 9; FR-20–FR-28; system-architecture ports | Pending (review) |
+| 2026-11-04T15:00:00Z | Units (STEP 10): 8 capability units; Batch + Recipe merged; OrgaTEX split inbound (003) / outbound (006); scale + scanner merged (004); weighing-station is the DDD core; one UI unit for all screens; FR-24 split by criterion; proposed port split IOrgatexGateway → IOrgatexBatchReader + IOrgatexConsumptionWriter | Capability-oriented decomposition; no dependency cycles | Pending (CHECKPOINT 3) |
 
 ## Scope Changes
 
@@ -80,7 +89,9 @@ status: in-progress
 3. ~~CHECKPOINT 2~~: requirements approved by human (`APPROVE REQUIREMENTS`, 2026-11-04T07:30:00Z)
 4. STEP 8: UI analysis written (`ui-analysis.md`), awaiting human review
 5. STEP 9: system context written (`system-context.md`), awaiting human review
-6. STEP 10: decompose into units (`/specsmd-inception-agent`)
+6. STEP 10: units written (`units.md` + 8 unit briefs)
+7. CHECKPOINT 3: human approves the units (`APPROVE UNITS`)
+8. STEP 11: stories
 
 ## Dependencies
 
