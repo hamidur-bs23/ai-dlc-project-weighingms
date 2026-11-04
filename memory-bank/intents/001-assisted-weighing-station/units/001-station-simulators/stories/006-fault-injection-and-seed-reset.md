@@ -2,12 +2,18 @@
 id: 006-fault-injection-and-seed-reset
 unit: 001-station-simulators
 intent: 001-assisted-weighing-station
-status: draft
+status: complete
 priority: must
-requirements: [FR-25, FR-26, FR-27, FR-28, FR-23, FR-24]
-created: 2026-11-04T16:00:00Z
+requirements:
+  - FR-25
+  - FR-26
+  - FR-27
+  - FR-28
+  - FR-23
+  - FR-24
+created: '2026-11-04T16:00:00Z'
 assigned_bolt: 002-station-simulators
-implemented: false
+implemented: true
 ---
 
 # Story: 006-fault-injection-and-seed-reset

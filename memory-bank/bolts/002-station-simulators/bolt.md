@@ -3,28 +3,34 @@ id: 002-station-simulators
 unit: 001-station-simulators
 intent: 001-assisted-weighing-station
 type: simple-construction-bolt
-status: in-progress
+status: complete
 stories:
   - 004-dummy-scanner-emits-scans
   - 005-dummy-printer-accepts-tickets
   - 006-fault-injection-and-seed-reset
-created: 2026-11-04T17:00:00Z
-started: 2026-11-04T19:10:00Z
-completed: null
-current_stage: test
+created: '2026-11-04T17:00:00Z'
+started: '2026-11-04T19:10:00Z'
+completed: '2026-11-04T19:23:23Z'
+current_stage: null
 stages_completed:
   - name: plan
-    completed: 2026-11-04T19:20:00Z
+    completed: '2026-11-04T19:20:00Z'
     artifact: implementation-plan.md
   - name: implement
-    completed: 2026-11-04T19:40:00Z
+    completed: '2026-11-04T19:40:00Z'
     artifact: implementation-walkthrough.md
-
-requires_bolts: [001-station-simulators]
-enables_bolts: [004-device-integration, 005-batch-recipe, 011-consumption-writeback, 012-ticket-printing]
+  - name: test
+    completed: '2026-11-04T19:55:00Z'
+    artifact: test-walkthrough.md
+requires_bolts:
+  - 001-station-simulators
+enables_bolts:
+  - 004-device-integration
+  - 005-batch-recipe
+  - 011-consumption-writeback
+  - 012-ticket-printing
 requires_units: []
 blocks: false
-
 complexity:
   avg_complexity: 1
   avg_uncertainty: 1
@@ -59,7 +65,7 @@ Story files: `memory-bank/intents/001-assisted-weighing-station/units/001-statio
 
 - ✅ **1. plan**: Complete → implementation-plan.md
 - ✅ **2. implement**: Complete → src/, implementation-walkthrough.md
-- ⏳ **3. test**: In Progress → test-walkthrough.md
+- ✅ **3. test**: Complete → test-walkthrough.md
 
 Every stage stops at a human validation checkpoint (workbook STEP 15, CHECKPOINT 5).
 

@@ -2,7 +2,7 @@
 unit: 001-station-simulators
 intent: 001-assisted-weighing-station
 created: 2026-11-04T17:55:00Z
-last_updated: 2026-11-04T19:05:00Z
+last_updated: 2026-11-04T19:55:00Z
 ---
 
 # Construction Log: station-simulators
@@ -27,7 +27,7 @@ last_updated: 2026-11-04T19:05:00Z
 | Bolt ID | Stories | Status | Changed |
 |---------|---------|--------|---------|
 | 001-station-simulators | 001, 002, 003 | ✅ completed | - |
-| 002-station-simulators | 004, 005, 006 | ⏳ in-progress | - |
+| 002-station-simulators | 004, 005, 006 | ✅ completed | - |
 
 ## Execution History
 
@@ -41,6 +41,8 @@ last_updated: 2026-11-04T19:05:00Z
 | 2026-11-04T19:10:00Z | 002-station-simulators | started | Stage 1: plan |
 | 2026-11-04T19:20:00Z | 002-station-simulators | stage-complete | plan → implement (APPROVE PLAN) |
 | 2026-11-04T19:40:00Z | 002-station-simulators | stage-complete | implement → test (approved) |
+| 2026-11-04T19:55:00Z | 002-station-simulators | stage-complete | test → done (approved; 122/122 tests) |
+| 2026-11-04T19:55:00Z | 002-station-simulators | completed | All 3 stages done (bolt-complete.cjs); unit complete |
 
 ## Execution Summary
 
@@ -48,9 +50,9 @@ last_updated: 2026-11-04T19:05:00Z
 |--------|-------|
 | Original bolts planned | 2 |
 | Current bolt count | 2 |
-| Bolts completed | 1 |
-| Bolts in progress | 1 |
-| Bolts remaining | 1 |
+| Bolts completed | 2 |
+| Bolts in progress | 0 |
+| Bolts remaining | 0 |
 | Replanning events | 0 |
 
 ## Notes
@@ -58,3 +60,5 @@ last_updated: 2026-11-04T19:05:00Z
 Bolt 001 also scaffolds the whole solution (first bolt of the intent).
 
 SEED-01 (CHECKPOINT 5): the product owner chose training recipes for B-24188, B-24190 and B-24191. They are invented for the lab, not sourced, and flagged `trainingOnly` in the seed.
+
+Unit complete (2026-11-04): both bolts done. The dummy OrgaTEX, scales, scanner and printer, fault injection and reset are in place; 122 tests. Open item: the Docker image build is unverified (Docker daemon not running).

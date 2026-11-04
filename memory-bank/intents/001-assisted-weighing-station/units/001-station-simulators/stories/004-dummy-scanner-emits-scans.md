@@ -2,12 +2,13 @@
 id: 004-dummy-scanner-emits-scans
 unit: 001-station-simulators
 intent: 001-assisted-weighing-station
-status: draft
+status: complete
 priority: must
-requirements: [FR-27]
-created: 2026-11-04T16:00:00Z
+requirements:
+  - FR-27
+created: '2026-11-04T16:00:00Z'
 assigned_bolt: 002-station-simulators
-implemented: false
+implemented: true
 ---
 
 # Story: 004-dummy-scanner-emits-scans
