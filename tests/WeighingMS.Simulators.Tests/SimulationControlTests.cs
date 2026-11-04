@@ -21,6 +21,23 @@ public sealed class SimulationControlTests(ProductionSimulatorFactory factory) :
         (await _client.GetUrlAsync("/_sim/orgatex/consumption")).StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
+    [Theory]
+    [InlineData("/_sim/faults")]
+    [InlineData("/_sim/printer/tickets")]
+    public async Task Production_SimGetEndpoints_DoNotExist(string url)
+    {
+        (await _client.GetUrlAsync(url)).StatusCode.ShouldBe(HttpStatusCode.NotFound);
+    }
+
+    [Theory]
+    [InlineData("/_sim/scanner/scan")]
+    [InlineData("/_sim/reset")]
+    [InlineData("/_sim/faults")]
+    public async Task Production_SimPostEndpoints_DoNotExist(string url)
+    {
+        (await _client.PostJsonAsync(url, new { code = "B-24187", target = "orgatex", mode = "unavailable" })).StatusCode.ShouldBe(HttpStatusCode.NotFound);
+    }
+
     [Fact]
     public async Task Production_TrainingContracts_StillServed()
     {
