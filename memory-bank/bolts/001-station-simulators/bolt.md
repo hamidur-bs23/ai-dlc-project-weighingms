@@ -3,28 +3,32 @@ id: 001-station-simulators
 unit: 001-station-simulators
 intent: 001-assisted-weighing-station
 type: simple-construction-bolt
-status: in-progress
+status: complete
 stories:
   - 001-dummy-orgatex-serves-batches-and-recipes
   - 002-dummy-orgatex-receives-consumption
   - 003-dummy-scales-with-scenarios
-created: 2026-11-04T17:00:00Z
-started: 2026-11-04T17:55:00Z
-completed: null
-current_stage: test
+created: '2026-11-04T17:00:00Z'
+started: '2026-11-04T17:55:00Z'
+completed: '2026-11-04T19:03:01Z'
+current_stage: null
 stages_completed:
   - name: plan
-    completed: 2026-11-04T18:20:00Z
+    completed: '2026-11-04T18:20:00Z'
     artifact: implementation-plan.md
   - name: implement
-    completed: 2026-11-04T18:35:00Z
+    completed: '2026-11-04T18:35:00Z'
     artifact: implementation-walkthrough.md
-
+  - name: test
+    completed: '2026-11-04T19:05:00Z'
+    artifact: test-walkthrough.md
 requires_bolts: []
-enables_bolts: [002-station-simulators, 003-station-access, 004-device-integration]
+enables_bolts:
+  - 002-station-simulators
+  - 003-station-access
+  - 004-device-integration
 requires_units: []
 blocks: false
-
 complexity:
   avg_complexity: 2
   avg_uncertainty: 1
@@ -59,7 +63,7 @@ Story files: `memory-bank/intents/001-assisted-weighing-station/units/001-statio
 
 - ✅ **1. plan**: Complete → implementation-plan.md
 - ✅ **2. implement**: Complete → src/, implementation-walkthrough.md
-- ⏳ **3. test**: In Progress → test-walkthrough.md
+- ✅ **3. test**: Complete → test-walkthrough.md
 
 Every stage stops at a human validation checkpoint (workbook STEP 15, CHECKPOINT 5).
 

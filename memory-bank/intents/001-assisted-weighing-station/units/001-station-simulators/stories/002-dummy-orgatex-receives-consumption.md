@@ -2,12 +2,14 @@
 id: 002-dummy-orgatex-receives-consumption
 unit: 001-station-simulators
 intent: 001-assisted-weighing-station
-status: draft
+status: complete
 priority: must
-requirements: [FR-25, FR-20]
-created: 2026-11-04T16:00:00Z
+requirements:
+  - FR-25
+  - FR-20
+created: '2026-11-04T16:00:00Z'
 assigned_bolt: 001-station-simulators
-implemented: false
+implemented: true
 ---
 
 # Story: 002-dummy-orgatex-receives-consumption

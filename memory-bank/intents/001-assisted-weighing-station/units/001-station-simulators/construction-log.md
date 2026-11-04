@@ -2,7 +2,7 @@
 unit: 001-station-simulators
 intent: 001-assisted-weighing-station
 created: 2026-11-04T17:55:00Z
-last_updated: 2026-11-04T18:35:00Z
+last_updated: 2026-11-04T19:05:00Z
 ---
 
 # Construction Log: station-simulators
@@ -26,7 +26,7 @@ last_updated: 2026-11-04T18:35:00Z
 
 | Bolt ID | Stories | Status | Changed |
 |---------|---------|--------|---------|
-| 001-station-simulators | 001, 002, 003 | ⏳ in-progress | - |
+| 001-station-simulators | 001, 002, 003 | ✅ completed | - |
 | 002-station-simulators | 004, 005, 006 | [ ] planned | - |
 
 ## Execution History
@@ -36,6 +36,8 @@ last_updated: 2026-11-04T18:35:00Z
 | 2026-11-04T17:55:00Z | 001-station-simulators | started | Stage 1: plan |
 | 2026-11-04T18:20:00Z | 001-station-simulators | stage-complete | plan → implement (CHECKPOINT 5: APPROVE PLAN) |
 | 2026-11-04T18:35:00Z | 001-station-simulators | stage-complete | implement → test (approved) |
+| 2026-11-04T19:05:00Z | 001-station-simulators | stage-complete | test → done (approved; 72/72 tests) |
+| 2026-11-04T19:05:00Z | 001-station-simulators | completed | All 3 stages done (bolt-complete.cjs) |
 
 ## Execution Summary
 
@@ -43,9 +45,9 @@ last_updated: 2026-11-04T18:35:00Z
 |--------|-------|
 | Original bolts planned | 2 |
 | Current bolt count | 2 |
-| Bolts completed | 0 |
-| Bolts in progress | 1 |
-| Bolts remaining | 2 |
+| Bolts completed | 1 |
+| Bolts in progress | 0 |
+| Bolts remaining | 1 |
 | Replanning events | 0 |
 
 ## Notes

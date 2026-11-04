@@ -1,9 +1,9 @@
 ---
 intent: 001-assisted-weighing-station
 phase: inception
-status: construction
-created: 2026-11-03T21:41:00Z
-updated: 2026-11-04T07:30:00Z
+status: units-defined
+created: '2026-11-03T21:41:00Z'
+updated: '2026-11-04T07:30:00Z'
 ---
 
 # Requirements: Assisted Dyestuff Weighing Station (WeighingMS)
