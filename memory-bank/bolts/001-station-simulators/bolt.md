@@ -3,15 +3,15 @@ id: 001-station-simulators
 unit: 001-station-simulators
 intent: 001-assisted-weighing-station
 type: simple-construction-bolt
-status: planned
+status: in-progress
 stories:
   - 001-dummy-orgatex-serves-batches-and-recipes
   - 002-dummy-orgatex-receives-consumption
   - 003-dummy-scales-with-scenarios
 created: 2026-11-04T17:00:00Z
-started: null
+started: 2026-11-04T17:55:00Z
 completed: null
-current_stage: null
+current_stage: plan
 stages_completed: []
 
 requires_bolts: []
