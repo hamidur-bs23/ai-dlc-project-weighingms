@@ -3,7 +3,7 @@ id: 004-device-integration
 unit: 004-device-integration
 intent: 001-assisted-weighing-station
 type: simple-construction-bolt
-status: planned
+status: in-progress
 stories:
   - 001-live-scale-reading
   - 002-tare-a-scale
@@ -12,15 +12,15 @@ stories:
   - 005-scanner-offline-manual-fallback
   - 006-device-health-for-status-strip
 created: 2026-11-04T17:00:00Z
-started: null
+started: 2026-11-04T21:50:00Z
 completed: null
-current_stage: null
+current_stage: plan
 stages_completed: []
 
 requires_bolts: [001-station-simulators, 002-station-simulators]
 enables_bolts: [005-batch-recipe, 006-assisted-weighing-station-ui, 007-weighing-station]
 requires_units: [001-station-simulators]
-blocks: true
+blocks: false
 
 complexity:
   avg_complexity: 2
@@ -57,7 +57,7 @@ Story files: `memory-bank/intents/001-assisted-weighing-station/units/004-device
 
 ## Stages
 
-- [ ] **1. plan**: Pending → implementation-plan.md
+- ⏳ **1. plan**: In Progress → implementation-plan.md
 - [ ] **2. implement**: Pending → src/
 - [ ] **3. test**: Pending → test-report.md
 
