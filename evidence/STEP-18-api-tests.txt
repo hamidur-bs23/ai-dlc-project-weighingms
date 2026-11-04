@@ -1,0 +1,205 @@
+# STEP 18: Dummy API tests (WeighingMS.Simulators.Host, http://localhost:5090)
+# Captured 2026-11-04T18:38:37Z with: npm run sim
+
+$ curl -s http://localhost:5090/api/batches | python3 -m json.tool
+[
+    {
+        "batchId": "B-24187",
+        "orderId": "SO-9931",
+        "machine": "JET-04",
+        "fabric": "100% CTN knit",
+        "batchWeightKg": 480,
+        "shade": "Teal 4C",
+        "componentCount": 5,
+        "status": "QUEUED",
+        "trainingOnly": false
+    },
+    {
+        "batchId": "B-24188",
+        "orderId": "SO-9931",
+        "machine": "JET-07",
+        "fabric": "100% CTN knit",
+        "batchWeightKg": 520,
+        "shade": "Teal 4C",
+        "componentCount": 5,
+        "status": "QUEUED",
+        "trainingOnly": true
+    },
+    {
+        "batchId": "B-24190",
+        "orderId": "SO-9944",
+        "machine": "JET-02",
+        "fabric": "CVC fleece",
+        "batchWeightKg": 310,
+        "shade": "Navy 12",
+        "componentCount": 7,
+        "status": "QUEUED",
+        "trainingOnly": true
+    },
+    {
+        "batchId": "B-24191",
+        "orderId": "SO-9947",
+        "machine": "WINCH-01",
+        "fabric": "Viscose jersey",
+        "batchWeightKg": 190,
+        "shade": "Rose 08",
+        "componentCount": 4,
+        "status": "QUEUED",
+        "trainingOnly": true
+    }
+]
+
+
+$ curl -s http://localhost:5090/api/batches/B-24187 | python3 -m json.tool
+{
+    "batchId": "B-24187",
+    "orderId": "SO-9931",
+    "machine": "JET-04",
+    "fabric": "100% CTN knit",
+    "batchWeightKg": 480,
+    "shade": "Teal 4C",
+    "componentCount": 5,
+    "status": "QUEUED",
+    "trainingOnly": false
+}
+
+
+$ curl -s http://localhost:5090/api/batches/B-24187/recipe | python3 -m json.tool
+{
+    "batchId": "B-24187",
+    "shade": "Teal 4C",
+    "trainingOnly": false,
+    "components": [
+        {
+            "sequence": 1,
+            "chemicalId": "DYE-1180",
+            "code": "DYE-1180",
+            "name": "Remazol Brill. Blue RSPL",
+            "displayColour": "#1f4fa8",
+            "targetQuantity": 1240.0,
+            "unit": "g",
+            "tolerance": 6.0,
+            "suggestedContainer": "C-09"
+        },
+        {
+            "sequence": 2,
+            "chemicalId": "DYE-2204",
+            "code": "DYE-2204",
+            "name": "Remazol Red RB",
+            "displayColour": "#b8253a",
+            "targetQuantity": 386.0,
+            "unit": "g",
+            "tolerance": 2.0,
+            "suggestedContainer": "C-11"
+        },
+        {
+            "sequence": 3,
+            "chemicalId": "DYE-4471",
+            "code": "DYE-4471",
+            "name": "Remazol Yellow RGB",
+            "displayColour": "#d9a520",
+            "targetQuantity": 94.0,
+            "unit": "g",
+            "tolerance": 0.5,
+            "suggestedContainer": "C-12"
+        },
+        {
+            "sequence": 4,
+            "chemicalId": "AUX-0101",
+            "code": "AUX-0101",
+            "name": "Sodium Sulphate",
+            "displayColour": "#c9d2dc",
+            "targetQuantity": 24.0,
+            "unit": "kg",
+            "tolerance": 0.12,
+            "suggestedContainer": "D-03"
+        },
+        {
+            "sequence": 5,
+            "chemicalId": "AUX-0107",
+            "code": "AUX-0107",
+            "name": "Soda Ash",
+            "displayColour": "#e4eaf0",
+            "targetQuantity": 9.6,
+            "unit": "kg",
+            "tolerance": 0.048,
+            "suggestedContainer": "D-05"
+        }
+    ]
+}
+
+
+$ curl -s -i http://localhost:5090/api/batches/B-00000
+HTTP/1.1 404 Not Found
+Content-Type: application/json; charset=utf-8
+Date: Wed, 04 Nov 2026 18:38:36 GMT
+Server: Kestrel
+Transfer-Encoding: chunked
+
+{"type":"Batch.NotFound","title":"Batch not found","status":404,"detail":"Batch 'B-00000' is not in the OrgaTEX queue."}
+
+$ curl -s http://localhost:5090/api/scales | python3 -m json.tool
+[
+    {
+        "scaleId": "scale-3kg",
+        "name": "3 kg precision",
+        "scaleClass": "precision",
+        "unit": "g",
+        "capacity": 3200.0,
+        "resolution": 0.1,
+        "status": "READY"
+    },
+    {
+        "scaleId": "scale-32kg",
+        "name": "32 kg floor",
+        "scaleClass": "heavyDuty",
+        "unit": "kg",
+        "capacity": 32.0,
+        "resolution": 0.001,
+        "status": "READY"
+    }
+]
+
+
+$ curl -s http://localhost:5090/api/scales/scale-3kg/status
+{"scaleId":"scale-3kg","status":"READY","timestamp":"2026-11-04T18:38:37.734712+00:00"}
+
+$ curl -s http://localhost:5090/api/scales/scale-3kg/weight
+{"scaleId":"scale-3kg","net":214.0,"unit":"g","stable":true,"overCapacity":false,"timestamp":"2026-11-04T18:38:37.742031+00:00"}
+
+$ curl -s -X POST http://localhost:5090/api/scales/scale-3kg/tare
+{"scaleId":"scale-3kg","tare":214.0,"unit":"g","timestamp":"2026-11-04T18:38:37.747944+00:00"}
+
+$ curl -s -X POST http://localhost:5090/_sim/scales/scale-3kg/scenario -H 'Content-Type: application/json' -d '{"scenario":"enterRange","target":{"value":94.0,"unit":"g"},"tolerance":0.5}' -w 'HTTP %{http_code}'
+HTTP 204
+
+$ curl -s http://localhost:5090/api/scales/scale-3kg/weight   # mid-pour (2 s)
+{"scaleId":"scale-3kg","net":55.0,"unit":"g","stable":false,"overCapacity":false,"timestamp":"2026-11-04T18:38:39.789242+00:00"}
+
+$ curl -s http://localhost:5090/api/scales/scale-3kg/weight   # settled (9 s)
+{"scaleId":"scale-3kg","net":94.2,"unit":"g","stable":true,"overCapacity":false,"timestamp":"2026-11-04T18:38:46.818642+00:00"}
+
+$ curl -s -X POST http://localhost:5090/api/batches/B-24187/consumption -H 'Idempotency-Key: step18-demo-0001' -H 'Content-Type: application/json' -d '{"lines":[{"chemicalId":"DYE-4471","actualQuantity":94.2,"unit":"g","lot":"2026-0387"}]}' -w ' HTTP %{http_code}'
+{"batchId":"B-24187","idempotencyKey":"step18-demo-0001","receivedAt":"2026-11-04T18:38:46.842499+00:00","lines":[{"chemicalId":"DYE-4471","actualQuantity":94.2,"unit":"g","lot":"2026-0387"}]} HTTP 200
+
+$ curl -s -X POST http://localhost:5090/api/batches/B-24187/consumption -H 'Idempotency-Key: step18-demo-0001' -H 'Content-Type: application/json' -d '{"lines":[{"chemicalId":"DYE-4471","actualQuantity":94.2,"unit":"g","lot":"2026-0387"}]}' -w ' HTTP %{http_code}   # replay: same receipt'
+{"batchId":"B-24187","idempotencyKey":"step18-demo-0001","receivedAt":"2026-11-04T18:38:46.842499+00:00","lines":[{"chemicalId":"DYE-4471","actualQuantity":94.2,"unit":"g","lot":"2026-0387"}]} HTTP 200   # replay: same receipt
+
+$ curl -s http://localhost:5090/_sim/orgatex/consumption | python3 -m json.tool
+[
+    {
+        "batchId": "B-24187",
+        "idempotencyKey": "step18-demo-0001",
+        "receivedAt": "2026-11-04T18:38:46.842499+00:00",
+        "lines": [
+            {
+                "chemicalId": "DYE-4471",
+                "actualQuantity": 94.2,
+                "unit": "g",
+                "lot": "2026-0387"
+            }
+        ]
+    }
+]
+
+

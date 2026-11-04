@@ -25,8 +25,9 @@ Working now (after bolt 001):
 | Task | Command |
 |---|---|
 | Build the backend (warnings are errors) | `dotnet build WeighingMS.sln` · `npm run build:backend` |
-| Backend tests | `dotnet test WeighingMS.sln` · `npm run test:backend` |
-| Single backend test | `dotnet test --filter "FullyQualifiedName~ScaleScenarioTests"` |
+| Backend tests (Microsoft.Testing.Platform, opted in via `global.json`) | `dotnet test --solution WeighingMS.sln` · `npm run test:backend` |
+| Single test class / method | `dotnet test --project tests/WeighingMS.Simulators.Tests --filter-class "*ScaleScenarioTests"` · `--filter-method "*Tare_EmptyContainer*"` |
+| Coverage (Cobertura) | `dotnet test --project tests/WeighingMS.Simulators.Tests --coverage --coverage-output-format cobertura` |
 | Format check | `dotnet format WeighingMS.sln --verify-no-changes` · `npm run format:backend` |
 | Run the simulators (dummy OrgaTEX + scales, :5090) | `npm run sim` (Scalar UI at `/scalar`, Development only) |
 | Run the Api host (:5080, health only so far) | `npm run api` |

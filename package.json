@@ -13,7 +13,7 @@
     "sim": "dotnet run --project src/WeighingMS.Simulators.Host --launch-profile http",
     "api": "dotnet run --project src/WeighingMS.Api --launch-profile http",
     "build:backend": "dotnet build WeighingMS.sln",
-    "test:backend": "dotnet test WeighingMS.sln",
+    "test:backend": "dotnet test --solution WeighingMS.sln",
     "format:backend": "dotnet format WeighingMS.sln --verify-no-changes"
   },
   "devDependencies": {
