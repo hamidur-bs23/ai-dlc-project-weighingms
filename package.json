@@ -16,10 +16,19 @@
     "test:backend": "dotnet test --solution WeighingMS.sln",
     "format:backend": "dotnet format WeighingMS.sln --verify-no-changes",
     "db:update": "dotnet ef database update --project src/WeighingMS.Infrastructure --startup-project src/WeighingMS.Infrastructure",
-    "db:migrations:add": "dotnet ef migrations add --project src/WeighingMS.Infrastructure --startup-project src/WeighingMS.Infrastructure --output-dir Persistence/Migrations"
+    "db:migrations:add": "dotnet ef migrations add --project src/WeighingMS.Infrastructure --startup-project src/WeighingMS.Infrastructure --output-dir Persistence/Migrations",
+    "web": "npm start -w web",
+    "dev": "concurrently -k -n sim,api,web -c cyan,magenta,green \"npm:sim\" \"npm:api\" \"npm:web\"",
+    "lint": "npm run lint -w web",
+    "test:web": "npm test -w web",
+    "api:types": "ConnectionStrings__Db=Host=openapi-build-only dotnet build src/WeighingMS.Api -p:OpenApiGenerateDocumentsOnBuild=true && npm run api:types -w web"
   },
   "devDependencies": {
     "fs-extra": "^11.4.1",
-    "js-yaml": "^5.5.0"
-  }
+    "js-yaml": "^5.5.0",
+    "concurrently": "10.0.6"
+  },
+  "workspaces": [
+    "web"
+  ]
 }

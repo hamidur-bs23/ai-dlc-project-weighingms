@@ -1,0 +1,45 @@
+{
+  "name": "web",
+  "version": "0.0.0",
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build",
+    "watch": "ng build --watch --configuration development",
+    "test": "ng test --watch=false",
+    "lint": "ng lint && stylelint \"src/**/*.scss\" && node scripts/verify-lint-rule.mjs",
+    "format": "prettier --check \"src/**/*.{ts,html,scss,json}\"",
+    "api:types": "npx --yes openapi-typescript@7.13.0 ../src/WeighingMS.Api/openapi/WeighingMS.Api.json -o src/app/core/api/generated/schema.ts"
+  },
+  "private": true,
+  "dependencies": {
+    "@angular/cdk": "22.2.6",
+    "@angular/common": "^22.2.0",
+    "@angular/compiler": "^22.2.0",
+    "@angular/core": "^22.2.0",
+    "@angular/forms": "^22.2.0",
+    "@angular/platform-browser": "^22.2.0",
+    "@angular/router": "^22.2.0",
+    "@jsverse/transloco": "8.4.0",
+    "rxjs": "~7.8.0",
+    "tslib": "^2.3.0"
+  },
+  "devDependencies": {
+    "@angular/build": "^22.2.6",
+    "@angular/cli": "^22.2.6",
+    "@angular/compiler-cli": "^22.2.0",
+    "@eslint/js": "10.0.1",
+    "@testing-library/angular": "19.6.0",
+    "@testing-library/dom": "10.4.2",
+    "@testing-library/user-event": "14.6.8",
+    "angular-eslint": "22.6.0",
+    "eslint": "10.14.0",
+    "jsdom": "^30.0.0",
+    "prettier": "3.9.10",
+    "stylelint": "17.16.0",
+    "stylelint-config-standard-scss": "17.0.0",
+    "typescript": "~6.0.2",
+    "typescript-eslint": "8.72.1",
+    "vitest": "^5.0.0"
+  }
+}

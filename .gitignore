@@ -23,3 +23,7 @@ TestResults/
 
 # Local environment (secrets)
 .env
+
+# Angular / Playwright MCP scratch
+.angular/
+.playwright-mcp/

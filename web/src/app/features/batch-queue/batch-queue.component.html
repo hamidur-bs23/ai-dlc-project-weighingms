@@ -1,0 +1,102 @@
+@let current = state();
+<section class="queue">
+  <div class="scan-prompt">
+    <div class="beam" aria-hidden="true"></div>
+    <div>
+      <p class="scan-prompt__title">{{ 'batchQueue.scanTitle' | transloco }}</p>
+      <p class="scan-prompt__hint">
+        @if (current.kind === 'ready') {
+          {{ 'batchQueue.scanHint' | transloco: { time: (current.receivedAt | plantTime) } }}
+        } @else {
+          {{ 'batchQueue.scanHintNoTime' | transloco }}
+        }
+      </p>
+    </div>
+  </div>
+
+  @if (openError(); as failed) {
+    @if (isNotFound(failed.error)) {
+      <wms-banner
+        messageKey="batchQueue.notFound"
+        [params]="{ batchId: failed.batchId }"
+        [error]="failed.error"
+      />
+    } @else {
+      <wms-banner [error]="failed.error" [retryable]="true" (retry)="open(failed.batchId)" />
+    }
+  }
+
+  @if (opening(); as batchId) {
+    <p class="queue__note" role="status">{{ 'batchQueue.opening' | transloco: { batchId } }}</p>
+  }
+
+  @switch (current.kind) {
+    @case ('loading') {
+      <p class="queue__note" role="status">{{ 'batchQueue.loading' | transloco }}</p>
+    }
+    @case ('error') {
+      @if (current.kind === 'error') {
+        <wms-banner [error]="current.error" [retryable]="true" (retry)="load()" />
+      }
+    }
+    @case ('ready') {
+      @if (current.kind === 'ready') {
+        @if (current.batches.length === 0) {
+          <wms-banner kind="info" messageKey="batchQueue.empty" />
+        } @else {
+          <div class="queue__table-wrap">
+            <table class="q">
+              <caption class="visually-hidden">
+                {{
+                  'batchQueue.caption' | transloco
+                }}
+              </caption>
+              <thead>
+                <tr>
+                  <th scope="col">{{ 'batchQueue.columns.batch' | transloco }}</th>
+                  <th scope="col">{{ 'batchQueue.columns.order' | transloco }}</th>
+                  <th scope="col">{{ 'batchQueue.columns.machine' | transloco }}</th>
+                  <th scope="col">{{ 'batchQueue.columns.fabric' | transloco }}</th>
+                  <th scope="col">{{ 'batchQueue.columns.shade' | transloco }}</th>
+                  <th scope="col">{{ 'batchQueue.columns.components' | transloco }}</th>
+                  <th scope="col">{{ 'batchQueue.columns.status' | transloco }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (b of current.batches; track b.batchId) {
+                  <tr
+                    class="q__row"
+                    [class.q__row--now]="b.status === 'weighing'"
+                    tabindex="0"
+                    [attr.aria-label]="'batchQueue.openRow' | transloco: { batchId: b.batchId }"
+                    [attr.aria-disabled]="opening() !== null"
+                    (click)="open(b.batchId)"
+                    (keydown.enter)="open(b.batchId)"
+                    (keydown.space)="$event.preventDefault(); open(b.batchId)"
+                  >
+                    <td class="mono">{{ b.batchId }}</td>
+                    <td class="mono">{{ b.orderId }}</td>
+                    <td class="mono">{{ b.machine }}</td>
+                    <td>{{ b.fabric }} · {{ b.batchWeight.value }} {{ b.batchWeight.unit }}</td>
+                    <td>{{ b.shade }}</td>
+                    <td class="mono">{{ b.componentCount }}</td>
+                    <td>
+                      <span class="tag" [class.tag--now]="b.status === 'weighing'">
+                        {{ 'batchQueue.status.' + b.status | transloco }}
+                      </span>
+                      @if (b.trainingOnly) {
+                        <span class="tag tag--training">{{
+                          'batchQueue.trainingOnly' | transloco
+                        }}</span>
+                      }
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      }
+    }
+  }
+</section>

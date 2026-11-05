@@ -1,0 +1,28 @@
+// Shared mixins (ux-guide): touch targets for gloved operators, mono readouts, a visible focus ring.
+
+@mixin touch-target($min: 44px) {
+  min-width: $min;
+  min-height: $min;
+}
+
+@mixin mono-readout($size) {
+  font-family: var(--mono);
+  font-size: $size;
+  font-variant-numeric: tabular-nums;
+}
+
+@mixin focus-ring {
+  &:focus-visible {
+    outline: 2px solid var(--steel);
+    outline-offset: 2px;
+  }
+}
+
+// Small uppercase mono label (table heads, strip, captions).
+@mixin caption {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--hmi-dim);
+}

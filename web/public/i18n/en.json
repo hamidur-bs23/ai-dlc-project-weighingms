@@ -1,0 +1,101 @@
+{
+  "app": {
+    "name": "WeighingMS"
+  },
+  "topBar": {
+    "batch": "BATCH",
+    "order": "ORDER",
+    "machine": "MACHINE",
+    "operator": "Operator",
+    "shift": "Shift {{ shift }}",
+    "operatorMenu": "Operator {{ name }}: show actions",
+    "signOut": "Sign out",
+    "signedOut": "Not signed in"
+  },
+  "statusStrip": {
+    "label": "Device status",
+    "scale": "SCALE",
+    "scanner": "SCANNER",
+    "printer": "PRINTER",
+    "orgatex": "ORGATEX",
+    "state": {
+      "ready": "READY",
+      "offline": "OFFLINE",
+      "unknown": "NO DATA"
+    },
+    "language": "EN",
+    "clock": "Plant time"
+  },
+  "signIn": {
+    "title": "Sign in to the station",
+    "hint": "Scan or type your badge number.",
+    "badge": "Badge number",
+    "shift": "Shift (optional)",
+    "submit": "OK",
+    "busy": "Signing in…",
+    "badgeRequired": "Enter your badge number."
+  },
+  "batchQueue": {
+    "scanTitle": "Scan a batch card to begin",
+    "scanHint": "Or touch a row below. Queue received from OrgaTEX at {{ time }}.",
+    "scanHintNoTime": "Or touch a row below.",
+    "caption": "Batches released for weighing",
+    "loading": "Loading the batch queue…",
+    "empty": "No batches released for weighing.",
+    "notFound": "Batch {{ batchId }} not found. Check the card or choose a batch from the list.",
+    "opening": "Opening {{ batchId }}…",
+    "openRow": "Open batch {{ batchId }}",
+    "trainingOnly": "TRAINING",
+    "columns": {
+      "batch": "Batch",
+      "order": "Order",
+      "machine": "Machine",
+      "fabric": "Fabric / lot",
+      "shade": "Shade",
+      "components": "Comp.",
+      "status": "Status"
+    },
+    "status": {
+      "queued": "QUEUED",
+      "weighing": "WEIGHING"
+    }
+  },
+  "batchOpened": {
+    "recipe": "Recipe · {{ shade }}",
+    "components": "{{ count }} components",
+    "loading": "Loading the recipe…",
+    "loadedAt": "Recipe loaded at {{ time }}",
+    "weighingNext": "Weighing controls arrive with the Weigh screen.",
+    "back": "Back to queue",
+    "columns": {
+      "sequence": "#",
+      "code": "Code",
+      "chemical": "Chemical",
+      "target": "Target",
+      "tolerance": "Tolerance",
+      "container": "Container"
+    },
+    "configuredTolerance": "configured",
+    "noContainer": "—"
+  },
+  "banner": {
+    "ref": "Ref {{ ref }}",
+    "retry": "Retry",
+    "dismiss": "Dismiss"
+  },
+  "errors": {
+    "Auth.BadgeNotRecognised": "Badge not recognised. Check the number or ask a supervisor.",
+    "Auth.LockedOut": "This badge is locked. Ask a supervisor.",
+    "Auth.TooManyAttempts": "Too many attempts. Wait a minute and try again.",
+    "Auth.SignInRequired": "Your session has ended. Sign in again.",
+    "Batch.NotFound": "Batch not found.",
+    "OrgaTex.Unavailable": "OrgaTEX is not responding. Batches cannot be loaded right now.",
+    "OrgaTex.InvalidRecipe": "OrgaTEX sent a recipe that cannot be used. Ask a supervisor.",
+    "Scanner.Unavailable": "The scanner is not responding.",
+    "Scale.Unavailable": "The scale is not responding.",
+    "Request.Invalid": "That entry is not valid.",
+    "Request.AntiforgeryInvalid": "The station needs to reload. Refresh the page.",
+    "Network.Unavailable": "The WeighingMS server cannot be reached.",
+    "Unknown": "Something went wrong. Try again or ask a supervisor."
+  }
+}

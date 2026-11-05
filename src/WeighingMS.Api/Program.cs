@@ -86,9 +86,19 @@ builder.Services.AddRateLimiter(o =>
 
 builder.Services
     .AddControllers(o => o.Filters.Add<AntiforgeryValidationFilter>())
-    .AddJsonOptions(o => o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)));
+    .AddJsonOptions(o =>
+    {
+        o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
+
+        // Numbers are numbers on the wire: no quoted numbers in or out, so the OpenAPI document (and the
+        // generated Angular types) describe them as plain numbers.
+        o.JsonSerializerOptions.NumberHandling = JsonNumberHandling.Strict;
+    });
 builder.Services.AddProblemDetails(o => o.CustomizeProblemDetails = ctx =>
     ctx.ProblemDetails.Extensions.TryAdd("traceId", TraceIds.Of(ctx.HttpContext)));
+
+// The OpenAPI generator reads the minimal-API JSON options, so they carry the same strict number rule.
+builder.Services.ConfigureHttpJsonOptions(o => o.SerializerOptions.NumberHandling = JsonNumberHandling.Strict);
 builder.Services.AddOpenApi();
 builder.Services.AddWeighingTelemetry(builder.Configuration);
 builder.Services.AddHealthChecks()

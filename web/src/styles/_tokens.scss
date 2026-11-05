@@ -1,0 +1,55 @@
+// Design tokens: the prototype's custom properties, under the prototype's names (ux-guide).
+// The HMI surface stays dark in every theme: it depicts the physical station panel.
+:root {
+  // HMI surface
+  --hmi-bezel: #0a0d11;
+  --hmi-bg: #12161c;
+  --hmi-panel: #1a2029;
+  --hmi-panel-2: #212936;
+  --hmi-line: #2c3644;
+  --hmi-ink: #e9eef4;
+  --hmi-muted: #8998a9;
+  --hmi-dim: #63717f;
+  --hmi-hover: #2a3442;
+
+  // Status
+  --ok: #2fbf6b;
+  --ok-ink: #07240f;
+  --warn: #f0a726;
+  --over: #e8503a;
+  --steel: #5b8cc4;
+
+  // Page chrome (light)
+  --page-bg: #f2f3f5;
+  --page-panel: #fff;
+  --page-ink: #171c22;
+  --page-muted: #5d6874;
+  --page-line: #d8dde3;
+  --page-accent: #2f6f7d;
+  --page-accent-soft: #e2eef0;
+
+  // Type
+  --mono: ui-monospace, 'SF Mono', sfmono-regular, menlo, consolas, 'Liberation Mono', monospace;
+  --sans:
+    ui-sans-serif, system-ui, -apple-system, 'Segoe UI', roboto, 'Helvetica Neue', arial, sans-serif;
+
+  // Spacing scale (4 px base)
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --page-bg: #0f1216;
+    --page-panel: #171b21;
+    --page-ink: #e6eaef;
+    --page-muted: #97a2ae;
+    --page-line: #262d36;
+    --page-accent: #6fb5c4;
+    --page-accent-soft: #1a2b30;
+  }
+}

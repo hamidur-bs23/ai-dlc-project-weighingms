@@ -20,7 +20,7 @@ The tech stack was approved during project-init. It is recorded in `memory-bank/
 
 ### Commands
 
-Working now (after bolt 001):
+Working now (after bolt 006 Implement):
 
 | Task | Command |
 |---|---|
@@ -31,6 +31,11 @@ Working now (after bolt 001):
 | Format check | `dotnet format WeighingMS.sln --verify-no-changes` · `npm run format:backend` |
 | Run the simulators (dummy OrgaTEX + scales, :5090) | `npm run sim` (Scalar UI at `/scalar`, Development only) |
 | Run the Api host (:5080) | `npm run api` (needs Postgres + migrations; seeds lab users in Development) |
+| Run the operator terminal (:4200, proxies `/api` → :5080) | `npm run web` (`WMS_API_URL=http://localhost:5180` to point elsewhere) |
+| Simulators + Api + web together | `npm run dev` (concurrently) |
+| Frontend lint (ESLint incl. no-batch-literals rule, Stylelint, rule self-check) | `npm run lint` |
+| Frontend unit tests (Vitest) | `npm run test:web` |
+| Regenerate Api OpenAPI document + Angular API types | `npm run api:types` (commit `src/WeighingMS.Api/openapi/` and `web/src/app/core/api/generated/`) |
 | Apply migrations to the dev database | `npm run db:update` (after `docker compose up -d postgres`) |
 | Add a migration | `npm run db:migrations:add -- <Name>` |
 | Start Postgres for dev | `docker compose up -d postgres` (needs `.env`; copy `.env.example`). Host port **5433** (`POSTGRES_PORT`) |
@@ -38,7 +43,7 @@ Working now (after bolt 001):
 
 Lab users (Development seed, `appsettings.Development.json`): operators `OP-1001` (R. Karim) and `OP-1002`, supervisor `SV-2001` (PIN in that file). Api session endpoints: `GET /api/antiforgery` → `POST|GET|DELETE /api/session`, `POST /api/session/step-up`, `GET /api/station`; state-changing calls need the `X-XSRF-TOKEN` header.
 
-Planned (added by later bolts): `npm run dev` (Api + simulators + web), `npm test -w web` and `npm run lint` (bolt 006), `npx playwright test` (bolt 014), `docker compose --profile observability up -d` (observability bolt).
+Planned (added by later bolts): `npx playwright test` (bolt 014), `docker compose --profile observability up -d` (observability bolt).
 
 Simulator control endpoints (`/_sim/*`, Development/Test only):
 - `POST /_sim/scales/{scaleId}/scenario` (`rising`, `belowRange`, `enterRange`, `overshoot`, `stable`)
