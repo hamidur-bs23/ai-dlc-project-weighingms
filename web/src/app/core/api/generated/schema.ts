@@ -1089,10 +1089,461 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/batches/{batchId}/session/attempt/lot": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    batchId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["CaptureLotRequest"];
+                    "text/json": components["schemas"]["CaptureLotRequest"];
+                    "application/*+json": components["schemas"]["CaptureLotRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["WeighingSessionResponse"];
+                        "application/json": components["schemas"]["WeighingSessionResponse"];
+                        "text/json": components["schemas"]["WeighingSessionResponse"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unprocessable Entity */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/batches/{batchId}/session/attempt/container": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    batchId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["CaptureContainerRequest"];
+                    "text/json": components["schemas"]["CaptureContainerRequest"];
+                    "application/*+json": components["schemas"]["CaptureContainerRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["WeighingSessionResponse"];
+                        "application/json": components["schemas"]["WeighingSessionResponse"];
+                        "text/json": components["schemas"]["WeighingSessionResponse"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unprocessable Entity */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/batches/{batchId}/session/tare": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    batchId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ComponentCommandRequest"];
+                    "text/json": components["schemas"]["ComponentCommandRequest"];
+                    "application/*+json": components["schemas"]["ComponentCommandRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["WeighingSessionResponse"];
+                        "application/json": components["schemas"]["WeighingSessionResponse"];
+                        "text/json": components["schemas"]["WeighingSessionResponse"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Service Unavailable */
+                503: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/batches/{batchId}/session/confirmation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    batchId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ComponentCommandRequest"];
+                    "text/json": components["schemas"]["ComponentCommandRequest"];
+                    "application/*+json": components["schemas"]["ComponentCommandRequest"];
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ConfirmationResponse"];
+                        "application/json": components["schemas"]["ConfirmationResponse"];
+                        "text/json": components["schemas"]["ConfirmationResponse"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unprocessable Entity */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ValidationProblemDetails"];
+                        "application/json": components["schemas"]["ValidationProblemDetails"];
+                        "text/json": components["schemas"]["ValidationProblemDetails"];
+                    };
+                };
+                /** @description Service Unavailable */
+                503: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/batches/{batchId}/session/quit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    batchId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ComponentCommandRequest"];
+                    "text/json": components["schemas"]["ComponentCommandRequest"];
+                    "application/*+json": components["schemas"]["ComponentCommandRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["WeighingSessionResponse"];
+                        "application/json": components["schemas"]["WeighingSessionResponse"];
+                        "text/json": components["schemas"]["WeighingSessionResponse"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/batches/{batchId}/session/leave": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    batchId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["WeighingSessionResponse"];
+                        "application/json": components["schemas"]["WeighingSessionResponse"];
+                        "text/json": components["schemas"]["WeighingSessionResponse"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        AppliedToleranceResponse: {
+            plusMinus: components["schemas"]["QuantityResponse"];
+            source: string;
+        };
+        AttemptResponse: {
+            lot: null | string;
+            container: null | string;
+            tare: null | components["schemas"]["QuantityResponse"];
+            /** Format: date-time */
+            taredAt: null | string;
+        };
         BatchListResponse: {
             items: components["schemas"]["BatchResponse"][];
         };
@@ -1108,6 +1559,29 @@ export interface components {
             status: string;
             trainingOnly: boolean;
         };
+        CaptureContainerRequest: {
+            /** Format: int32 */
+            sequence: null | number;
+            container: null | string;
+        };
+        CaptureLotRequest: {
+            /** Format: int32 */
+            sequence: null | number;
+            lot: null | string;
+        };
+        ComponentCommandRequest: {
+            /** Format: int32 */
+            sequence: null | number;
+        };
+        ComponentRecordResponse: {
+            /** Format: uuid */
+            recordId: string;
+            actual: components["schemas"]["QuantityResponse"];
+            class: string;
+            operator: string;
+            /** Format: date-time */
+            confirmedAt: string;
+        };
         ComponentScaleResponse: {
             scaleId: string;
             scaleClass: string;
@@ -1121,6 +1595,14 @@ export interface components {
             plusMinus: null | components["schemas"]["QuantityResponse"];
             lower: null | components["schemas"]["QuantityResponse"];
             upper: null | components["schemas"]["QuantityResponse"];
+        };
+        ConfirmationCheckResponse: {
+            canConfirm: boolean;
+            missing: string[];
+        };
+        ConfirmationResponse: {
+            record: components["schemas"]["WeighingRecordResponse"];
+            session: components["schemas"]["WeighingSessionResponse"];
         };
         DeviceHealthListResponse: {
             items: components["schemas"]["DeviceHealthResponse"][];
@@ -1253,6 +1735,17 @@ export interface components {
             lower: components["schemas"]["QuantityResponse"];
             upper: components["schemas"]["QuantityResponse"];
         };
+        ValidationProblemDetails: {
+            type?: null | string;
+            title?: null | string;
+            /** Format: int32 */
+            status?: null | number;
+            detail?: null | string;
+            instance?: null | string;
+            errors?: {
+                [key: string]: string[];
+            };
+        };
         WeighingComponentResponse: {
             /** Format: int32 */
             sequence: number;
@@ -1264,6 +1757,8 @@ export interface components {
             scale: components["schemas"]["ComponentScaleResponse"];
             tolerance: components["schemas"]["ComponentToleranceResponse"];
             suggestedContainer: null | string;
+            attempt: null | components["schemas"]["AttemptResponse"];
+            record: null | components["schemas"]["ComponentRecordResponse"];
         };
         WeighingReadingResponse: {
             /** Format: int32 */
@@ -1278,6 +1773,28 @@ export interface components {
             remaining: null | components["schemas"]["QuantityResponse"];
             band: null | components["schemas"]["ToleranceBandResponse"];
             toleranceStatus: string;
+            confirmation: components["schemas"]["ConfirmationCheckResponse"];
+        };
+        WeighingRecordResponse: {
+            /** Format: uuid */
+            recordId: string;
+            batchId: string;
+            /** Format: int32 */
+            sequence: number;
+            chemicalId: string;
+            chemicalName: string;
+            required: components["schemas"]["QuantityResponse"];
+            actual: components["schemas"]["QuantityResponse"];
+            class: string;
+            tolerance: components["schemas"]["AppliedToleranceResponse"];
+            scaleId: string;
+            scaleClass: string;
+            lot: string;
+            container: string;
+            tare: components["schemas"]["QuantityResponse"];
+            operator: string;
+            /** Format: date-time */
+            confirmedAt: string;
         };
         WeighingSessionResponse: {
             batchId: string;
@@ -1290,6 +1807,7 @@ export interface components {
             suggestedSequence: null | number;
             /** Format: int32 */
             activeSequence: null | number;
+            readyToComplete: boolean;
             components: components["schemas"]["WeighingComponentResponse"][];
         };
         WeightResponse: {

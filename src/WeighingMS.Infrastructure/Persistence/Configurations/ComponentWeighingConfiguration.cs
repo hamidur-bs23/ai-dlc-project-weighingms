@@ -32,11 +32,25 @@ public sealed class ComponentWeighingConfiguration : IEntityTypeConfiguration<Co
         builder.Ignore(c => c.Scale);
         builder.Ignore(c => c.Tolerance);
         builder.Ignore(c => c.Band);
+        builder.Ignore(c => c.Attempt);
         builder.Property<decimal>("_targetValue").HasColumnName("target_value").HasPrecision(12, 4);
         builder.Property<MassUnit>("_targetUnit").HasColumnName("target_unit").HasConversion<string>().HasMaxLength(16);
         builder.Property<MassUnit>("_scaleUnit").HasColumnName("scale_unit").HasConversion<string>().HasMaxLength(16);
         builder.Property<decimal>("_scaleResolution").HasColumnName("scale_resolution").HasPrecision(12, 4);
         builder.Property<decimal?>("_toleranceValue").HasColumnName("tolerance_value").HasPrecision(12, 4);
         builder.Property<MassUnit?>("_toleranceUnit").HasColumnName("tolerance_unit").HasConversion<string>().HasMaxLength(16);
+
+        // The current attempt (bolt 008); all null when pending or done.
+        builder.Property<DateTimeOffset?>("_attemptStartedAt").HasColumnName("attempt_started_at");
+        builder.Property<string?>("_attemptStartedBy").HasColumnName("attempt_started_by").HasMaxLength(32);
+        builder.Property<string?>("_lot").HasColumnName("lot").HasMaxLength(32);
+        builder.Property<string?>("_container").HasColumnName("container").HasMaxLength(32);
+        builder.Property<string?>("_tareScaleId").HasColumnName("tare_scale_id").HasMaxLength(32);
+        builder.Property<decimal?>("_tareValue").HasColumnName("tare_value").HasPrecision(12, 4);
+        builder.Property<MassUnit?>("_tareUnit").HasColumnName("tare_unit").HasConversion<string>().HasMaxLength(16);
+        builder.Property<DateTimeOffset?>("_taredAt").HasColumnName("tared_at");
+
+        // One record per component, at most (A8 backstop).
+        builder.HasOne(c => c.Record).WithOne().HasForeignKey<WeighingRecord>("ComponentId").OnDelete(DeleteBehavior.Restrict);
     }
 }

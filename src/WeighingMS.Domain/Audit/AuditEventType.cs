@@ -50,4 +50,7 @@ public enum AuditEventType
 
     /// <summary>A weighing attempt was abandoned by switching component (bolt 007).</summary>
     AttemptAbandoned,
+
+    /// <summary>A weighing was confirmed and recorded (bolt 008).</summary>
+    WeighingConfirmed,
 }

@@ -9,6 +9,7 @@ public sealed record WeighingSessionResponse(
     ProgressResponse Progress,
     int? SuggestedSequence,
     int? ActiveSequence,
+    bool ReadyToComplete,
     IReadOnlyList<WeighingComponentResponse> Components);
 
 /// <summary>"n of N" components done.</summary>

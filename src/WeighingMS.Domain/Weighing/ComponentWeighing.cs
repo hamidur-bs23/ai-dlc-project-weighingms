@@ -15,6 +15,14 @@ public sealed class ComponentWeighing
     private decimal _scaleResolution;
     private decimal? _toleranceValue;
     private MassUnit? _toleranceUnit;
+    private DateTimeOffset? _attemptStartedAt;
+    private string? _attemptStartedBy;
+    private string? _lot;
+    private string? _container;
+    private string? _tareScaleId;
+    private decimal? _tareValue;
+    private MassUnit? _tareUnit;
+    private DateTimeOffset? _taredAt;
 
     private ComponentWeighing()
     {
@@ -53,6 +61,14 @@ public sealed class ComponentWeighing
 
     /// <summary>Pending, active or done.</summary>
     public ComponentState State { get; private set; }
+
+    /// <summary>The confirmed record, once done.</summary>
+    public WeighingRecord? Record { get; private set; }
+
+    /// <summary>The current attempt while active; null when pending or done.</summary>
+    public WeighingAttempt? Attempt => State == ComponentState.Active
+        ? new WeighingAttempt(_attemptStartedAt, _attemptStartedBy, _lot, _container, TareOfAttempt)
+        : null;
 
     /// <summary>The required quantity.</summary>
     public Quantity Target => Quantity.Of(_targetValue, _targetUnit);
@@ -95,7 +111,55 @@ public sealed class ComponentWeighing
     public Classification? Classify(Quantity net) =>
         Tolerance.PlusMinus is { } plusMinus ? ReadingClassifier.Classify(Target, plusMinus, net, Scale) : null;
 
-    internal void Activate() => State = ComponentState.Active;
+    private TareTaken? TareOfAttempt =>
+        _tareScaleId is { } scaleId && _tareValue is { } value && _tareUnit is { } unit && _taredAt is { } at
+            ? new TareTaken(scaleId, Quantity.Of(value, unit), at)
+            : null;
 
-    internal void ReturnToPending() => State = ComponentState.Pending;
+    /// <summary>Starts a fresh, empty attempt.</summary>
+    internal void Activate(string operatorBadgeId, DateTimeOffset now)
+    {
+        ClearAttempt();
+        State = ComponentState.Active;
+        _attemptStartedAt = now;
+        _attemptStartedBy = operatorBadgeId;
+    }
+
+    /// <summary>Discards the attempt (quit, leave, switching): no record.</summary>
+    internal void ReturnToPending()
+    {
+        ClearAttempt();
+        State = ComponentState.Pending;
+    }
+
+    internal void SetLot(string lot) => _lot = lot;
+
+    internal void SetContainer(string container) => _container = container;
+
+    internal void SetTare(TareTaken tare)
+    {
+        _tareScaleId = tare.ScaleId;
+        _tareValue = tare.Tare.Value;
+        _tareUnit = tare.Tare.Unit;
+        _taredAt = tare.TakenAt.ToUniversalTime();
+    }
+
+    internal void Complete(WeighingRecord record)
+    {
+        ClearAttempt();
+        Record = record;
+        State = ComponentState.Done;
+    }
+
+    private void ClearAttempt()
+    {
+        _attemptStartedAt = null;
+        _attemptStartedBy = null;
+        _lot = null;
+        _container = null;
+        _tareScaleId = null;
+        _tareValue = null;
+        _tareUnit = null;
+        _taredAt = null;
+    }
 }

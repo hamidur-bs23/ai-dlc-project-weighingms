@@ -12,7 +12,9 @@ public sealed record WeighingComponentResponse(
     string State,
     ComponentScaleResponse Scale,
     ComponentToleranceResponse Tolerance,
-    string? SuggestedContainer);
+    string? SuggestedContainer,
+    AttemptResponse? Attempt,
+    ComponentRecordResponse? Record);
 
 /// <summary>The automatically selected scale (FR-8).</summary>
 public sealed record ComponentScaleResponse(string ScaleId, string ScaleClass, string Unit, QuantityResponse Resolution, bool Automatic);

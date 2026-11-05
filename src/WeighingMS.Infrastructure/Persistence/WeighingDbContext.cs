@@ -25,6 +25,9 @@ public sealed class WeighingDbContext(DbContextOptions<WeighingDbContext> option
     /// <summary>Weighing sessions (one per batch).</summary>
     public DbSet<WeighingSession> WeighingSessions => Set<WeighingSession>();
 
+    /// <summary>Confirmed weighing records (immutable).</summary>
+    public DbSet<WeighingRecord> WeighingRecords => Set<WeighingRecord>();
+
     /// <summary>Append-only audit trail.</summary>
     public DbSet<AuditEntry> AuditEntries => Set<AuditEntry>();
 
@@ -35,6 +38,7 @@ public sealed class WeighingDbContext(DbContextOptions<WeighingDbContext> option
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         RejectAuditChanges();
+        RejectRecordChanges();
         return base.SaveChangesAsync(cancellationToken);
     }
 
@@ -43,6 +47,17 @@ public sealed class WeighingDbContext(DbContextOptions<WeighingDbContext> option
     {
         ArgumentNullException.ThrowIfNull(modelBuilder);
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(WeighingDbContext).Assembly);
+    }
+
+    /// <summary>Weighing records are immutable (FR-19, A9): modifying or deleting one is a programming error.</summary>
+    private void RejectRecordChanges()
+    {
+        var tampered = ChangeTracker.Entries<WeighingRecord>()
+            .Any(e => e.State is EntityState.Modified or EntityState.Deleted);
+        if (tampered)
+        {
+            throw new InvalidOperationException("Weighing records are immutable and cannot be modified or deleted.");
+        }
     }
 
     /// <summary>The audit trail is append-only: modifying or deleting an entry is a programming error.</summary>

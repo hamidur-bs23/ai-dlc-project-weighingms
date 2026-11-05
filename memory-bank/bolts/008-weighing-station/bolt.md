@@ -3,7 +3,7 @@ id: 008-weighing-station
 unit: 005-weighing-station
 intent: 001-assisted-weighing-station
 type: ddd-construction-bolt
-status: planned
+status: in-progress
 stories:
   - 004-capture-lot-and-container
   - 005-tare-required-and-re-tare
@@ -11,10 +11,19 @@ stories:
   - 009-progress-to-next-component
   - 012-quit-and-incomplete-batch
 created: 2026-11-04T17:00:00Z
-started: null
+started: 2026-11-05T18:08:29Z
 completed: null
-current_stage: null
-stages_completed: []
+current_stage: implement
+stages_completed:
+  - name: model
+    completed: '2026-11-05T18:20:00Z'
+    artifact: ddd-01-domain-model.md
+  - name: design
+    completed: '2026-11-05T18:35:00Z'
+    artifact: ddd-02-technical-design.md
+  - name: adr
+    completed: '2026-11-05T18:35:00Z'
+    artifact: skipped (T1–T3 in decision-index)
 
 requires_bolts: [007-weighing-station]
 enables_bolts: [009-weighing-station]
@@ -55,10 +64,10 @@ Story files: `memory-bank/intents/001-assisted-weighing-station/units/005-weighi
 
 ## Stages
 
-- [ ] **1. model**: Pending → ddd-01-domain-model.md
-- [ ] **2. design**: Pending → ddd-02-technical-design.md
-- [ ] **3. adr**: Pending → adr-*.md (optional)
-- [ ] **4. implement**: Pending → src/
+- ✅ **1. model**: Complete → ddd-01-domain-model.md
+- ✅ **2. design**: Complete → ddd-02-technical-design.md
+- ✅ **3. adr**: Skipped (approved; T1–T3 recorded in decision-index)
+- ⏳ **4. implement**: In Progress → implementation-walkthrough.md
 - [ ] **5. test**: Pending → ddd-03-test-report.md
 
 Every stage stops at a human validation checkpoint (workbook STEP 15, CHECKPOINT 5).

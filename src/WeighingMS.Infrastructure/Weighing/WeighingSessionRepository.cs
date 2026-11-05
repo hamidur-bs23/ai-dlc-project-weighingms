@@ -12,7 +12,7 @@ public sealed class WeighingSessionRepository(WeighingDbContext db) : IWeighingS
 {
     /// <inheritdoc />
     public Task<WeighingSession?> FindAsync(string batchId, CancellationToken cancellationToken) =>
-        db.WeighingSessions.Include("_components").FirstOrDefaultAsync(s => s.BatchId == batchId, cancellationToken);
+        db.WeighingSessions.Include("_components.Record").FirstOrDefaultAsync(s => s.BatchId == batchId, cancellationToken);
 
     /// <inheritdoc />
     public async Task<(WeighingSession Session, bool Started)> AddOrGetExistingAsync(WeighingSession session, CancellationToken cancellationToken)
@@ -46,8 +46,11 @@ public sealed class WeighingSessionRepository(WeighingDbContext db) : IWeighingS
             await db.SaveChangesAsync(cancellationToken);
             return Result.Success;
         }
-        catch (DbUpdateConcurrencyException)
+        catch (DbUpdateException ex) when (ex is DbUpdateConcurrencyException
+            || ex.InnerException is PostgresException { SqlState: PostgresErrorCodes.UniqueViolation })
         {
+            // Another change to the session was saved first, or a second record for the same component (double
+            // submit): nothing of this request is stored.
             foreach (var entry in db.ChangeTracker.Entries().ToList())
             {
                 entry.State = EntityState.Detached;

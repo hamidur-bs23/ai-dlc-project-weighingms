@@ -17,7 +17,8 @@ public sealed record WeighingReadingResponse(
     string? Class,
     QuantityResponse? Remaining,
     ToleranceBandResponse? Band,
-    string ToleranceStatus);
+    string ToleranceStatus,
+    ConfirmationCheckResponse Confirmation);
 
 /// <summary>Target, ± and the inclusive range, e.g. "TOLERANCE ±0.5 g (93.5 – 94.5)".</summary>
 public sealed record ToleranceBandResponse(QuantityResponse Target, QuantityResponse PlusMinus, QuantityResponse Lower, QuantityResponse Upper);

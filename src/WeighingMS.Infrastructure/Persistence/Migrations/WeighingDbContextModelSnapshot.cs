@@ -359,6 +359,25 @@ namespace WeighingMS.Infrastructure.Persistence.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("weighing_session_id");
 
+                    b.Property<DateTimeOffset?>("_attemptStartedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("attempt_started_at");
+
+                    b.Property<string>("_attemptStartedBy")
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasColumnName("attempt_started_by");
+
+                    b.Property<string>("_container")
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasColumnName("container");
+
+                    b.Property<string>("_lot")
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasColumnName("lot");
+
                     b.Property<decimal>("_scaleResolution")
                         .HasPrecision(12, 4)
                         .HasColumnType("numeric(12,4)")
@@ -369,6 +388,25 @@ namespace WeighingMS.Infrastructure.Persistence.Migrations
                         .HasMaxLength(16)
                         .HasColumnType("character varying(16)")
                         .HasColumnName("scale_unit");
+
+                    b.Property<string>("_tareScaleId")
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasColumnName("tare_scale_id");
+
+                    b.Property<string>("_tareUnit")
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)")
+                        .HasColumnName("tare_unit");
+
+                    b.Property<decimal?>("_tareValue")
+                        .HasPrecision(12, 4)
+                        .HasColumnType("numeric(12,4)")
+                        .HasColumnName("tare_value");
+
+                    b.Property<DateTimeOffset?>("_taredAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("tared_at");
 
                     b.Property<string>("_targetUnit")
                         .IsRequired()
@@ -399,6 +437,149 @@ namespace WeighingMS.Infrastructure.Persistence.Migrations
                         .HasDatabaseName("ix_weighing_session_components_weighing_session_id_sequence");
 
                     b.ToTable("weighing_session_components", (string)null);
+                });
+
+            modelBuilder.Entity("WeighingMS.Domain.Weighing.WeighingRecord", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("BatchId")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasColumnName("batch_id");
+
+                    b.Property<string>("ChemicalId")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasColumnName("chemical_id");
+
+                    b.Property<string>("ChemicalName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("chemical_name");
+
+                    b.Property<string>("Class")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)")
+                        .HasColumnName("class");
+
+                    b.Property<Guid>("ComponentId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("component_id");
+
+                    b.Property<DateTimeOffset>("ConfirmedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("confirmed_at");
+
+                    b.Property<string>("Container")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasColumnName("container");
+
+                    b.Property<string>("Lot")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasColumnName("lot");
+
+                    b.Property<string>("OperatorBadgeId")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasColumnName("operator_badge_id");
+
+                    b.Property<string>("ScaleClass")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)")
+                        .HasColumnName("scale_class");
+
+                    b.Property<string>("ScaleId")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasColumnName("scale_id");
+
+                    b.Property<int>("Sequence")
+                        .HasColumnType("integer")
+                        .HasColumnName("sequence");
+
+                    b.Property<Guid>("SessionId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("session_id");
+
+                    b.Property<string>("ToleranceSource")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)")
+                        .HasColumnName("tolerance_source");
+
+                    b.Property<string>("_actualUnit")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)")
+                        .HasColumnName("actual_unit");
+
+                    b.Property<decimal>("_actualValue")
+                        .HasPrecision(12, 4)
+                        .HasColumnType("numeric(12,4)")
+                        .HasColumnName("actual_value");
+
+                    b.Property<string>("_requiredUnit")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)")
+                        .HasColumnName("required_unit");
+
+                    b.Property<decimal>("_requiredValue")
+                        .HasPrecision(12, 4)
+                        .HasColumnType("numeric(12,4)")
+                        .HasColumnName("required_value");
+
+                    b.Property<string>("_tareUnit")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)")
+                        .HasColumnName("tare_unit");
+
+                    b.Property<decimal>("_tareValue")
+                        .HasPrecision(12, 4)
+                        .HasColumnType("numeric(12,4)")
+                        .HasColumnName("tare_value");
+
+                    b.Property<string>("_toleranceUnit")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)")
+                        .HasColumnName("tolerance_unit");
+
+                    b.Property<decimal>("_toleranceValue")
+                        .HasPrecision(12, 4)
+                        .HasColumnType("numeric(12,4)")
+                        .HasColumnName("tolerance_value");
+
+                    b.HasKey("Id")
+                        .HasName("pk_weighing_records");
+
+                    b.HasIndex("BatchId")
+                        .HasDatabaseName("ix_weighing_records_batch_id");
+
+                    b.HasIndex("ComponentId")
+                        .IsUnique()
+                        .HasDatabaseName("ix_weighing_records_component_id");
+
+                    b.HasIndex("SessionId", "Sequence")
+                        .IsUnique()
+                        .HasDatabaseName("ix_weighing_records_session_id_sequence");
+
+                    b.ToTable("weighing_records", (string)null);
                 });
 
             modelBuilder.Entity("WeighingMS.Domain.Weighing.WeighingSession", b =>
@@ -479,9 +660,31 @@ namespace WeighingMS.Infrastructure.Persistence.Migrations
                         .HasConstraintName("fk_weighing_session_components_weighing_sessions_weighing_sess");
                 });
 
+            modelBuilder.Entity("WeighingMS.Domain.Weighing.WeighingRecord", b =>
+                {
+                    b.HasOne("WeighingMS.Domain.Weighing.ComponentWeighing", null)
+                        .WithOne("Record")
+                        .HasForeignKey("WeighingMS.Domain.Weighing.WeighingRecord", "ComponentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_weighing_records_weighing_session_components_component_id");
+
+                    b.HasOne("WeighingMS.Domain.Weighing.WeighingSession", null)
+                        .WithMany()
+                        .HasForeignKey("SessionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_weighing_records_weighing_sessions_session_id");
+                });
+
             modelBuilder.Entity("WeighingMS.Domain.Batches.RecipeSnapshot", b =>
                 {
                     b.Navigation("_components");
+                });
+
+            modelBuilder.Entity("WeighingMS.Domain.Weighing.ComponentWeighing", b =>
+                {
+                    b.Navigation("Record");
                 });
 
             modelBuilder.Entity("WeighingMS.Domain.Weighing.WeighingSession", b =>

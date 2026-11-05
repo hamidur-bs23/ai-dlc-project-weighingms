@@ -61,7 +61,7 @@ public sealed class WeighingSessionController(WeighingSessionService weighing) :
         ArgumentNullException.ThrowIfNull(request);
         if (request.Sequence is not { } sequence)
         {
-            return Problem([Error.Validation("Request.Invalid", "sequence is required.", new Dictionary<string, object> { ["field"] = "sequence" })]);
+            return MissingSequence();
         }
 
         var result = await weighing.SelectAsync(batchId, sequence, OperatorBadge, cancellationToken);
@@ -80,7 +80,115 @@ public sealed class WeighingSessionController(WeighingSessionService weighing) :
         return result.Match<IActionResult>(r => Ok(ToResponse(r)), Problem);
     }
 
+    /// <summary>Captures the lot (scanned or typed) for the active component (story 004).</summary>
+    [HttpPost("attempt/lot")]
+    [ProducesResponseType<WeighingSessionResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status409Conflict)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status422UnprocessableEntity)]
+    public async Task<IActionResult> CaptureLot(string batchId, [FromBody] CaptureLotRequest request, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+        if (request.Sequence is not { } sequence)
+        {
+            return MissingSequence();
+        }
+
+        var result = await weighing.CaptureLotAsync(batchId, sequence, request.Lot, OperatorBadge, cancellationToken);
+        return result.Match<IActionResult>(s => Ok(ToResponse(s)), Problem);
+    }
+
+    /// <summary>Captures the container for the active component (story 004).</summary>
+    [HttpPost("attempt/container")]
+    [ProducesResponseType<WeighingSessionResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status409Conflict)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status422UnprocessableEntity)]
+    public async Task<IActionResult> CaptureContainer(string batchId, [FromBody] CaptureContainerRequest request, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+        if (request.Sequence is not { } sequence)
+        {
+            return MissingSequence();
+        }
+
+        var result = await weighing.CaptureContainerAsync(batchId, sequence, request.Container, OperatorBadge, cancellationToken);
+        return result.Match<IActionResult>(s => Ok(ToResponse(s)), Problem);
+    }
+
+    /// <summary>Tares the active component's own scale and stores the tare (SESSION-TARE); again = re-tare (F2).</summary>
+    [HttpPost("tare")]
+    [ProducesResponseType<WeighingSessionResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status409Conflict)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status503ServiceUnavailable)]
+    public async Task<IActionResult> Tare(string batchId, [FromBody] ComponentCommandRequest request, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+        if (request.Sequence is not { } sequence)
+        {
+            return MissingSequence();
+        }
+
+        var result = await weighing.TareAsync(batchId, sequence, OperatorBadge, cancellationToken);
+        return result.Match<IActionResult>(s => Ok(ToResponse(s)), Problem);
+    }
+
+    /// <summary>
+    /// Confirms the named component (F1, story 008). The server reads the scale itself and re-checks the rule; on success
+    /// one immutable record is created (201) and the next pending component becomes active.
+    /// </summary>
+    [HttpPost("confirmation")]
+    [ProducesResponseType<ConfirmationResponse>(StatusCodes.Status201Created)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status409Conflict)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status422UnprocessableEntity)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status503ServiceUnavailable)]
+    public async Task<IActionResult> Confirm(string batchId, [FromBody] ComponentCommandRequest request, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+        if (request.Sequence is not { } sequence)
+        {
+            return MissingSequence();
+        }
+
+        var result = await weighing.ConfirmAsync(batchId, sequence, OperatorBadge, cancellationToken);
+        return result.Match<IActionResult>(
+            r => CreatedAtAction(nameof(Get), new { batchId = r.Session.BatchId }, new ConfirmationResponse(ToResponse(r.Record), ToResponse(r.Session))),
+            Problem);
+    }
+
+    /// <summary>Quit (F4): discards the attempt of the named component; no record (story 012).</summary>
+    [HttpPost("quit")]
+    [ProducesResponseType<WeighingSessionResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status409Conflict)]
+    public async Task<IActionResult> Quit(string batchId, [FromBody] ComponentCommandRequest request, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+        if (request.Sequence is not { } sequence)
+        {
+            return MissingSequence();
+        }
+
+        var result = await weighing.QuitAsync(batchId, sequence, OperatorBadge, cancellationToken);
+        return result.Match<IActionResult>(s => Ok(ToResponse(s)), Problem);
+    }
+
+    /// <summary>Leaves the batch (LEAVE-DISCARDS): any attempt is discarded, every record is kept (story 012).</summary>
+    [HttpPost("leave")]
+    [ProducesResponseType<WeighingSessionResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Leave(string batchId, CancellationToken cancellationToken)
+    {
+        var result = await weighing.LeaveAsync(batchId, OperatorBadge, cancellationToken);
+        return result.Match<IActionResult>(s => Ok(ToResponse(s)), Problem);
+    }
+
     private string OperatorBadge => StationClaims.BadgeOf(User) ?? string.Empty;
+
+    private IActionResult MissingSequence() =>
+        Problem([Error.Validation("Request.Invalid", "sequence is required.", new Dictionary<string, object> { ["field"] = "sequence" })]);
 
     private static WeighingSessionResponse ToResponse(WeighingSession s) => new(
         s.BatchId,
@@ -90,6 +198,7 @@ public sealed class WeighingSessionController(WeighingSessionService weighing) :
         new ProgressResponse(s.DoneCount, s.Components.Count),
         s.Suggested?.Sequence,
         s.ActiveSequence,
+        s.ReadyToComplete,
         [.. s.Components.Select(ToResponse)]);
 
     private static WeighingComponentResponse ToResponse(ComponentWeighing c)
@@ -108,8 +217,39 @@ public sealed class WeighingSessionController(WeighingSessionService weighing) :
             WireNames.Of(c.State),
             new ComponentScaleResponse(c.ScaleId, WireNames.Of(c.ScaleClass), Quantity.SymbolOf(scale.Unit), ToWire(scale.Resolution), Automatic: true),
             tolerance,
-            c.SuggestedContainer);
+            c.SuggestedContainer,
+            ToResponse(c.Attempt),
+            c.Record is { } r ? new ComponentRecordResponse(r.Id, ToWire(r.Actual), WireNames.Of(r.Class), r.OperatorBadgeId, r.ConfirmedAt) : null);
     }
+
+    private static AttemptResponse? ToResponse(WeighingAttempt? attempt)
+    {
+        if (attempt is null)
+        {
+            return null;
+        }
+
+        var tare = attempt.Tare is { } t ? ToWire(t.Tare) : null;
+        return new AttemptResponse(attempt.Lot, attempt.Container, tare, attempt.Tare?.TakenAt);
+    }
+
+    private static WeighingRecordResponse ToResponse(WeighingRecord r) => new(
+        r.Id,
+        r.BatchId,
+        r.Sequence,
+        r.ChemicalId,
+        r.ChemicalName,
+        ToWire(r.Required),
+        ToWire(r.Actual),
+        WireNames.Of(r.Class),
+        new AppliedToleranceResponse(ToWire(r.Tolerance), WireNames.Of(r.ToleranceSource)),
+        r.ScaleId,
+        WireNames.Of(r.ScaleClass),
+        r.Lot,
+        r.Container,
+        ToWire(r.Tare),
+        r.OperatorBadgeId,
+        r.ConfirmedAt);
 
     private static WeighingReadingResponse ToResponse(CurrentReading r)
     {
@@ -131,7 +271,8 @@ public sealed class WeighingSessionController(WeighingSessionService weighing) :
             classification is not null ? WireNames.Of(classification.Class) : null,
             classification is not null ? ToWire(classification.Remaining) : null,
             band is not null ? new ToleranceBandResponse(ToWire(band.Target), ToWire(band.PlusMinus), ToWire(band.Lower), ToWire(band.Upper)) : null,
-            r.Component.Tolerance.IsBlocked ? "blocked" : "resolved");
+            r.Component.Tolerance.IsBlocked ? "blocked" : "resolved",
+            new ConfirmationCheckResponse(r.Check.CanConfirm, [.. r.Check.Missing.Select(WeighingErrors.GapName)]));
     }
 
     private static string? SourceOf(ComponentWeighing c) => c.ToleranceSource is { } source ? WireNames.Of(source) : null;
