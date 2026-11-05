@@ -3,15 +3,15 @@ id: 006-assisted-weighing-station-ui
 unit: 008-assisted-weighing-station-ui
 intent: 001-assisted-weighing-station
 type: simple-construction-bolt
-status: in-progress
+status: complete
 stories:
   - 001-app-shell-top-bar-status-strip
   - 002-sign-in-screen
   - 003-select-batch-screen
-created: 2026-11-04T17:00:00Z
-started: 2026-11-05T13:54:37Z
-completed: null
-current_stage: test
+created: '2026-11-04T17:00:00Z'
+started: '2026-11-05T13:54:37Z'
+completed: '2026-11-05T17:24:48Z'
+current_stage: null
 stages_completed:
   - name: plan
     completed: '2026-11-05T15:55:00Z'
@@ -19,12 +19,17 @@ stages_completed:
   - name: implement
     completed: '2026-11-05T16:55:00Z'
     artifact: implementation-walkthrough.md
-
-requires_bolts: [003-station-access, 004-device-integration, 005-batch-recipe]
-enables_bolts: [010-assisted-weighing-station-ui]
-requires_units: [002-station-access, 003-batch-recipe, 004-device-integration]
+requires_bolts:
+  - 003-station-access
+  - 004-device-integration
+  - 005-batch-recipe
+enables_bolts:
+  - 010-assisted-weighing-station-ui
+requires_units:
+  - 002-station-access
+  - 003-batch-recipe
+  - 004-device-integration
 blocks: false
-
 complexity:
   avg_complexity: 2
   avg_uncertainty: 1
@@ -59,7 +64,7 @@ Story files: `memory-bank/intents/001-assisted-weighing-station/units/008-assist
 
 - ✅ **1. plan**: Complete → implementation-plan.md
 - ✅ **2. implement**: Complete → implementation-walkthrough.md
-- ⏳ **3. test**: In Progress → test-walkthrough.md (awaiting approval)
+- ⏳ **3. test**: In Progress → test-walkthrough.md
 
 Every stage stops at a human validation checkpoint (workbook STEP 15, CHECKPOINT 5).
 
