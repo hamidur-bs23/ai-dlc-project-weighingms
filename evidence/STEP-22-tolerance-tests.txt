@@ -1,0 +1,118 @@
+WeighingMS - workbook STEP 22: tolerance classification tests (bolt 007, test stage)
+Run: 2026-11-05T18:02:44Z - xUnit v3 + Shouldly on Microsoft.Testing.Platform
+
+Rules under test (FR-11, FR-12, PDF section 7, decisions TOL, WEIGH-ROUNDING, A4, A5):
+  net < target - tol -> Underweight | target - tol <= net <= target + tol, net != target -> Within range
+  net = target at the scale resolution -> Target achieved | net > target + tol -> Overweight
+  bounds inclusive; fixed-point decimals; net rounded to the scale resolution half away from zero
+  remaining = max(0, target - max(0, net)); tolerance: recipe -> configured -> blocked (no default)
+
+== 1. Domain: STEP 22 Yellow RGB 94.0 g +/- 0.5 g (93.5, 94.0, 94.5 confirmable; 93.4, 94.6 not),
+      PDF 1.000 +/- 0.010 kg, rounding, units, Sodium Sulphate, below zero
+$ dotnet test --project tests/WeighingMS.Domain.Tests --filter-class "*ReadingClassifierTests" --output Detailed
+  PASS Band_IsShownAsTargetPlusMinusAndRange
+  PASS Classify_ExtraDigits_AreRoundedToTheResolutionFirst(raw: 93.44, shown: 93.4, expected: Underweight)
+  PASS Classify_ExtraDigits_AreRoundedToTheResolutionFirst(raw: 93.45, shown: 93.5, expected: WithinRange)
+  PASS Classify_ExtraDigits_AreRoundedToTheResolutionFirst(raw: 93.96, shown: 94, expected: TargetAchieved)
+  PASS Classify_ExtraDigits_AreRoundedToTheResolutionFirst(raw: 94.04, shown: 94, expected: TargetAchieved)
+  PASS Classify_ExtraDigits_AreRoundedToTheResolutionFirst(raw: 94.54, shown: 94.5, expected: WithinRange)
+  PASS Classify_ExtraDigits_AreRoundedToTheResolutionFirst(raw: 94.55, shown: 94.6, expected: Overweight)
+  PASS Classify_KilogramTargetOnAGramScale_IsComparedInGrams
+  PASS Classify_NothingOrLessOnTheScale_IsUnderweightWithFullTargetRemaining(net: -0.3)
+  PASS Classify_NothingOrLessOnTheScale_IsUnderweightWithFullTargetRemaining(net: -1)
+  PASS Classify_NothingOrLessOnTheScale_IsUnderweightWithFullTargetRemaining(net: 0)
+  PASS Classify_PdfExample(net: 0.98, expected: Underweight)
+  PASS Classify_PdfExample(net: 0.989, expected: Underweight)
+  PASS Classify_PdfExample(net: 0.99, expected: WithinRange)
+  PASS Classify_PdfExample(net: 0.995, expected: WithinRange)
+  PASS Classify_PdfExample(net: 1, expected: TargetAchieved)
+  PASS Classify_PdfExample(net: 1.008, expected: WithinRange)
+  PASS Classify_PdfExample(net: 1.01, expected: WithinRange)
+  PASS Classify_PdfExample(net: 1.011, expected: Overweight)
+  PASS Classify_PdfExample(net: 1.02, expected: Overweight)
+  PASS Classify_ReadingInAnotherUnit_IsConvertedToTheScaleUnit
+  PASS Classify_RisingPour_RemainingFollowsTheNet
+  PASS Classify_SodiumSulphateOnTheFloorScale(net: 23.879, expected: Underweight, remaining: 0.121)
+  PASS Classify_SodiumSulphateOnTheFloorScale(net: 23.88, expected: WithinRange, remaining: 0.12)
+  PASS Classify_SodiumSulphateOnTheFloorScale(net: 24, expected: TargetAchieved, remaining: 0)
+  PASS Classify_SodiumSulphateOnTheFloorScale(net: 24.12, expected: WithinRange, remaining: 0)
+  PASS Classify_SodiumSulphateOnTheFloorScale(net: 24.121, expected: Overweight, remaining: 0)
+  PASS Classify_Step22YellowRgb(net: 93.4, expected: Underweight, confirmable: False, remaining: 0.6)
+  PASS Classify_Step22YellowRgb(net: 93.5, expected: WithinRange, confirmable: True, remaining: 0.5)
+  PASS Classify_Step22YellowRgb(net: 94, expected: TargetAchieved, confirmable: True, remaining: 0)
+  PASS Classify_Step22YellowRgb(net: 94.5, expected: WithinRange, confirmable: True, remaining: 0)
+  PASS Classify_Step22YellowRgb(net: 94.6, expected: Overweight, confirmable: False, remaining: 0)
+  PASS Classify_ToleranceInAnotherUnit_BuildsTheBandInTheScaleUnit
+  failed: 0
+  succeeded: 33
+  total: 33
+
+== 2. Domain: tolerance source (recipe -> configured -> blocked)
+$ dotnet test --project tests/WeighingMS.Domain.Tests --filter-class "*ToleranceResolverTests" --output Detailed
+  PASS Resolve_ConfiguredZero_IsBlockedNotADefault
+  PASS Resolve_Neither_IsBlocked
+  PASS Resolve_NoRecipeTolerance_UsesTheConfiguredOne
+  PASS Resolve_RecipeTolerance_IsUsedAndConfigurationNotConsulted
+  PASS Resolved_ZeroTolerance_IsRejected
+  failed: 0
+  succeeded: 5
+  total: 5
+
+== 3. Domain: automatic scale selection (FR-8: 2.999 / 3.000 / 3.001 kg; Yellow RGB, Sodium Sulphate)
+$ dotnet test --project tests/WeighingMS.Domain.Tests --filter-class "*ScaleSelectorTests" --output Detailed
+  PASS CreatePolicy_MissingAssignment_IsRejected(precision: "", heavyDuty: "scale-32kg")
+  PASS CreatePolicy_MissingAssignment_IsRejected(precision: "scale-3kg", heavyDuty: " ")
+  PASS CreatePolicy_MissingAssignment_IsRejected(precision: null, heavyDuty: "scale-32kg")
+  PASS CreatePolicy_ThresholdNotPositive_IsRejected(threshold: -1)
+  PASS CreatePolicy_ThresholdNotPositive_IsRejected(threshold: 0)
+  PASS CreatePolicy_TrimsScaleIds
+  PASS Select_ConfiguredThreshold_IsUsedInsteadOfThreeKilograms
+  PASS Select_DefaultThreshold_PicksTheClassAfterConversion(value: 2.999, unit: "kg", expected: Precision, scaleId: "scale-3kg")
+  PASS Select_DefaultThreshold_PicksTheClassAfterConversion(value: 24, unit: "kg", expected: HeavyDuty, scaleId: "scale-32kg")
+  PASS Select_DefaultThreshold_PicksTheClassAfterConversion(value: 2999, unit: "g", expected: Precision, scaleId: "scale-3kg")
+  PASS Select_DefaultThreshold_PicksTheClassAfterConversion(value: 3, unit: "kg", expected: Precision, scaleId: "scale-3kg")
+  PASS Select_DefaultThreshold_PicksTheClassAfterConversion(value: 3.001, unit: "kg", expected: HeavyDuty, scaleId: "scale-32kg")
+  PASS Select_DefaultThreshold_PicksTheClassAfterConversion(value: 3000, unit: "g", expected: Precision, scaleId: "scale-3kg")
+  PASS Select_DefaultThreshold_PicksTheClassAfterConversion(value: 3001, unit: "g", expected: HeavyDuty, scaleId: "scale-32kg")
+  PASS Select_DefaultThreshold_PicksTheClassAfterConversion(value: 94, unit: "g", expected: Precision, scaleId: "scale-3kg")
+  failed: 0
+  succeeded: 15
+  total: 15
+
+== 4. Api (PostgreSQL 17 + in-process simulator): live readings classified on the server
+$ dotnet test --project tests/WeighingMS.Api.IntegrationTests --filter-class "*WeighingSessionEndpointsTests" --output Detailed
+  PASS Commands_WithoutXsrf_Are400
+  PASS Endpoints_WithoutSession_Are401
+  PASS Get_NoSession_Is404
+  PASS Migration_CreatesTheSessionTables
+  PASS ReadingPolls_AreTreatedAsHealthyWeightPolls(method: "GET", path: "/api/batches/B-24187/session", poll: False)
+  PASS ReadingPolls_AreTreatedAsHealthyWeightPolls(method: "GET", path: "/api/batches/B-24187/session/reading", poll: True)
+  PASS ReadingPolls_AreTreatedAsHealthyWeightPolls(method: "GET", path: "/api/scales/scale-3kg/weight", poll: True)
+  PASS ReadingPolls_AreTreatedAsHealthyWeightPolls(method: "POST", path: "/api/batches/B-24187/session/reading", poll: False)
+  PASS Reading_IsTakenFromTheActiveComponentsOwnScale
+  PASS Reading_NoActiveComponent_Is409
+  PASS Reading_ScaleFaulted_Is503
+  PASS Reading_WhileStillPouring_IsUnstableAndUnderweightWithRemaining
+  PASS Reading_YellowRgb_IsClassifiedOnTheServer(scenario: "belowRange", net: 93, expectedClass: "underweight", remaining: 1)
+  PASS Reading_YellowRgb_IsClassifiedOnTheServer(scenario: "enterRange", net: 94.2, expectedClass: "withinRange", remaining: 0)
+  PASS Reading_YellowRgb_IsClassifiedOnTheServer(scenario: "overshoot", net: 96.4, expectedClass: "overweight", remaining: 0)
+  PASS Reading_YellowRgb_IsClassifiedOnTheServer(scenario: "rising", net: 94, expectedClass: "targetAchieved", remaining: 0)
+  PASS Select_SwitchingComponent_AbandonsTheFirstAndAuditsBoth
+  PASS Select_UnknownComponent_Is404AndMissingSequenceIs422
+  PASS Session_SurvivesAnApiRestartAndAnotherOperatorResumesIt
+  PASS Start_Again_Is200ResumeAndChangesNothing
+  PASS Start_ConfiguredThreshold_DecidesTheScaleWithoutACodeChange
+  PASS Start_FirstOpen_Is201WithEveryComponentPendingAndItsScaleAndBand
+  PASS Start_ScaleListDown_Is503AndNothingIsStored
+  PASS Start_SixConcurrentFirstOpens_StoreOneSession
+  PASS Start_UnknownBatch_Is404BatchNotFound
+  PASS TwoConcurrentChangesToOneSession_TheSecondIsAConflict
+  failed: 0
+  succeeded: 26
+  total: 26
+
+== Whole solution
+$ dotnet test --solution WeighingMS.sln
+  total: 440
+  failed: 0
+  succeeded: 440
