@@ -41,7 +41,7 @@ Working now (after bolt 006 Implement):
 | Start Postgres for dev | `docker compose up -d postgres` (needs `.env`; copy `.env.example`). Host port **5433** (`POSTGRES_PORT`) |
 | Simulators in a container | `docker compose --profile full up --wait` |
 
-Lab users (Development seed, `appsettings.Development.json`): operators `OP-1001` (R. Karim) and `OP-1002`, supervisor `SV-2001` (PIN in that file). Api session endpoints: `GET /api/antiforgery` → `POST|GET|DELETE /api/session`, `POST /api/session/step-up`, `GET /api/station`; state-changing calls need the `X-XSRF-TOKEN` header. Weighing session (bolt 007): `POST|GET /api/batches/{id}/session` (start 201 / resume 200), `POST /api/batches/{id}/session/selection {"sequence":n}`, `GET /api/batches/{id}/session/reading` (active component's own scale, classified, with `confirmation.missing`); bolt 008 adds `POST …/session/attempt/lot|attempt/container|tare|confirmation|quit {"sequence":n}` and `POST …/session/leave` (confirm = server re-reads the scale → 201 record). Scale selection is configured in `Weighing:ScaleSelection` (Api appsettings).
+Lab users (Development seed, `appsettings.Development.json`): operators `OP-1001` (R. Karim) and `OP-1002`, supervisor `SV-2001` (PIN in that file). Api session endpoints: `GET /api/antiforgery` → `POST|GET|DELETE /api/session`, `POST /api/session/step-up`, `GET /api/station`; state-changing calls need the `X-XSRF-TOKEN` header. Weighing session (bolt 007): `POST|GET /api/batches/{id}/session` (start 201 / resume 200), `POST /api/batches/{id}/session/selection {"sequence":n}`, `GET /api/batches/{id}/session/reading` (active component's own scale, classified, with `confirmation.missing`); bolt 008 adds `POST …/session/attempt/lot|attempt/container|tare|confirmation|quit {"sequence":n}` and `POST …/session/leave` (confirm = server re-reads the scale → 201 record); bolt 009 adds `POST …/session/override {sequence, grantId, reason}` (grant from `POST /api/session/step-up` by another supervisor), `POST …/session/completion`, `GET …/session/summary` and the review list `GET /api/weighing-sessions?status=completed`. The last record completes the batch automatically. Scale selection is configured in `Weighing:ScaleSelection` (Api appsettings).
 
 Planned (added by later bolts): `npx playwright test` (bolt 014), `docker compose --profile observability up -d` (observability bolt).
 
@@ -70,7 +70,7 @@ How the sources rank (from the PDF):
 
 Source precedence (ADR-015): **the PDF and `workbook.md` define mandatory scope.** `brief.md` fills gaps only where both are silent; cite its IDs and assumption IDs (A-xx) and mark them unconfirmed.
 
-**Pending decisions PD-01…PD-07** are registered in `memory-bank/standards/decision-index.md`: OrgaTEX outage, printer down, scanner mode/scope, ticket layout, time zone, chemical weighing order (all decided in STEP 7) and overshoot (STEP 24). Don't implement or state any of them as decided until they're resolved there.
+**Decisions PD-01…PD-07** are registered in `memory-bank/standards/decision-index.md`: OrgaTEX outage, printer down, scanner mode/scope, ticket layout, time zone, chemical weighing order (all decided in STEP 7) and overshoot (decided at STEP 24, bolt 009 ADR-001: option 1, block and recover or supervisor override, no recalculation). Check the index before relying on any of them.
 
 **The top acceptance criterion is that the whole workflow works end to end**, not that the screens look like the mockup.
 
@@ -140,7 +140,7 @@ Minimum dummy endpoints:
 - A batch completes only when every component is confirmed. Completion does two things:
   - POSTs the consumption to OrgaTEX.
   - Generates a ticket with batch, order, machine, shade, date, operator, components, target and actual weights, and a barcode.
-- Overshoot handling is an **open business decision**. Present 2–3 options and wait for a human to choose. Don't adopt the prototype's calculation.
+- Overshoot handling was decided at STEP 24 (PD-05, option 1): an overweight stays unconfirmed until it is brought back into range, quit and re-weighed, or overridden by a supervisor (OVR). The prototype's recalculation is not adopted.
 - These failure scenarios must be handled and tested:
   - Scale, OrgaTEX or printer unavailable
   - Invalid, under-tolerance or over-tolerance weight

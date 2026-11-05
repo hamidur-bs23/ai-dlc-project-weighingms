@@ -20,6 +20,9 @@ public static class AccessErrors
     /// <summary>The supervisor is locked out after too many wrong PINs.</summary>
     public static readonly Error LockedOut = Error.Custom(429, "Auth.LockedOut", "Too many wrong PINs; try again later.");
 
+    /// <summary>Four eyes (OVR-FOUR-EYES): the authorising supervisor is the signed-in operator (403).</summary>
+    public static readonly Error FourEyesRequired = Error.Forbidden("Auth.FourEyesRequired", "Another supervisor must authorise this: the signed-in operator cannot approve their own override.");
+
     /// <summary>A step-up grant cannot be used (unknown, already used, expired or for another action).</summary>
     public static Error GrantInvalid(string reason) => Error.Forbidden("Auth.GrantInvalid", $"Supervisor authorisation is not valid: {reason}.");
 }

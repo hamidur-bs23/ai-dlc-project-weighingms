@@ -18,11 +18,14 @@ public sealed class WeighingSessionConfiguration : IEntityTypeConfiguration<Weig
         builder.HasIndex(s => s.BatchId).IsUnique();
         builder.Property(s => s.Status).HasConversion<string>().HasMaxLength(16);
         builder.Property(s => s.StartedBy).HasMaxLength(32).IsRequired();
+        builder.Property(s => s.CompletedBy).HasMaxLength(32);
+        builder.HasIndex(s => new { s.Status, s.CompletedAt }).IsDescending(false, true); // review list, newest first
         builder.Property<uint>("xmin").IsRowVersion();
         builder.Ignore(s => s.Components);
         builder.Ignore(s => s.Active);
         builder.Ignore(s => s.Suggested);
         builder.Ignore(s => s.DoneCount);
+        builder.Ignore(s => s.ReadyToComplete);
         builder.Ignore(s => s.Events);
         builder.HasMany<ComponentWeighing>("_components").WithOne().HasForeignKey("WeighingSessionId").OnDelete(DeleteBehavior.Cascade);
         builder.Navigation("_components").UsePropertyAccessMode(PropertyAccessMode.Field);

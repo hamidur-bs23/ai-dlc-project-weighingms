@@ -1,7 +1,9 @@
 using ErrorOr;
 using WeighingMS.Application.Abstractions;
+using WeighingMS.Application.Access;
 using WeighingMS.Application.Batches;
 using WeighingMS.Application.Devices;
+using WeighingMS.Domain.Access;
 using WeighingMS.Domain.Audit;
 using WeighingMS.Domain.Common;
 using WeighingMS.Domain.Weighing;
@@ -20,8 +22,18 @@ public sealed class WeighingSessionService(
     DeviceService devices,
     IScaleSelectionSource scaleSelection,
     IAuditTrail audit,
-    IPlantClock clock)
+    IPlantClock clock,
+    IStepUpGrantStore grants,
+    IRecipeSnapshotStore snapshots,
+    IStationUserRepository users,
+    IEnumerable<IBatchCompletedHandler> completionHandlers)
 {
+    /// <summary>The step-up action an override needs (ADR-009).</summary>
+    public const string OverrideAction = "override";
+
+    /// <summary>Review list page size (A18).</summary>
+    public const int ReviewPageSize = 20;
+
     /// <summary>
     /// Resumes the batch's session, or starts one from the recipe snapshot (decision SESSION-START). Starting reads the
     /// scale list once (SCALE-PROFILE) and the current configuration (A1); resuming needs neither OrgaTEX nor a scale.
@@ -213,6 +225,107 @@ public sealed class WeighingSessionService(
         return (record.Value, session);
     }
 
+    /// <summary>
+    /// Supervisor override of an Underweight or Overweight reading (story 011, OVR, PD-05 option 1). The grant is checked
+    /// first without being used; the server reads the scale; the domain checks everything but the tolerance (A11), four
+    /// eyes and the reason; only then is the grant consumed, in the same transaction as the record.
+    /// </summary>
+    public async Task<ErrorOr<(WeighingRecord Record, WeighingSession Session)>> OverrideAsync(string batchId, int sequence, Guid grantId, string? reason, string operatorBadgeId, CancellationToken cancellationToken)
+    {
+        if (await sessions.FindAsync(batchId, cancellationToken) is not { } session)
+        {
+            return WeighingErrors.SessionNotFound(batchId);
+        }
+
+        var component = ActiveOrError(session, sequence);
+        if (component.IsError)
+        {
+            return component.Errors;
+        }
+
+        var grant = await grants.FindAsync(grantId, cancellationToken);
+        if (grant is null)
+        {
+            return AccessErrors.GrantInvalid("unknown grant");
+        }
+
+        var usable = grant.CheckUsable(OverrideAction, clock.UtcNow);
+        if (usable.IsError)
+        {
+            return usable.Errors;
+        }
+
+        var reading = await devices.ReadAsync(component.Value.ScaleId, cancellationToken);
+        if (reading.IsError)
+        {
+            return reading.Errors;
+        }
+
+        var now = clock.UtcNow;
+        var record = session.Override(sequence, Measured(reading.Value), new OverrideAuthority(grant.Id, grant.SupervisorBadgeId, grant.SupervisorName), reason, operatorBadgeId, now);
+        if (record.IsError)
+        {
+            return record.Errors;
+        }
+
+        var consumed = grant.Consume(OverrideAction, now);
+        if (consumed.IsError)
+        {
+            return consumed.Errors;
+        }
+
+        var saved = await SaveAsync(session, cancellationToken);
+        return saved.IsError ? saved.Errors : (record.Value, session);
+    }
+
+    /// <summary>The explicit, idempotent completion (AUTO-COMPLETE): pending components → <c>Batch.Incomplete</c>.</summary>
+    public async Task<ErrorOr<BatchSummary>> CompleteAsync(string batchId, string operatorBadgeId, CancellationToken cancellationToken)
+    {
+        if (await sessions.FindAsync(batchId, cancellationToken) is not { } session)
+        {
+            return WeighingErrors.SessionNotFound(batchId);
+        }
+
+        var completed = session.Complete(operatorBadgeId, clock.UtcNow);
+        if (completed.IsError)
+        {
+            return completed.Errors;
+        }
+
+        if (session.Events.Count > 0)
+        {
+            var saved = await SaveAsync(session, cancellationToken);
+            if (saved.IsError)
+            {
+                return saved.Errors;
+            }
+        }
+
+        return await SummaryOfAsync(session, cancellationToken);
+    }
+
+    /// <summary>The batch summary (FR-18), for any session.</summary>
+    public async Task<ErrorOr<BatchSummary>> GetSummaryAsync(string batchId, CancellationToken cancellationToken) =>
+        await sessions.FindAsync(batchId, cancellationToken) is { } session
+            ? await SummaryOfAsync(session, cancellationToken)
+            : WeighingErrors.SessionNotFound(batchId);
+
+    /// <summary>Completed batches, newest first, <see cref="ReviewPageSize"/> per page (A18).</summary>
+    public async Task<CompletedBatchPage> ListCompletedAsync(int page, CancellationToken cancellationToken)
+    {
+        var current = Math.Max(1, page);
+        var total = await sessions.CountCompletedAsync(cancellationToken);
+        var list = await sessions.ListCompletedAsync((current - 1) * ReviewPageSize, ReviewPageSize, cancellationToken);
+        var items = new List<CompletedBatchItem>();
+        foreach (var s in list)
+        {
+            var summary = await SummaryOfAsync(s, cancellationToken);
+            items.Add(new CompletedBatchItem(s.BatchId, summary.OrderId, summary.Machine, summary.Shade, s.CompletedAt!.Value, summary.Done, summary.Total, summary.AllWithinTolerance, summary.OverrideCount));
+        }
+
+        return new CompletedBatchPage(items, current, ReviewPageSize, total);
+    }
+
     /// <summary>Quit (F4): discards the active attempt; no record (story 012).</summary>
     public Task<ErrorOr<WeighingSession>> QuitAsync(string batchId, int sequence, string operatorBadgeId, CancellationToken cancellationToken) =>
         ChangeAsync(batchId, s => s.Quit(sequence, operatorBadgeId, clock.UtcNow), cancellationToken);
@@ -271,8 +384,55 @@ public sealed class WeighingSessionService(
         return changed.IsError ? changed.Errors : await SaveAsync(session, cancellationToken);
     }
 
+    private static ErrorOr<ComponentWeighing> ActiveOrError(WeighingSession session, int sequence)
+    {
+        if (session.Status == WeighingSessionStatus.Completed)
+        {
+            return WeighingErrors.BatchCompleted(session.BatchId);
+        }
+
+        var component = session.Components.SingleOrDefault(c => c.Sequence == sequence);
+        if (component is null)
+        {
+            return WeighingErrors.ComponentNotFound(sequence);
+        }
+
+        return component.State switch
+        {
+            ComponentState.Active => component,
+            ComponentState.Done => WeighingErrors.AlreadyConfirmed(sequence),
+            _ => WeighingErrors.ComponentNotActive(sequence),
+        };
+    }
+
+    private async Task<BatchSummary> SummaryOfAsync(WeighingSession session, CancellationToken cancellationToken)
+    {
+        var snapshot = await snapshots.FindAsync(session.BatchId, cancellationToken);
+        var names = new Dictionary<string, string>(StringComparer.Ordinal);
+        foreach (var badge in session.Components.Where(c => c.Record is not null).Select(c => c.Record!.OperatorBadgeId).Distinct(StringComparer.Ordinal))
+        {
+            if (await users.FindByBadgeAsync(badge, cancellationToken) is { } user)
+            {
+                names[badge] = user.DisplayName;
+            }
+        }
+
+        return BatchSummaryBuilder.Build(session, snapshot?.OrderId ?? string.Empty, snapshot?.Machine ?? string.Empty, snapshot?.Shade ?? string.Empty, names);
+    }
+
     private async Task<ErrorOr<WeighingSession>> SaveAsync(WeighingSession session, CancellationToken cancellationToken)
     {
+        // COMPLETION-HANDLERS: whatever the handlers add is saved together with the completion below.
+        foreach (var completed in session.Events.OfType<BatchCompleted>())
+        {
+            var snapshot = await snapshots.FindAsync(completed.BatchId, cancellationToken);
+            var notice = new BatchCompletedNotice(completed, snapshot?.OrderId ?? string.Empty, snapshot?.Machine ?? string.Empty, snapshot?.Shade ?? string.Empty);
+            foreach (var handler in completionHandlers)
+            {
+                await handler.HandleAsync(notice, cancellationToken);
+            }
+        }
+
         AppendAudit(session);
         var saved = await sessions.SaveAsync(cancellationToken);
         if (saved.IsError)
@@ -329,7 +489,12 @@ public sealed class WeighingSessionService(
         WeighingConfirmed w => AuditEntry.Record(AuditEventType.WeighingConfirmed, w.OperatorBadgeId, w.OccurredAt, $"{w.BatchId}#{w.Record.Sequence}"),
         WeighingAttemptQuit q => AuditEntry.Record(AuditEventType.Quit, q.OperatorBadgeId, q.OccurredAt, $"{q.BatchId}#{q.Sequence}"),
         BatchLeft l => AuditEntry.Record(AuditEventType.BatchLeft, l.OperatorBadgeId, l.OccurredAt, l.BatchId, $"{l.DoneCount} of {l.Total} done"),
+        WeighingOverridden o => AuditEntry.Record(AuditEventType.Override, o.OperatorBadgeId, o.OccurredAt, $"{o.BatchId}#{o.Record.Sequence}", Fit($"{o.Record.Class} {o.Record.Actual} authorised by {o.Record.Override!.SupervisorBadgeId}: {o.Record.Override.Reason}")),
+        BatchCompleted c => AuditEntry.Record(AuditEventType.BatchCompleted, c.OperatorBadgeId, c.OccurredAt, c.BatchId, $"{c.Records.Count} components"),
         LotCaptured or ContainerCaptured or ScaleTared => null,
         _ => throw new InvalidOperationException($"Unmapped weighing event {e.GetType().Name}."),
     };
+
+    /// <summary>Audit reasons are at most 500 characters; the full override reason is on the record itself.</summary>
+    private static string Fit(string text) => text.Length <= 500 ? text : string.Concat(text.AsSpan(0, 499), "…");
 }

@@ -532,6 +532,29 @@ namespace WeighingMS.Infrastructure.Persistence.Migrations
                         .HasColumnType("numeric(12,4)")
                         .HasColumnName("actual_value");
 
+                    b.Property<DateTimeOffset?>("_overriddenAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("overridden_at");
+
+                    b.Property<Guid?>("_overrideGrantId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("override_grant_id");
+
+                    b.Property<string>("_overrideReason")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("override_reason");
+
+                    b.Property<string>("_overrideSupervisorBadgeId")
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasColumnName("override_supervisor_badge_id");
+
+                    b.Property<string>("_overrideSupervisorName")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("override_supervisor_name");
+
                     b.Property<string>("_requiredUnit")
                         .IsRequired()
                         .HasMaxLength(16)
@@ -542,6 +565,21 @@ namespace WeighingMS.Infrastructure.Persistence.Migrations
                         .HasPrecision(12, 4)
                         .HasColumnType("numeric(12,4)")
                         .HasColumnName("required_value");
+
+                    b.Property<decimal?>("_surplusPercent")
+                        .HasPrecision(7, 2)
+                        .HasColumnType("numeric(7,2)")
+                        .HasColumnName("surplus_percent");
+
+                    b.Property<string>("_surplusUnit")
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)")
+                        .HasColumnName("surplus_unit");
+
+                    b.Property<decimal?>("_surplusValue")
+                        .HasPrecision(12, 4)
+                        .HasColumnType("numeric(12,4)")
+                        .HasColumnName("surplus_value");
 
                     b.Property<string>("_tareUnit")
                         .IsRequired()
@@ -575,6 +613,11 @@ namespace WeighingMS.Infrastructure.Persistence.Migrations
                         .IsUnique()
                         .HasDatabaseName("ix_weighing_records_component_id");
 
+                    b.HasIndex("_overrideGrantId")
+                        .IsUnique()
+                        .HasDatabaseName("ix_weighing_records_override_grant_id")
+                        .HasFilter("override_grant_id IS NOT NULL");
+
                     b.HasIndex("SessionId", "Sequence")
                         .IsUnique()
                         .HasDatabaseName("ix_weighing_records_session_id_sequence");
@@ -597,6 +640,15 @@ namespace WeighingMS.Infrastructure.Persistence.Migrations
                         .HasMaxLength(32)
                         .HasColumnType("character varying(32)")
                         .HasColumnName("batch_id");
+
+                    b.Property<DateTimeOffset?>("CompletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("completed_at");
+
+                    b.Property<string>("CompletedBy")
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasColumnName("completed_by");
 
                     b.Property<DateTimeOffset>("StartedAt")
                         .HasColumnType("timestamp with time zone")
@@ -626,6 +678,10 @@ namespace WeighingMS.Infrastructure.Persistence.Migrations
                     b.HasIndex("BatchId")
                         .IsUnique()
                         .HasDatabaseName("ix_weighing_sessions_batch_id");
+
+                    b.HasIndex("Status", "CompletedAt")
+                        .IsDescending(false, true)
+                        .HasDatabaseName("ix_weighing_sessions_status_completed_at");
 
                     b.ToTable("weighing_sessions", (string)null);
                 });

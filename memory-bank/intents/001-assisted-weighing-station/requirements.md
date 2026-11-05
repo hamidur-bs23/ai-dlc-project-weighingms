@@ -1,7 +1,7 @@
 ---
 intent: 001-assisted-weighing-station
 phase: inception
-status: units-defined
+status: construction
 created: '2026-11-03T21:41:00Z'
 updated: '2026-11-04T07:30:00Z'
 ---
@@ -276,9 +276,9 @@ They are **training contracts, not claims about the real OrgaTEX interface**. No
 - **Acceptance Criteria**:
   - The status shows "OVER TOLERANCE — SURPLUS +x (+y%)", with a distinct visual state.
   - Confirm is disabled. The available actions are re-tare and re-weigh (FR-7), quit (FR-14), or supervisor override (FR-15).
-  - **Anything further (compensation, recalculation, discard rules) is decided at STEP 24 (PD-05).** The prototype's recalculation is not adopted.
+  - **PD-05 resolved at STEP 24 (option 1, ADR-001 of bolt 009):** no compensation, recalculation or surplus limit. An overweight ends only by bringing it back into range, quitting and re-weighing, or a supervisor override (true class Overweight + surplus + OVR). The prototype's recalculation is not adopted.
 - **Priority**: Must
-- **Basis**: [C] PDF §6 Step 6; workbook STEP 24. [D] OVR. **PD-05 pending.**
+- **Basis**: [C] PDF §6 Step 6; workbook STEP 24. [D] OVR, PD-05 (option 1).
 
 ### D. Progression, completion and outputs
 

@@ -951,6 +951,73 @@
         }
       }
     },
+    "/api/weighing-sessions": {
+      "get": {
+        "tags": [
+          "WeighingReview"
+        ],
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/CompletedBatchPageResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CompletedBatchPageResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CompletedBatchPageResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/batches/{batchId}/session": {
       "post": {
         "tags": [
@@ -1861,6 +1928,303 @@
         }
       }
     },
+    "/api/batches/{batchId}/session/override": {
+      "post": {
+        "tags": [
+          "WeighingSession"
+        ],
+        "parameters": [
+          {
+            "name": "batchId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OverrideRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OverrideRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/OverrideRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConfirmationResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConfirmationResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConfirmationResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/batches/{batchId}/session/completion": {
+      "post": {
+        "tags": [
+          "WeighingSession"
+        ],
+        "parameters": [
+          {
+            "name": "batchId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/BatchSummaryResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BatchSummaryResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BatchSummaryResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/batches/{batchId}/session/summary": {
+      "get": {
+        "tags": [
+          "WeighingSession"
+        ],
+        "parameters": [
+          {
+            "name": "batchId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/BatchSummaryResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BatchSummaryResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BatchSummaryResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/batches/{batchId}/session/quit": {
       "post": {
         "tags": [
@@ -2135,6 +2499,142 @@
           }
         }
       },
+      "BatchSummaryLineResponse": {
+        "required": [
+          "sequence",
+          "chemicalId",
+          "chemicalName",
+          "required",
+          "actual",
+          "status",
+          "override"
+        ],
+        "type": "object",
+        "properties": {
+          "sequence": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "chemicalId": {
+            "type": "string"
+          },
+          "chemicalName": {
+            "type": "string"
+          },
+          "required": {
+            "$ref": "#/components/schemas/QuantityResponse"
+          },
+          "actual": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/QuantityResponse"
+              }
+            ]
+          },
+          "status": {
+            "type": "string"
+          },
+          "override": {
+            "type": "boolean"
+          }
+        }
+      },
+      "BatchSummaryResponse": {
+        "required": [
+          "batchId",
+          "orderId",
+          "machine",
+          "shade",
+          "status",
+          "done",
+          "total",
+          "allWithinTolerance",
+          "overrideCount",
+          "totalDispensed",
+          "startedAt",
+          "completedAt",
+          "elapsedSeconds",
+          "operators",
+          "orgatex",
+          "ticket",
+          "lines"
+        ],
+        "type": "object",
+        "properties": {
+          "batchId": {
+            "type": "string"
+          },
+          "orderId": {
+            "type": "string"
+          },
+          "machine": {
+            "type": "string"
+          },
+          "shade": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "done": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "total": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "allWithinTolerance": {
+            "type": "boolean"
+          },
+          "overrideCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalDispensed": {
+            "$ref": "#/components/schemas/QuantityResponse"
+          },
+          "startedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "completedAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "elapsedSeconds": {
+            "type": [
+              "null",
+              "integer"
+            ],
+            "format": "int64"
+          },
+          "operators": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "orgatex": {
+            "$ref": "#/components/schemas/IntegrationStateResponse"
+          },
+          "ticket": {
+            "$ref": "#/components/schemas/IntegrationStateResponse"
+          },
+          "lines": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BatchSummaryLineResponse"
+            }
+          }
+        }
+      },
       "CaptureContainerRequest": {
         "required": [
           "sequence",
@@ -2179,6 +2679,82 @@
           }
         }
       },
+      "CompletedBatchPageResponse": {
+        "required": [
+          "items",
+          "page",
+          "pageSize",
+          "total"
+        ],
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CompletedBatchResponse"
+            }
+          },
+          "page": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "total": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "CompletedBatchResponse": {
+        "required": [
+          "batchId",
+          "orderId",
+          "machine",
+          "shade",
+          "completedAt",
+          "done",
+          "total",
+          "allWithinTolerance",
+          "overrideCount"
+        ],
+        "type": "object",
+        "properties": {
+          "batchId": {
+            "type": "string"
+          },
+          "orderId": {
+            "type": "string"
+          },
+          "machine": {
+            "type": "string"
+          },
+          "shade": {
+            "type": "string"
+          },
+          "completedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "done": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "total": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "allWithinTolerance": {
+            "type": "boolean"
+          },
+          "overrideCount": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
       "ComponentCommandRequest": {
         "required": [
           "sequence"
@@ -2200,7 +2776,8 @@
           "actual",
           "class",
           "operator",
-          "confirmedAt"
+          "confirmedAt",
+          "override"
         ],
         "type": "object",
         "properties": {
@@ -2220,6 +2797,9 @@
           "confirmedAt": {
             "type": "string",
             "format": "date-time"
+          },
+          "override": {
+            "type": "boolean"
           }
         }
       },
@@ -2387,6 +2967,82 @@
             "type": "string"
           },
           "since": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "IntegrationStateResponse": {
+        "required": [
+          "state"
+        ],
+        "type": "object",
+        "properties": {
+          "state": {
+            "type": "string"
+          }
+        }
+      },
+      "OverrideOfferResponse": {
+        "required": [
+          "offered"
+        ],
+        "type": "object",
+        "properties": {
+          "offered": {
+            "type": "boolean"
+          }
+        }
+      },
+      "OverrideRequest": {
+        "required": [
+          "sequence",
+          "grantId",
+          "reason"
+        ],
+        "type": "object",
+        "properties": {
+          "sequence": {
+            "type": [
+              "null",
+              "integer"
+            ],
+            "format": "int32"
+          },
+          "grantId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "reason": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "OverrideResponse": {
+        "required": [
+          "supervisorBadgeId",
+          "supervisorName",
+          "reason",
+          "overriddenAt"
+        ],
+        "type": "object",
+        "properties": {
+          "supervisorBadgeId": {
+            "type": "string"
+          },
+          "supervisorName": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string"
+          },
+          "overriddenAt": {
             "type": "string",
             "format": "date-time"
           }
@@ -2777,6 +3433,22 @@
           }
         }
       },
+      "SurplusResponse": {
+        "required": [
+          "amount",
+          "percentOfTarget"
+        ],
+        "type": "object",
+        "properties": {
+          "amount": {
+            "$ref": "#/components/schemas/QuantityResponse"
+          },
+          "percentOfTarget": {
+            "type": "number",
+            "format": "double"
+          }
+        }
+      },
       "TareResponse": {
         "required": [
           "scaleId",
@@ -2946,7 +3618,9 @@
           "remaining",
           "band",
           "toleranceStatus",
-          "confirmation"
+          "confirmation",
+          "surplus",
+          "override"
         ],
         "type": "object",
         "properties": {
@@ -3008,6 +3682,19 @@
           },
           "confirmation": {
             "$ref": "#/components/schemas/ConfirmationCheckResponse"
+          },
+          "surplus": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/SurplusResponse"
+              }
+            ]
+          },
+          "override": {
+            "$ref": "#/components/schemas/OverrideOfferResponse"
           }
         }
       },
@@ -3028,7 +3715,9 @@
           "container",
           "tare",
           "operator",
-          "confirmedAt"
+          "confirmedAt",
+          "surplus",
+          "override"
         ],
         "type": "object",
         "properties": {
@@ -3082,6 +3771,26 @@
           "confirmedAt": {
             "type": "string",
             "format": "date-time"
+          },
+          "surplus": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/SurplusResponse"
+              }
+            ]
+          },
+          "override": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/OverrideResponse"
+              }
+            ]
           }
         }
       },
@@ -3091,6 +3800,8 @@
           "status",
           "startedAt",
           "startedBy",
+          "completedAt",
+          "completedBy",
           "progress",
           "suggestedSequence",
           "activeSequence",
@@ -3111,6 +3822,19 @@
           },
           "startedBy": {
             "type": "string"
+          },
+          "completedAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "completedBy": {
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "progress": {
             "$ref": "#/components/schemas/ProgressResponse"
@@ -3206,6 +3930,9 @@
     },
     {
       "name": "Station"
+    },
+    {
+      "name": "WeighingReview"
     },
     {
       "name": "WeighingSession"

@@ -85,6 +85,12 @@ internal sealed class FakeSessions : IWeighingSessionRepository
         return Task.FromResult((session, true));
     }
 
+    public Task<IReadOnlyList<WeighingSession>> ListCompletedAsync(int skip, int take, CancellationToken cancellationToken) =>
+        Task.FromResult<IReadOnlyList<WeighingSession>>([.. Stored.Where(s => s.Status == WeighingSessionStatus.Completed).OrderByDescending(s => s.CompletedAt).Skip(skip).Take(take)]);
+
+    public Task<int> CountCompletedAsync(CancellationToken cancellationToken) =>
+        Task.FromResult(Stored.Count(s => s.Status == WeighingSessionStatus.Completed));
+
     public Task<ErrorOr<Success>> SaveAsync(CancellationToken cancellationToken)
     {
         Saves++;

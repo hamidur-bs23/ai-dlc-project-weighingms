@@ -37,6 +37,20 @@ public sealed class WeighingRecordConfiguration : IEntityTypeConfiguration<Weigh
         builder.Ignore(r => r.Actual);
         builder.Ignore(r => r.Tolerance);
         builder.Ignore(r => r.Tare);
+        builder.Ignore(r => r.Surplus);
+        builder.Ignore(r => r.Override);
+        builder.Ignore(r => r.IsOverride);
+
+        // Surplus (Overweight only, A16) and the supervisor override (OVR); null for a record within tolerance.
+        builder.Property<decimal?>("_surplusValue").HasColumnName("surplus_value").HasPrecision(12, 4);
+        builder.Property<MassUnit?>("_surplusUnit").HasColumnName("surplus_unit").HasConversion<string>().HasMaxLength(16);
+        builder.Property<decimal?>("_surplusPercent").HasColumnName("surplus_percent").HasPrecision(7, 2);
+        builder.Property<Guid?>("_overrideGrantId").HasColumnName("override_grant_id");
+        builder.Property<string?>("_overrideSupervisorBadgeId").HasColumnName("override_supervisor_badge_id").HasMaxLength(32);
+        builder.Property<string?>("_overrideSupervisorName").HasColumnName("override_supervisor_name").HasMaxLength(100);
+        builder.Property<string?>("_overrideReason").HasColumnName("override_reason").HasMaxLength(WeighingSession.OverrideReasonMaxLength);
+        builder.Property<DateTimeOffset?>("_overriddenAt").HasColumnName("overridden_at");
+        builder.HasIndex("_overrideGrantId").IsUnique().HasFilter("override_grant_id IS NOT NULL"); // single-use backstop
         Quantity(builder, "_requiredValue", "_requiredUnit", "required");
         Quantity(builder, "_actualValue", "_actualUnit", "actual");
         Quantity(builder, "_toleranceValue", "_toleranceUnit", "tolerance");

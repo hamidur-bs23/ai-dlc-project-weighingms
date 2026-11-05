@@ -2,7 +2,7 @@
 unit: 005-weighing-station
 intent: 001-assisted-weighing-station
 created: 2026-11-05T17:29:20Z
-last_updated: 2026-11-05T18:08:29Z
+last_updated: 2026-11-05T18:37:11Z
 ---
 
 # Construction Log: weighing-station
@@ -29,7 +29,7 @@ last_updated: 2026-11-05T18:08:29Z
 |---------|---------|--------|---------|
 | 007-weighing-station | 001, 002, 003, 006, 007 | ✅ complete | - |
 | 008-weighing-station | 004, 005, 008, 009, 012 | ✅ complete | - |
-| 009-weighing-station | 010, 011, 013, 014 | [ ] planned | - |
+| 009-weighing-station | 010, 011, 013, 014 | ⏳ in-progress | - |
 
 ## Execution History
 
@@ -45,6 +45,7 @@ last_updated: 2026-11-05T18:08:29Z
 | 2026-11-05T18:35:00Z | 008-weighing-station | stage-complete | Design (T1–T3 option 1); ADR skipped |
 | 2026-11-05T18:21:00Z | 008-weighing-station | stage-complete | Implement |
 | 2026-11-06T00:36:00Z | 008-weighing-station | completed | 524 tests (84 new), STEP 25 evidence |
+| 2026-11-05T18:37:11Z | 009-weighing-station | started | Stage 1: model |
 
 ## Execution Summary
 
@@ -53,7 +54,7 @@ last_updated: 2026-11-05T18:08:29Z
 | Original bolts planned | 3 |
 | Current bolt count | 3 |
 | Bolts completed | 2 |
-| Bolts in progress | 0 |
+| Bolts in progress | 1 |
 | Bolts remaining | 1 |
 | Replanning events | 0 |
 

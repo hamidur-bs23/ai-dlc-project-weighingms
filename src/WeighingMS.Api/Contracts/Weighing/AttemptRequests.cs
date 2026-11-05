@@ -8,3 +8,6 @@ public sealed record CaptureLotRequest(int? Sequence, string? Lot);
 
 /// <summary>Capture the container for the active component.</summary>
 public sealed record CaptureContainerRequest(int? Sequence, string? Container);
+
+/// <summary>Supervisor override (OVR-GRANT-FLOW): the grant from <c>POST /api/session/step-up</c> and a mandatory reason.</summary>
+public sealed record OverrideRequest(int? Sequence, Guid? GrantId, string? Reason);

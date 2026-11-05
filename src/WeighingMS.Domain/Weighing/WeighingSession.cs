@@ -35,6 +35,12 @@ public sealed class WeighingSession
     /// <summary>Badge of the operator who started it (anyone may resume, SESSION-RESUME).</summary>
     public string StartedBy { get; private set; }
 
+    /// <summary>When the batch completed (UTC), if it has.</summary>
+    public DateTimeOffset? CompletedAt { get; private set; }
+
+    /// <summary>Badge of the operator whose last record completed the batch.</summary>
+    public string? CompletedBy { get; private set; }
+
     /// <summary>The active component's sequence, if one is active.</summary>
     public int? ActiveSequence { get; private set; }
 
@@ -104,6 +110,11 @@ public sealed class WeighingSession
     public void Resume(string operatorBadgeId, DateTimeOffset now)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(operatorBadgeId);
+        if (Status == WeighingSessionStatus.Completed)
+        {
+            return; // reopening a completed batch only reads it
+        }
+
         _events.Add(new WeighingSessionResumed(BatchId, operatorBadgeId, DoneCount, now.ToUniversalTime()));
     }
 
@@ -114,6 +125,11 @@ public sealed class WeighingSession
     public ErrorOr<Success> Select(int sequence, string operatorBadgeId, DateTimeOffset now)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(operatorBadgeId);
+        if (Status == WeighingSessionStatus.Completed)
+        {
+            return WeighingErrors.BatchCompleted(BatchId);
+        }
+
         var target = _components.SingleOrDefault(c => c.Sequence == sequence);
         if (target is null)
         {
@@ -218,6 +234,11 @@ public sealed class WeighingSession
     {
         ArgumentNullException.ThrowIfNull(reading);
         ArgumentException.ThrowIfNullOrWhiteSpace(operatorBadgeId);
+        if (Status == WeighingSessionStatus.Completed)
+        {
+            return WeighingErrors.BatchCompleted(BatchId);
+        }
+
         if (_components.SingleOrDefault(c => c.Sequence == sequence) is { State: ComponentState.Done })
         {
             return WeighingErrors.AlreadyConfirmed(sequence);
@@ -240,13 +261,88 @@ public sealed class WeighingSession
         component.Value.Complete(record);
         _events.Add(new WeighingConfirmed(BatchId, operatorBadgeId, record, at));
 
-        ActiveSequence = NextComponentRule.After(_components, sequence);
-        if (Active is { } next)
+        AdvanceAfter(sequence, operatorBadgeId, at);
+        return record;
+    }
+
+    /// <summary>
+    /// Records an Underweight or Overweight weighing by supervisor override (FR-15, OVR, PD-05 option 1). Everything
+    /// else a confirm needs must hold (A11); the record keeps its true class, the surplus and the override. In range →
+    /// <c>Weighing.OverrideNotNeeded</c>. The caller has checked the grant and consumes it in the same transaction.
+    /// </summary>
+    public ErrorOr<WeighingRecord> Override(int sequence, MeasuredReading reading, OverrideAuthority authority, string? reason, string operatorBadgeId, DateTimeOffset now)
+    {
+        ArgumentNullException.ThrowIfNull(reading);
+        ArgumentNullException.ThrowIfNull(authority);
+        ArgumentException.ThrowIfNullOrWhiteSpace(operatorBadgeId);
+        if (Status == WeighingSessionStatus.Completed)
         {
-            next.Activate(operatorBadgeId, at);
+            return WeighingErrors.BatchCompleted(BatchId);
         }
 
+        if (_components.SingleOrDefault(c => c.Sequence == sequence) is { State: ComponentState.Done })
+        {
+            return WeighingErrors.AlreadyConfirmed(sequence);
+        }
+
+        var component = RequireActive(sequence);
+        if (component.IsError)
+        {
+            return component.Errors;
+        }
+
+        if (authority.SupervisorBadgeId == operatorBadgeId)
+        {
+            return Access.AccessErrors.FourEyesRequired;
+        }
+
+        var check = ConfirmationRules.Check(component.Value, reading);
+        if (check.Classification is { IsConfirmable: true })
+        {
+            return WeighingErrors.OverrideNotNeeded(sequence);
+        }
+
+        var gaps = check.Missing.Where(g => g != ConfirmationGap.InTolerance).ToList();
+        if (gaps.Count > 0 || check.Classification is null)
+        {
+            return WeighingErrors.NotConfirmable(new ConfirmationCheck(gaps.Count > 0 ? gaps : [ConfirmationGap.Reading], check.Classification));
+        }
+
+        var text = AttemptText.Create(reason, "reason", OverrideReasonMaxLength);
+        if (text.IsError)
+        {
+            return text.Errors;
+        }
+
+        var at = now.ToUniversalTime();
+        var details = new OverrideDetails(authority.GrantId, authority.SupervisorBadgeId, authority.SupervisorName, text.Value, at);
+        var record = WeighingRecord.Create(Id, BatchId, component.Value, check.Classification, component.Value.Attempt!, operatorBadgeId, at, details);
+        component.Value.Complete(record);
+        _events.Add(new WeighingOverridden(BatchId, operatorBadgeId, record, at));
+        AdvanceAfter(sequence, operatorBadgeId, at);
         return record;
+    }
+
+    /// <summary>The longest override reason accepted.</summary>
+    public const int OverrideReasonMaxLength = 500;
+
+    /// <summary>
+    /// The explicit completion (AUTO-COMPLETE): completed already → nothing to do; anything pending → <c>Batch.Incomplete</c>.
+    /// </summary>
+    public ErrorOr<Success> Complete(string operatorBadgeId, DateTimeOffset now)
+    {
+        if (Status == WeighingSessionStatus.Completed)
+        {
+            return Result.Success;
+        }
+
+        if (!ReadyToComplete)
+        {
+            return WeighingErrors.Incomplete(BatchId, DoneCount, _components.Count);
+        }
+
+        MarkCompleted(operatorBadgeId, now.ToUniversalTime());
+        return Result.Success;
     }
 
     /// <summary>Quit (F4): discards the active attempt; no record; the chemical returns to pending (story 012).</summary>
@@ -270,6 +366,11 @@ public sealed class WeighingSession
     /// </summary>
     public void Leave(string operatorBadgeId, DateTimeOffset now)
     {
+        if (Status == WeighingSessionStatus.Completed)
+        {
+            return;
+        }
+
         Active?.ReturnToPending();
         ActiveSequence = null;
         if (!ReadyToComplete)
@@ -281,8 +382,35 @@ public sealed class WeighingSession
     /// <summary>Forgets the raised events once they are written.</summary>
     public void ClearEvents() => _events.Clear();
 
+    private void AdvanceAfter(int sequence, string operatorBadgeId, DateTimeOffset at)
+    {
+        ActiveSequence = NextComponentRule.After(_components, sequence);
+        if (Active is { } next)
+        {
+            next.Activate(operatorBadgeId, at);
+        }
+        else if (ReadyToComplete)
+        {
+            MarkCompleted(operatorBadgeId, at); // AUTO-COMPLETE: in the same transaction as the last record
+        }
+    }
+
+    private void MarkCompleted(string operatorBadgeId, DateTimeOffset at)
+    {
+        Status = WeighingSessionStatus.Completed;
+        CompletedAt = at;
+        CompletedBy = operatorBadgeId;
+        ActiveSequence = null;
+        _events.Add(new BatchCompleted(BatchId, operatorBadgeId, [.. Components.Select(c => c.Record!)], at));
+    }
+
     private ErrorOr<ComponentWeighing> RequireActive(int sequence)
     {
+        if (Status == WeighingSessionStatus.Completed)
+        {
+            return WeighingErrors.BatchCompleted(BatchId);
+        }
+
         var component = _components.SingleOrDefault(c => c.Sequence == sequence);
         if (component is null)
         {

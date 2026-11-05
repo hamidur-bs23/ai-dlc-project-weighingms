@@ -18,7 +18,15 @@ public sealed record WeighingReadingResponse(
     QuantityResponse? Remaining,
     ToleranceBandResponse? Band,
     string ToleranceStatus,
-    ConfirmationCheckResponse Confirmation);
+    ConfirmationCheckResponse Confirmation,
+    SurplusResponse? Surplus,
+    OverrideOfferResponse Override);
+
+/// <summary>
+/// Whether a supervisor override is offered now (PD-05 option 1): only for an Underweight or Overweight reading when
+/// everything except the tolerance is in place (A11).
+/// </summary>
+public sealed record OverrideOfferResponse(bool Offered);
 
 /// <summary>Target, ± and the inclusive range, e.g. "TOLERANCE ±0.5 g (93.5 – 94.5)".</summary>
 public sealed record ToleranceBandResponse(QuantityResponse Target, QuantityResponse PlusMinus, QuantityResponse Lower, QuantityResponse Upper);

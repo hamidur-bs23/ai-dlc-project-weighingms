@@ -3,17 +3,26 @@ id: 009-weighing-station
 unit: 005-weighing-station
 intent: 001-assisted-weighing-station
 type: ddd-construction-bolt
-status: planned
+status: in-progress
 stories:
   - 010-overshoot-warn-and-block
   - 011-supervisor-override
   - 013-complete-batch-all-confirmed
   - 014-weighing-records-and-review
 created: 2026-11-04T17:00:00Z
-started: null
+started: 2026-11-05T18:37:11Z
 completed: null
-current_stage: null
-stages_completed: []
+current_stage: implement
+stages_completed:
+  - name: model
+    completed: '2026-11-05T18:50:00Z'
+    artifact: ddd-01-domain-model.md
+  - name: design
+    completed: '2026-11-05T19:05:00Z'
+    artifact: ddd-02-technical-design.md
+  - name: adr
+    completed: '2026-11-05T18:42:00Z'
+    artifact: adr-001-overshoot.md (PD-05 option 1)
 
 requires_bolts: [003-station-access, 008-weighing-station]
 enables_bolts: [010-assisted-weighing-station-ui, 011-consumption-writeback, 012-ticket-printing]
@@ -53,10 +62,10 @@ Story files: `memory-bank/intents/001-assisted-weighing-station/units/005-weighi
 
 ## Stages
 
-- [ ] **1. model**: Pending → ddd-01-domain-model.md
-- [ ] **2. design**: Pending → ddd-02-technical-design.md
-- [ ] **3. adr**: Pending → adr-*.md (**PD-05 overshoot decision, human decides**)
-- [ ] **4. implement**: Pending → src/
+- ✅ **1. model**: Complete → ddd-01-domain-model.md
+- ⏳ **2. design**: In Progress → ddd-02-technical-design.md
+- ✅ **3. adr**: Complete → adr-001-overshoot.md (PD-05: option 1, human decision)
+- ⏳ **4. implement**: In Progress → implementation-walkthrough.md
 - [ ] **5. test**: Pending → ddd-03-test-report.md
 
 Every stage stops at a human validation checkpoint (workbook STEP 15, CHECKPOINT 5).

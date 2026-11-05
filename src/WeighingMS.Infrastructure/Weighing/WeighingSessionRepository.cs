@@ -15,6 +15,18 @@ public sealed class WeighingSessionRepository(WeighingDbContext db) : IWeighingS
         db.WeighingSessions.Include("_components.Record").FirstOrDefaultAsync(s => s.BatchId == batchId, cancellationToken);
 
     /// <inheritdoc />
+    public async Task<IReadOnlyList<WeighingSession>> ListCompletedAsync(int skip, int take, CancellationToken cancellationToken) =>
+        await db.WeighingSessions.AsNoTracking().Include("_components.Record")
+            .Where(s => s.Status == WeighingSessionStatus.Completed)
+            .OrderByDescending(s => s.CompletedAt)
+            .Skip(skip).Take(take)
+            .ToListAsync(cancellationToken);
+
+    /// <inheritdoc />
+    public Task<int> CountCompletedAsync(CancellationToken cancellationToken) =>
+        db.WeighingSessions.CountAsync(s => s.Status == WeighingSessionStatus.Completed, cancellationToken);
+
+    /// <inheritdoc />
     public async Task<(WeighingSession Session, bool Started)> AddOrGetExistingAsync(WeighingSession session, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(session);

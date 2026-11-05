@@ -15,6 +15,12 @@ public interface IWeighingSessionRepository
     /// </summary>
     Task<(WeighingSession Session, bool Started)> AddOrGetExistingAsync(WeighingSession session, CancellationToken cancellationToken);
 
+    /// <summary>Completed sessions with their records, newest first (review list, A18).</summary>
+    Task<IReadOnlyList<WeighingSession>> ListCompletedAsync(int skip, int take, CancellationToken cancellationToken);
+
+    /// <summary>How many sessions are completed.</summary>
+    Task<int> CountCompletedAsync(CancellationToken cancellationToken);
+
     /// <summary>Saves changes to a loaded session; a concurrent change saved first → <see cref="WeighingErrors.ConcurrencyConflict"/>.</summary>
     Task<ErrorOr<Success>> SaveAsync(CancellationToken cancellationToken);
 }

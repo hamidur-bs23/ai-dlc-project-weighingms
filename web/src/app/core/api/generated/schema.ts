@@ -811,6 +811,57 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/weighing-sessions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    status?: string;
+                    page?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["CompletedBatchPageResponse"];
+                        "application/json": components["schemas"]["CompletedBatchPageResponse"];
+                        "text/json": components["schemas"]["CompletedBatchPageResponse"];
+                    };
+                };
+                /** @description Unprocessable Entity */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ValidationProblemDetails"];
+                        "application/json": components["schemas"]["ValidationProblemDetails"];
+                        "text/json": components["schemas"]["ValidationProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/batches/{batchId}/session": {
         parameters: {
             query?: never;
@@ -1412,6 +1463,217 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/batches/{batchId}/session/override": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    batchId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["OverrideRequest"];
+                    "text/json": components["schemas"]["OverrideRequest"];
+                    "application/*+json": components["schemas"]["OverrideRequest"];
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ConfirmationResponse"];
+                        "application/json": components["schemas"]["ConfirmationResponse"];
+                        "text/json": components["schemas"]["ConfirmationResponse"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unprocessable Entity */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ValidationProblemDetails"];
+                        "application/json": components["schemas"]["ValidationProblemDetails"];
+                        "text/json": components["schemas"]["ValidationProblemDetails"];
+                    };
+                };
+                /** @description Service Unavailable */
+                503: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/batches/{batchId}/session/completion": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    batchId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["BatchSummaryResponse"];
+                        "application/json": components["schemas"]["BatchSummaryResponse"];
+                        "text/json": components["schemas"]["BatchSummaryResponse"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/batches/{batchId}/session/summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    batchId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["BatchSummaryResponse"];
+                        "application/json": components["schemas"]["BatchSummaryResponse"];
+                        "text/json": components["schemas"]["BatchSummaryResponse"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/batches/{batchId}/session/quit": {
         parameters: {
             query?: never;
@@ -1559,6 +1821,41 @@ export interface components {
             status: string;
             trainingOnly: boolean;
         };
+        BatchSummaryLineResponse: {
+            /** Format: int32 */
+            sequence: number;
+            chemicalId: string;
+            chemicalName: string;
+            required: components["schemas"]["QuantityResponse"];
+            actual: null | components["schemas"]["QuantityResponse"];
+            status: string;
+            override: boolean;
+        };
+        BatchSummaryResponse: {
+            batchId: string;
+            orderId: string;
+            machine: string;
+            shade: string;
+            status: string;
+            /** Format: int32 */
+            done: number;
+            /** Format: int32 */
+            total: number;
+            allWithinTolerance: boolean;
+            /** Format: int32 */
+            overrideCount: number;
+            totalDispensed: components["schemas"]["QuantityResponse"];
+            /** Format: date-time */
+            startedAt: string;
+            /** Format: date-time */
+            completedAt: null | string;
+            /** Format: int64 */
+            elapsedSeconds: null | number;
+            operators: string[];
+            orgatex: components["schemas"]["IntegrationStateResponse"];
+            ticket: components["schemas"]["IntegrationStateResponse"];
+            lines: components["schemas"]["BatchSummaryLineResponse"][];
+        };
         CaptureContainerRequest: {
             /** Format: int32 */
             sequence: null | number;
@@ -1568,6 +1865,30 @@ export interface components {
             /** Format: int32 */
             sequence: null | number;
             lot: null | string;
+        };
+        CompletedBatchPageResponse: {
+            items: components["schemas"]["CompletedBatchResponse"][];
+            /** Format: int32 */
+            page: number;
+            /** Format: int32 */
+            pageSize: number;
+            /** Format: int32 */
+            total: number;
+        };
+        CompletedBatchResponse: {
+            batchId: string;
+            orderId: string;
+            machine: string;
+            shade: string;
+            /** Format: date-time */
+            completedAt: string;
+            /** Format: int32 */
+            done: number;
+            /** Format: int32 */
+            total: number;
+            allWithinTolerance: boolean;
+            /** Format: int32 */
+            overrideCount: number;
         };
         ComponentCommandRequest: {
             /** Format: int32 */
@@ -1581,6 +1902,7 @@ export interface components {
             operator: string;
             /** Format: date-time */
             confirmedAt: string;
+            override: boolean;
         };
         ComponentScaleResponse: {
             scaleId: string;
@@ -1619,6 +1941,26 @@ export interface components {
             status: string;
             /** Format: date-time */
             since: string;
+        };
+        IntegrationStateResponse: {
+            state: string;
+        };
+        OverrideOfferResponse: {
+            offered: boolean;
+        };
+        OverrideRequest: {
+            /** Format: int32 */
+            sequence: null | number;
+            /** Format: uuid */
+            grantId: null | string;
+            reason: null | string;
+        };
+        OverrideResponse: {
+            supervisorBadgeId: string;
+            supervisorName: string;
+            reason: string;
+            /** Format: date-time */
+            overriddenAt: string;
         };
         ProblemDetails: {
             type?: null | string;
@@ -1723,6 +2065,11 @@ export interface components {
             /** Format: date-time */
             expiresAt: string;
         };
+        SurplusResponse: {
+            amount: components["schemas"]["QuantityResponse"];
+            /** Format: double */
+            percentOfTarget: number;
+        };
         TareResponse: {
             scaleId: string;
             tare: components["schemas"]["QuantityResponse"];
@@ -1774,6 +2121,8 @@ export interface components {
             band: null | components["schemas"]["ToleranceBandResponse"];
             toleranceStatus: string;
             confirmation: components["schemas"]["ConfirmationCheckResponse"];
+            surplus: null | components["schemas"]["SurplusResponse"];
+            override: components["schemas"]["OverrideOfferResponse"];
         };
         WeighingRecordResponse: {
             /** Format: uuid */
@@ -1795,6 +2144,8 @@ export interface components {
             operator: string;
             /** Format: date-time */
             confirmedAt: string;
+            surplus: null | components["schemas"]["SurplusResponse"];
+            override: null | components["schemas"]["OverrideResponse"];
         };
         WeighingSessionResponse: {
             batchId: string;
@@ -1802,6 +2153,9 @@ export interface components {
             /** Format: date-time */
             startedAt: string;
             startedBy: string;
+            /** Format: date-time */
+            completedAt: null | string;
+            completedBy: null | string;
             progress: components["schemas"]["ProgressResponse"];
             /** Format: int32 */
             suggestedSequence: null | number;

@@ -22,7 +22,15 @@ public sealed record WeighingRecordResponse(
     string Container,
     QuantityResponse Tare,
     string Operator,
-    DateTimeOffset ConfirmedAt);
+    DateTimeOffset ConfirmedAt,
+    SurplusResponse? Surplus,
+    OverrideResponse? Override);
+
+/// <summary>An Overweight's surplus against the target (A16), e.g. +2.4 g (+2.6%).</summary>
+public sealed record SurplusResponse(QuantityResponse Amount, decimal PercentOfTarget);
+
+/// <summary>The supervisor override (OVR) on a record.</summary>
+public sealed record OverrideResponse(string SupervisorBadgeId, string SupervisorName, string Reason, DateTimeOffset OverriddenAt);
 
 /// <summary>The ± tolerance a record was judged by, and where it came from.</summary>
 public sealed record AppliedToleranceResponse(QuantityResponse PlusMinus, string Source);
@@ -34,7 +42,7 @@ public sealed record ConfirmationResponse(WeighingRecordResponse Record, Weighin
 public sealed record AttemptResponse(string? Lot, string? Container, QuantityResponse? Tare, DateTimeOffset? TaredAt);
 
 /// <summary>A done component's result, for the rail ("✓ 94.2 g").</summary>
-public sealed record ComponentRecordResponse(Guid RecordId, QuantityResponse Actual, string Class, string Operator, DateTimeOffset ConfirmedAt);
+public sealed record ComponentRecordResponse(Guid RecordId, QuantityResponse Actual, string Class, string Operator, DateTimeOffset ConfirmedAt, bool Override);
 
 /// <summary>Whether Confirm (F1) may be pressed now, and what is missing (the same rule the server applies).</summary>
 public sealed record ConfirmationCheckResponse(bool CanConfirm, IReadOnlyList<string> Missing);

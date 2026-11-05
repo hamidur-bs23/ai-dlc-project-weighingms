@@ -45,3 +45,9 @@ public sealed record WeighingAttemptQuit(string BatchId, string OperatorBadgeId,
 
 /// <summary>The operator left the batch with components still pending.</summary>
 public sealed record BatchLeft(string BatchId, string OperatorBadgeId, int DoneCount, int Total, DateTimeOffset OccurredAt) : IWeighingEvent;
+
+/// <summary>An out-of-tolerance weighing was recorded by supervisor override (OVR).</summary>
+public sealed record WeighingOverridden(string BatchId, string OperatorBadgeId, WeighingRecord Record, DateTimeOffset OccurredAt) : IWeighingEvent;
+
+/// <summary>Every component is recorded: the batch is complete (consumed by write-back and ticket, units 006/007).</summary>
+public sealed record BatchCompleted(string BatchId, string OperatorBadgeId, IReadOnlyList<WeighingRecord> Records, DateTimeOffset OccurredAt) : IWeighingEvent;

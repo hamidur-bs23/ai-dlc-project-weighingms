@@ -63,6 +63,22 @@ public sealed class StepUpGrant
     /// <summary>Uses the grant for <paramref name="action"/>; fails if used, expired or for another action.</summary>
     public ErrorOr<Success> Consume(string action, DateTimeOffset now)
     {
+        var usable = CheckUsable(action, now);
+        if (usable.IsError)
+        {
+            return usable.Errors;
+        }
+
+        UsedAt = now;
+        return Result.Success;
+    }
+
+    /// <summary>
+    /// Whether the grant could be consumed now for <paramref name="action"/>, without consuming it: an override checks
+    /// the grant first and consumes it only when the record is written, so a fixable rejection leaves it unused.
+    /// </summary>
+    public ErrorOr<Success> CheckUsable(string action, DateTimeOffset now)
+    {
         if (UsedAt is not null)
         {
             return AccessErrors.GrantInvalid("already used");
@@ -78,7 +94,6 @@ public sealed class StepUpGrant
             return AccessErrors.GrantInvalid($"issued for '{Action}', not '{action}'");
         }
 
-        UsedAt = now;
         return Result.Success;
     }
 }

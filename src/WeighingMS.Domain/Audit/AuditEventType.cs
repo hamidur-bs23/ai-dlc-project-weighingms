@@ -53,4 +53,7 @@ public enum AuditEventType
 
     /// <summary>A weighing was confirmed and recorded (bolt 008).</summary>
     WeighingConfirmed,
+
+    /// <summary>A batch completed: every component recorded (bolt 009).</summary>
+    BatchCompleted,
 }

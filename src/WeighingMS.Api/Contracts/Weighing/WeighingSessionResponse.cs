@@ -6,6 +6,8 @@ public sealed record WeighingSessionResponse(
     string Status,
     DateTimeOffset StartedAt,
     string StartedBy,
+    DateTimeOffset? CompletedAt,
+    string? CompletedBy,
     ProgressResponse Progress,
     int? SuggestedSequence,
     int? ActiveSequence,

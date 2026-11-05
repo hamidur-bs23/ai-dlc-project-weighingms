@@ -17,6 +17,14 @@ public sealed class WeighingRecord
     private MassUnit _toleranceUnit;
     private decimal _tareValue;
     private MassUnit _tareUnit;
+    private decimal? _surplusValue;
+    private MassUnit? _surplusUnit;
+    private decimal? _surplusPercent;
+    private Guid? _overrideGrantId;
+    private string? _overrideSupervisorBadgeId;
+    private string? _overrideSupervisorName;
+    private string? _overrideReason;
+    private DateTimeOffset? _overriddenAt;
 
     private WeighingRecord()
     {
@@ -47,7 +55,7 @@ public sealed class WeighingRecord
     /// <summary>Chemical name.</summary>
     public string ChemicalName { get; private set; }
 
-    /// <summary>The result class (Within range or Target achieved; overrides in bolt 009).</summary>
+    /// <summary>The true result class: Within range or Target achieved, or Underweight / Overweight under an override.</summary>
     public WeightClass Class { get; private set; }
 
     /// <summary>Where the applied tolerance came from.</summary>
@@ -83,9 +91,22 @@ public sealed class WeighingRecord
     /// <summary>The tare the scale reported for this attempt.</summary>
     public Quantity Tare => Quantity.Of(_tareValue, _tareUnit);
 
-    internal static WeighingRecord Create(Guid sessionId, string batchId, ComponentWeighing component, Classification classification, WeighingAttempt attempt, string operatorBadgeId, DateTimeOffset now)
+    /// <summary>The surplus of an Overweight record (A16), else null.</summary>
+    public Surplus? Surplus => _surplusValue is { } v && _surplusUnit is { } u && _surplusPercent is { } p ? new Surplus(Quantity.Of(v, u), p) : null;
+
+    /// <summary>The supervisor override (OVR), or null for a record within tolerance.</summary>
+    public OverrideDetails? Override =>
+        _overrideGrantId is { } grant && _overrideSupervisorBadgeId is { } badge && _overrideSupervisorName is { } name && _overrideReason is { } reason && _overriddenAt is { } at
+            ? new OverrideDetails(grant, badge, name, reason, at)
+            : null;
+
+    /// <summary>True when the record was made by supervisor override.</summary>
+    public bool IsOverride => _overrideGrantId is not null;
+
+    internal static WeighingRecord Create(Guid sessionId, string batchId, ComponentWeighing component, Classification classification, WeighingAttempt attempt, string operatorBadgeId, DateTimeOffset now, OverrideDetails? overrideDetails = null)
     {
         var tolerance = component.Tolerance;
+        var surplus = classification.Surplus;
         return new WeighingRecord
         {
             Id = Guid.CreateVersion7(),
@@ -110,6 +131,14 @@ public sealed class WeighingRecord
             _toleranceUnit = tolerance.PlusMinus.Unit,
             _tareValue = attempt.Tare!.Tare.Value,
             _tareUnit = attempt.Tare.Tare.Unit,
+            _surplusValue = surplus?.Amount.Value,
+            _surplusUnit = surplus?.Amount.Unit,
+            _surplusPercent = surplus?.PercentOfTarget,
+            _overrideGrantId = overrideDetails?.GrantId,
+            _overrideSupervisorBadgeId = overrideDetails?.SupervisorBadgeId,
+            _overrideSupervisorName = overrideDetails?.SupervisorName,
+            _overrideReason = overrideDetails?.Reason,
+            _overriddenAt = overrideDetails?.OverriddenAt.ToUniversalTime(),
         };
     }
 }

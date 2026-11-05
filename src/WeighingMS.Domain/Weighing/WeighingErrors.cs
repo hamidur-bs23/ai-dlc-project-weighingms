@@ -67,4 +67,16 @@ public static class WeighingErrors
         ConfirmationGap.Stable => "Wait for a stable reading.",
         _ => classification is { } c ? $"The weight is {c.Class}: not within tolerance." : "The weight is not within tolerance.",
     };
+
+    /// <summary>The reading is in tolerance: confirm normally instead of overriding (409, story 011 edge case).</summary>
+    public static Error OverrideNotNeeded(int sequence) =>
+        Error.Conflict("Weighing.OverrideNotNeeded", $"Component {sequence} is within tolerance: confirm it normally.", new Dictionary<string, object> { ["sequence"] = sequence });
+
+    /// <summary>The batch is completed; the session can only be read (409, A17).</summary>
+    public static Error BatchCompleted(string batchId) =>
+        Error.Conflict("Weighing.BatchCompleted", $"Batch '{batchId}' is completed and can't be changed.", new Dictionary<string, object> { ["batchId"] = batchId });
+
+    /// <summary>Completion while components are still pending (409, story 013).</summary>
+    public static Error Incomplete(string batchId, int done, int total) =>
+        Error.Conflict("Batch.Incomplete", $"Batch '{batchId}' has {done} of {total} components weighed.", new Dictionary<string, object> { ["batchId"] = batchId, ["done"] = done, ["total"] = total });
 }

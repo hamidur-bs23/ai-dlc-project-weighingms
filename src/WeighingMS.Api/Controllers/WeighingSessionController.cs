@@ -158,6 +158,58 @@ public sealed class WeighingSessionController(WeighingSessionService weighing) :
             Problem);
     }
 
+    /// <summary>
+    /// Supervisor override of an Underweight or Overweight reading (story 011, PD-05 option 1): needs the single-use grant
+    /// from <c>POST /api/session/step-up</c> (another supervisor, four eyes) and a reason. Creates one record with the true
+    /// class, the surplus and OVR (201).
+    /// </summary>
+    [HttpPost("override")]
+    [ProducesResponseType<ConfirmationResponse>(StatusCodes.Status201Created)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status409Conflict)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status422UnprocessableEntity)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status503ServiceUnavailable)]
+    public async Task<IActionResult> Override(string batchId, [FromBody] OverrideRequest request, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+        if (request.Sequence is not { } sequence)
+        {
+            return MissingSequence();
+        }
+
+        if (request.GrantId is not { } grantId)
+        {
+            return Problem([Error.Validation("Request.Invalid", "grantId is required.", new Dictionary<string, object> { ["field"] = "grantId" })]);
+        }
+
+        var result = await weighing.OverrideAsync(batchId, sequence, grantId, request.Reason, OperatorBadge, cancellationToken);
+        return result.Match<IActionResult>(
+            r => CreatedAtAction(nameof(Get), new { batchId = r.Session.BatchId }, new ConfirmationResponse(ToResponse(r.Record), ToResponse(r.Session))),
+            Problem);
+    }
+
+    /// <summary>Completes the batch (idempotent); 409 <c>Batch.Incomplete</c> while components are pending (story 013).</summary>
+    [HttpPost("completion")]
+    [ProducesResponseType<BatchSummaryResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status409Conflict)]
+    public async Task<IActionResult> Complete(string batchId, CancellationToken cancellationToken)
+    {
+        var result = await weighing.CompleteAsync(batchId, OperatorBadge, cancellationToken);
+        return result.Match<IActionResult>(s => Ok(ToSummary(s)), Problem);
+    }
+
+    /// <summary>The batch summary (FR-18): n of N, within tolerance, total, elapsed, operators, per-chemical lines.</summary>
+    [HttpGet("summary")]
+    [ProducesResponseType<BatchSummaryResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Summary(string batchId, CancellationToken cancellationToken)
+    {
+        var result = await weighing.GetSummaryAsync(batchId, cancellationToken);
+        return result.Match<IActionResult>(s => Ok(ToSummary(s)), Problem);
+    }
+
     /// <summary>Quit (F4): discards the attempt of the named component; no record (story 012).</summary>
     [HttpPost("quit")]
     [ProducesResponseType<WeighingSessionResponse>(StatusCodes.Status200OK)]
@@ -195,6 +247,8 @@ public sealed class WeighingSessionController(WeighingSessionService weighing) :
         WireNames.Of(s.Status),
         s.StartedAt,
         s.StartedBy,
+        s.CompletedAt,
+        s.CompletedBy,
         new ProgressResponse(s.DoneCount, s.Components.Count),
         s.Suggested?.Sequence,
         s.ActiveSequence,
@@ -219,7 +273,7 @@ public sealed class WeighingSessionController(WeighingSessionService weighing) :
             tolerance,
             c.SuggestedContainer,
             ToResponse(c.Attempt),
-            c.Record is { } r ? new ComponentRecordResponse(r.Id, ToWire(r.Actual), WireNames.Of(r.Class), r.OperatorBadgeId, r.ConfirmedAt) : null);
+            c.Record is { } r ? new ComponentRecordResponse(r.Id, ToWire(r.Actual), WireNames.Of(r.Class), r.OperatorBadgeId, r.ConfirmedAt, r.IsOverride) : null);
     }
 
     private static AttemptResponse? ToResponse(WeighingAttempt? attempt)
@@ -249,7 +303,9 @@ public sealed class WeighingSessionController(WeighingSessionService weighing) :
         r.Container,
         ToWire(r.Tare),
         r.OperatorBadgeId,
-        r.ConfirmedAt);
+        r.ConfirmedAt,
+        ToSurplus(r.Surplus),
+        r.Override is { } o ? new OverrideResponse(o.SupervisorBadgeId, o.SupervisorName, o.Reason, o.OverriddenAt) : null);
 
     private static WeighingReadingResponse ToResponse(CurrentReading r)
     {
@@ -272,8 +328,40 @@ public sealed class WeighingSessionController(WeighingSessionService weighing) :
             classification is not null ? ToWire(classification.Remaining) : null,
             band is not null ? new ToleranceBandResponse(ToWire(band.Target), ToWire(band.PlusMinus), ToWire(band.Lower), ToWire(band.Upper)) : null,
             r.Component.Tolerance.IsBlocked ? "blocked" : "resolved",
-            new ConfirmationCheckResponse(r.Check.CanConfirm, [.. r.Check.Missing.Select(WeighingErrors.GapName)]));
+            new ConfirmationCheckResponse(r.Check.CanConfirm, [.. r.Check.Missing.Select(WeighingErrors.GapName)]),
+            ToSurplus(classification?.Surplus),
+            new OverrideOfferResponse(OverrideOffered(r.Check)));
     }
+
+    /// <summary>The summary contract.</summary>
+    private static BatchSummaryResponse ToSummary(BatchSummary s) => new(
+        s.BatchId,
+        s.OrderId,
+        s.Machine,
+        s.Shade,
+        WireNames.Of(s.Status),
+        s.Done,
+        s.Total,
+        s.AllWithinTolerance,
+        s.OverrideCount,
+        new QuantityResponse(Math.Round(s.TotalDispensed.Value, 3, MidpointRounding.AwayFromZero), s.TotalDispensed.Symbol),
+        s.StartedAt,
+        s.CompletedAt,
+        s.ElapsedSeconds,
+        s.Operators,
+        new IntegrationStateResponse(s.OrgatexState),
+        new IntegrationStateResponse(s.TicketState),
+        [.. s.Lines.Select(l => new BatchSummaryLineResponse(
+            l.Sequence, l.ChemicalId, l.ChemicalName, ToWire(l.Required), l.Actual is { } a ? ToWire(a) : null, LineStatus(l), l.Override))]);
+
+    private static string LineStatus(BatchSummaryLine line) => line.Class is { } c ? WireNames.Of(c) : WireNames.Of(line.State);
+
+    private static SurplusResponse? ToSurplus(Surplus? surplus) =>
+        surplus is null ? null : new SurplusResponse(ToWire(surplus.Amount), surplus.PercentOfTarget);
+
+    /// <summary>Override is offered only when tolerance is the one missing condition (A11, PD-05 option 1).</summary>
+    private static bool OverrideOffered(ConfirmationCheck check) =>
+        check.Classification is { IsConfirmable: false } && check.Missing.SequenceEqual([ConfirmationGap.InTolerance]);
 
     private static string? SourceOf(ComponentWeighing c) => c.ToleranceSource is { } source ? WireNames.Of(source) : null;
 
