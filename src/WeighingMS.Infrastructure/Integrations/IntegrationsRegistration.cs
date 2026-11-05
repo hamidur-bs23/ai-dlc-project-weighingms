@@ -3,8 +3,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Http.Resilience;
 using Polly;
+using WeighingMS.Application.Batches;
 using WeighingMS.Application.Devices;
 using WeighingMS.Infrastructure.Integrations.Health;
+using WeighingMS.Infrastructure.Integrations.OrgaTex;
 using WeighingMS.Infrastructure.Integrations.Scales;
 using WeighingMS.Infrastructure.Integrations.Scanner;
 
@@ -23,6 +25,7 @@ internal static class IntegrationsRegistration
 
         services.AddHttpClient<IScaleDevice, ScaleDeviceClient>(c => c.BaseAddress = options.BaseUrl).AddResilienceHandler("scales", b => Configure(b, options));
         services.AddHttpClient<IScanner, ScannerClient>(c => c.BaseAddress = options.BaseUrl).AddResilienceHandler("scanner", b => Configure(b, options));
+        services.AddHttpClient<IOrgatexGateway, OrgatexGatewayClient>(c => c.BaseAddress = options.BaseUrl).AddResilienceHandler("orgatex", b => Configure(b, options));
         services.AddHttpClient<PrinterStatusProbe>(c => c.BaseAddress = options.BaseUrl).AddResilienceHandler("printer-status", b => Configure(b, options));
         services.AddHttpClient<OrgatexReachabilityProbe>(c => c.BaseAddress = options.BaseUrl).AddResilienceHandler("orgatex-reachability", b => Configure(b, options));
         services.AddTransient<IDeviceHealthProbe>(sp => sp.GetRequiredService<PrinterStatusProbe>());

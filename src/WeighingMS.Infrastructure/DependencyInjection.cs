@@ -3,7 +3,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using WeighingMS.Application.Abstractions;
 using WeighingMS.Application.Access;
+using WeighingMS.Application.Batches;
 using WeighingMS.Infrastructure.Access;
+using WeighingMS.Infrastructure.Batches;
 using WeighingMS.Infrastructure.Integrations;
 using WeighingMS.Infrastructure.Persistence;
 
@@ -25,6 +27,8 @@ public static class DependencyInjection
         services.AddSingleton<IPinHasher, PinHasher>();
         services.AddSingleton<IPlantClock, PlantClock>();
         services.AddScoped<DevelopmentUserSeeder>();
+        services.AddScoped<IRecipeSnapshotStore, RecipeSnapshotStore>();
+        services.AddSingleton<IToleranceCatalogue, ToleranceCatalogue>();
         services.AddDeviceIntegrations(configuration);
         return services;
     }

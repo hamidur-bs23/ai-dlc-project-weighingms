@@ -2,7 +2,7 @@
 unit: 003-batch-recipe
 intent: 001-assisted-weighing-station
 phase: inception
-status: stories-defined
+status: in-progress
 unit_type: backend
 default_bolt_type: simple-construction-bolt
 created: 2026-11-04T15:00:00Z

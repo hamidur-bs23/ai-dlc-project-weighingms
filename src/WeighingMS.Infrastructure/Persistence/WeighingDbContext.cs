@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using WeighingMS.Application.Abstractions;
 using WeighingMS.Domain.Access;
 using WeighingMS.Domain.Audit;
+using WeighingMS.Domain.Batches;
 
 namespace WeighingMS.Infrastructure.Persistence;
 
@@ -16,6 +17,9 @@ public sealed class WeighingDbContext(DbContextOptions<WeighingDbContext> option
 
     /// <summary>Supervisor step-up grants.</summary>
     public DbSet<StepUpGrant> StepUpGrants => Set<StepUpGrant>();
+
+    /// <summary>Recipe snapshots (one per batch, immutable).</summary>
+    public DbSet<RecipeSnapshot> RecipeSnapshots => Set<RecipeSnapshot>();
 
     /// <summary>Append-only audit trail.</summary>
     public DbSet<AuditEntry> AuditEntries => Set<AuditEntry>();

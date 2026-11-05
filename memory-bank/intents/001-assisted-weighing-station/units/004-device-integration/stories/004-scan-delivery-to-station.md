@@ -2,12 +2,15 @@
 id: 004-scan-delivery-to-station
 unit: 004-device-integration
 intent: 001-assisted-weighing-station
-status: draft
+status: complete
 priority: must
-requirements: [FR-27, FR-2, FR-5]
-created: 2026-11-04T16:00:00Z
+requirements:
+  - FR-27
+  - FR-2
+  - FR-5
+created: '2026-11-04T16:00:00Z'
 assigned_bolt: 004-device-integration
-implemented: false
+implemented: true
 ---
 
 # Story: 004-scan-delivery-to-station

@@ -9,6 +9,7 @@ using Serilog;
 using WeighingMS.Api.Common;
 using WeighingMS.Application;
 using WeighingMS.Application.Access;
+using WeighingMS.Application.Batches;
 using WeighingMS.Application.Devices;
 using WeighingMS.Infrastructure;
 
@@ -34,6 +35,11 @@ builder.Services.AddOptions<DevicesOptions>()
     .Validate(o => o.ScalePollInterval >= TimeSpan.FromMilliseconds(50), "Devices:ScalePollInterval must be at least 50 ms.")
     .ValidateOnStart();
 builder.Services.AddSingleton(sp => sp.GetRequiredService<IOptions<DevicesOptions>>().Value);
+
+builder.Services.AddOptions<ToleranceSettings>()
+    .Bind(builder.Configuration.GetSection(ToleranceSettings.SectionName))
+    .Validate(o => o.Validate().Count == 0, "Tolerances: each entry needs a chemicalId, a positive plusMinus, unit g or kg, scaleClass precision or heavyDuty, and no duplicates.")
+    .ValidateOnStart();
 
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);

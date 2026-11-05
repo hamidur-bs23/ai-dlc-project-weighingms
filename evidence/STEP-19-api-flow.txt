@@ -1,0 +1,179 @@
+# STEP 19: batch selection data flow through WeighingMS.Api (the UI calls only the Api; the Api reads the Dummy OrgaTEX).
+# Captured 2026-11-05T13:32:00Z. Signed in as OP-1001 (cookie + XSRF). Dev run on :5180 (Api) / :5190 (simulator); the normal ports are :5080 / :5090.
+
+$ GET /api/batches
+{
+    "items": [
+        {
+            "batchId": "B-24187",
+            "orderId": "SO-9931",
+            "machine": "JET-04",
+            "fabric": "100% CTN knit",
+            "batchWeight": {
+                "value": 480,
+                "unit": "kg"
+            },
+            "shade": "Teal 4C",
+            "componentCount": 5,
+            "status": "queued",
+            "trainingOnly": false
+        },
+        {
+            "batchId": "B-24188",
+            "orderId": "SO-9931",
+            "machine": "JET-07",
+            "fabric": "100% CTN knit",
+            "batchWeight": {
+                "value": 520,
+                "unit": "kg"
+            },
+            "shade": "Teal 4C",
+            "componentCount": 5,
+            "status": "queued",
+            "trainingOnly": true
+        },
+        {
+            "batchId": "B-24190",
+            "orderId": "SO-9944",
+            "machine": "JET-02",
+            "fabric": "CVC fleece",
+            "batchWeight": {
+                "value": 310,
+                "unit": "kg"
+            },
+            "shade": "Navy 12",
+            "componentCount": 7,
+            "status": "queued",
+            "trainingOnly": true
+        },
+        {
+            "batchId": "B-24191",
+            "orderId": "SO-9947",
+            "machine": "WINCH-01",
+            "fabric": "Viscose jersey",
+            "batchWeight": {
+                "value": 190,
+                "unit": "kg"
+            },
+            "shade": "Rose 08",
+            "componentCount": 4,
+            "status": "queued",
+            "trainingOnly": true
+        }
+    ]
+}
+
+$ GET /api/batches/B-24187
+{
+    "batchId": "B-24187",
+    "orderId": "SO-9931",
+    "machine": "JET-04",
+    "fabric": "100% CTN knit",
+    "batchWeight": {
+        "value": 480,
+        "unit": "kg"
+    },
+    "shade": "Teal 4C",
+    "componentCount": 5,
+    "status": "queued",
+    "trainingOnly": false
+}
+
+$ GET /api/batches/B-24187/recipe   # first call: recipe snapshot stored
+{
+    "batchId": "B-24187",
+    "shade": "Teal 4C",
+    "loadedAt": "2026-11-05T13:32:00.885603+00:00",
+    "trainingOnly": false,
+    "components": [
+        {
+            "sequence": 1,
+            "chemicalId": "DYE-1180",
+            "code": "DYE-1180",
+            "name": "Remazol Brill. Blue RSPL",
+            "displayColour": "#1f4fa8",
+            "target": {
+                "value": 1240.0,
+                "unit": "g"
+            },
+            "tolerance": {
+                "value": 6.0,
+                "unit": "g"
+            },
+            "suggestedContainer": "C-09"
+        },
+        {
+            "sequence": 2,
+            "chemicalId": "DYE-2204",
+            "code": "DYE-2204",
+            "name": "Remazol Red RB",
+            "displayColour": "#b8253a",
+            "target": {
+                "value": 386.0,
+                "unit": "g"
+            },
+            "tolerance": {
+                "value": 2.0,
+                "unit": "g"
+            },
+            "suggestedContainer": "C-11"
+        },
+        {
+            "sequence": 3,
+            "chemicalId": "DYE-4471",
+            "code": "DYE-4471",
+            "name": "Remazol Yellow RGB",
+            "displayColour": "#d9a520",
+            "target": {
+                "value": 94.0,
+                "unit": "g"
+            },
+            "tolerance": {
+                "value": 0.5,
+                "unit": "g"
+            },
+            "suggestedContainer": "C-12"
+        },
+        {
+            "sequence": 4,
+            "chemicalId": "AUX-0101",
+            "code": "AUX-0101",
+            "name": "Sodium Sulphate",
+            "displayColour": "#c9d2dc",
+            "target": {
+                "value": 24.0,
+                "unit": "kg"
+            },
+            "tolerance": {
+                "value": 0.12,
+                "unit": "kg"
+            },
+            "suggestedContainer": "D-03"
+        },
+        {
+            "sequence": 5,
+            "chemicalId": "AUX-0107",
+            "code": "AUX-0107",
+            "name": "Soda Ash",
+            "displayColour": "#e4eaf0",
+            "target": {
+                "value": 9.6,
+                "unit": "kg"
+            },
+            "tolerance": {
+                "value": 0.048,
+                "unit": "kg"
+            },
+            "suggestedContainer": "D-05"
+        }
+    ]
+}
+
+$ GET /api/batches   # B-24187 now "weighing"
+  B-24187 weighing
+  B-24188 queued
+  B-24190 queued
+  B-24191 queued
+
+$ GET /api/batches/B-99999   # scanned/typed ID not in the queue
+{"type":"Batch.NotFound","title":"Batch 'B-99999' was not found.","status":404,"detail":"Batch 'B-99999' was not found.","traceId":"00-3218be33603e27f11671a4df14c2f2b5-aceedf19747e5088-01","errorCode":"Batch.NotFound"}   HTTP 404

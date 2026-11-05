@@ -3,7 +3,7 @@ id: 004-device-integration
 unit: 004-device-integration
 intent: 001-assisted-weighing-station
 type: simple-construction-bolt
-status: in-progress
+status: complete
 stories:
   - 001-live-scale-reading
   - 002-tare-a-scale
@@ -11,23 +11,30 @@ stories:
   - 004-scan-delivery-to-station
   - 005-scanner-offline-manual-fallback
   - 006-device-health-for-status-strip
-created: 2026-11-04T17:00:00Z
-started: 2026-11-04T21:50:00Z
-completed: null
-current_stage: test
+created: '2026-11-04T17:00:00Z'
+started: '2026-11-04T21:50:00Z'
+completed: '2026-11-05T12:25:12Z'
+current_stage: null
 stages_completed:
   - name: plan
-    completed: 2026-11-04T22:10:00Z
+    completed: '2026-11-04T22:10:00Z'
     artifact: implementation-plan.md
   - name: implement
-    completed: 2026-11-04T22:25:00Z
+    completed: '2026-11-04T22:25:00Z'
     artifact: implementation-walkthrough.md
-
-requires_bolts: [001-station-simulators, 002-station-simulators]
-enables_bolts: [005-batch-recipe, 006-assisted-weighing-station-ui, 007-weighing-station]
-requires_units: [001-station-simulators]
+  - name: test
+    completed: '2026-11-05T12:15:00Z'
+    artifact: test-walkthrough.md
+requires_bolts:
+  - 001-station-simulators
+  - 002-station-simulators
+enables_bolts:
+  - 005-batch-recipe
+  - 006-assisted-weighing-station-ui
+  - 007-weighing-station
+requires_units:
+  - 001-station-simulators
 blocks: false
-
 complexity:
   avg_complexity: 2
   avg_uncertainty: 2
@@ -65,7 +72,7 @@ Story files: `memory-bank/intents/001-assisted-weighing-station/units/004-device
 
 - ✅ **1. plan**: Complete → implementation-plan.md
 - ✅ **2. implement**: Complete → src/, implementation-walkthrough.md
-- ⏳ **3. test**: In Progress → test-walkthrough.md
+- ✅ **3. test**: Complete → test-walkthrough.md
 
 Every stage stops at a human validation checkpoint (workbook STEP 15, CHECKPOINT 5).
 

@@ -2,7 +2,7 @@
 unit: 004-device-integration
 intent: 001-assisted-weighing-station
 created: 2026-11-04T21:50:00Z
-last_updated: 2026-11-04T21:50:00Z
+last_updated: 2026-11-05T12:15:00Z
 ---
 
 # Construction Log: device-integration
@@ -25,7 +25,7 @@ last_updated: 2026-11-04T21:50:00Z
 
 | Bolt ID | Stories | Status | Changed |
 |---------|---------|--------|---------|
-| 004-device-integration | 001–006 | ⏳ in-progress | - |
+| 004-device-integration | 001–006 | ✅ completed | - |
 
 ## Execution History
 
@@ -34,6 +34,8 @@ last_updated: 2026-11-04T21:50:00Z
 | 2026-11-04T21:50:00Z | 004-device-integration | started | Stage 1: plan |
 | 2026-11-04T22:10:00Z | 004-device-integration | stage-complete | plan → implement (APPROVE PLAN) |
 | 2026-11-04T22:25:00Z | 004-device-integration | stage-complete | implement → test (approved) |
+| 2026-11-05T12:15:00Z | 004-device-integration | stage-complete | test → done (approved; 240/240 tests) |
+| 2026-11-05T12:15:00Z | 004-device-integration | completed | All 3 stages done (bolt-complete.cjs); unit complete |
 
 ## Execution Summary
 
@@ -41,11 +43,13 @@ last_updated: 2026-11-04T21:50:00Z
 |--------|-------|
 | Original bolts planned | 1 |
 | Current bolt count | 1 |
-| Bolts completed | 0 |
-| Bolts in progress | 1 |
-| Bolts remaining | 1 |
+| Bolts completed | 1 |
+| Bolts in progress | 0 |
+| Bolts remaining | 0 |
 | Replanning events | 0 |
 
 ## Notes
 
 First Api → simulator integration; OpenTelemetry is added in this bolt (OTEL-TIMING).
+
+Unit complete (2026-11-05): scale and scanner adapters with resilience, reading validity, device health, OpenTelemetry; 240 tests across the solution.

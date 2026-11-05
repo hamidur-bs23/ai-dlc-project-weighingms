@@ -171,6 +171,134 @@ namespace WeighingMS.Infrastructure.Persistence.Migrations
                     b.ToTable("audit_entries", (string)null);
                 });
 
+            modelBuilder.Entity("WeighingMS.Domain.Batches.RecipeSnapshot", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("BatchId")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasColumnName("batch_id");
+
+                    b.Property<decimal>("BatchWeightKg")
+                        .HasPrecision(12, 4)
+                        .HasColumnType("numeric(12,4)")
+                        .HasColumnName("batch_weight_kg");
+
+                    b.Property<string>("Fabric")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("fabric");
+
+                    b.Property<DateTimeOffset>("LoadedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("loaded_at");
+
+                    b.Property<string>("Machine")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasColumnName("machine");
+
+                    b.Property<string>("OrderId")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasColumnName("order_id");
+
+                    b.Property<string>("Shade")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
+                        .HasColumnName("shade");
+
+                    b.Property<bool>("TrainingOnly")
+                        .HasColumnType("boolean")
+                        .HasColumnName("training_only");
+
+                    b.HasKey("Id")
+                        .HasName("pk_recipe_snapshots");
+
+                    b.HasIndex("BatchId")
+                        .IsUnique()
+                        .HasDatabaseName("ix_recipe_snapshots_batch_id");
+
+                    b.ToTable("recipe_snapshots", (string)null);
+                });
+
+            modelBuilder.Entity("WeighingMS.Domain.Batches.SnapshotComponent", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("ChemicalId")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasColumnName("chemical_id");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasColumnName("code");
+
+                    b.Property<string>("DisplayColour")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)")
+                        .HasColumnName("display_colour");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("name");
+
+                    b.Property<Guid>("RecipeSnapshotId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("recipe_snapshot_id");
+
+                    b.Property<int>("Sequence")
+                        .HasColumnType("integer")
+                        .HasColumnName("sequence");
+
+                    b.Property<string>("SuggestedContainer")
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasColumnName("suggested_container");
+
+                    b.Property<string>("_targetUnit")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)")
+                        .HasColumnName("target_unit");
+
+                    b.Property<decimal>("_targetValue")
+                        .HasPrecision(12, 4)
+                        .HasColumnType("numeric(12,4)")
+                        .HasColumnName("target_value");
+
+                    b.Property<decimal?>("_toleranceValue")
+                        .HasPrecision(12, 4)
+                        .HasColumnType("numeric(12,4)")
+                        .HasColumnName("tolerance_value");
+
+                    b.HasKey("Id")
+                        .HasName("pk_recipe_snapshot_components");
+
+                    b.HasIndex("RecipeSnapshotId", "Sequence")
+                        .IsUnique()
+                        .HasDatabaseName("ix_recipe_snapshot_components_recipe_snapshot_id_sequence");
+
+                    b.ToTable("recipe_snapshot_components", (string)null);
+                });
+
             modelBuilder.Entity("WeighingMS.Domain.Access.StepUpGrant", b =>
                 {
                     b.HasOne("WeighingMS.Domain.Access.StationUser", null)
@@ -179,6 +307,21 @@ namespace WeighingMS.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
                         .HasConstraintName("fk_step_up_grants_station_users_supervisor_id");
+                });
+
+            modelBuilder.Entity("WeighingMS.Domain.Batches.SnapshotComponent", b =>
+                {
+                    b.HasOne("WeighingMS.Domain.Batches.RecipeSnapshot", null)
+                        .WithMany("_components")
+                        .HasForeignKey("RecipeSnapshotId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_recipe_snapshot_components_recipe_snapshots_recipe_snapshot");
+                });
+
+            modelBuilder.Entity("WeighingMS.Domain.Batches.RecipeSnapshot", b =>
+                {
+                    b.Navigation("_components");
                 });
 #pragma warning restore 612, 618
         }

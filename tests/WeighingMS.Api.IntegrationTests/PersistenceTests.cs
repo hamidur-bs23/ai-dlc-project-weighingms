@@ -16,7 +16,9 @@ public sealed class PersistenceTests(ApiFixture fixture) : IAsyncLifetime
         await using var db = fixture.NewDbContext();
 
         (await db.Database.GetPendingMigrationsAsync(TestContext.Current.CancellationToken)).ShouldBeEmpty();
-        (await db.Database.GetAppliedMigrationsAsync(TestContext.Current.CancellationToken)).ShouldContain(m => m.EndsWith("_InitialStationAccess", StringComparison.Ordinal));
+        var applied = (await db.Database.GetAppliedMigrationsAsync(TestContext.Current.CancellationToken)).ToList();
+        applied.ShouldContain(m => m.EndsWith("_InitialStationAccess", StringComparison.Ordinal));
+        applied.ShouldContain(m => m.EndsWith("_AddRecipeSnapshots", StringComparison.Ordinal));
     }
 
     [Fact]
