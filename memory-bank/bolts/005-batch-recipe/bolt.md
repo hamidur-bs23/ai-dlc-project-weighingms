@@ -3,30 +3,37 @@ id: 005-batch-recipe
 unit: 003-batch-recipe
 intent: 001-assisted-weighing-station
 type: simple-construction-bolt
-status: in-progress
+status: complete
 stories:
   - 001-view-batch-queue
   - 002-select-batch-by-touch-or-scan
   - 003-load-recipe-snapshot
   - 004-configured-tolerance-fallback
   - 005-orgatex-unavailable-on-load
-created: 2026-11-04T17:00:00Z
-started: 2026-11-05T12:20:00Z
-completed: null
-current_stage: test
+created: '2026-11-04T17:00:00Z'
+started: '2026-11-05T12:20:00Z'
+completed: '2026-11-05T13:48:25Z'
+current_stage: null
 stages_completed:
   - name: plan
-    completed: 2026-11-05T12:35:00Z
+    completed: '2026-11-05T12:35:00Z'
     artifact: implementation-plan.md
   - name: implement
-    completed: 2026-11-05T13:15:00Z
+    completed: '2026-11-05T13:15:00Z'
     artifact: implementation-walkthrough.md
-
-requires_bolts: [002-station-simulators, 004-device-integration]
-enables_bolts: [006-assisted-weighing-station-ui, 007-weighing-station]
-requires_units: [001-station-simulators, 004-device-integration]
+  - name: test
+    completed: '2026-11-05T13:47:44Z'
+    artifact: test-walkthrough.md
+requires_bolts:
+  - 002-station-simulators
+  - 004-device-integration
+enables_bolts:
+  - 006-assisted-weighing-station-ui
+  - 007-weighing-station
+requires_units:
+  - 001-station-simulators
+  - 004-device-integration
 blocks: false
-
 complexity:
   avg_complexity: 1
   avg_uncertainty: 1

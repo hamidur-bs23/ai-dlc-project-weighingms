@@ -2,12 +2,14 @@
 id: 002-select-batch-by-touch-or-scan
 unit: 003-batch-recipe
 intent: 001-assisted-weighing-station
-status: draft
+status: complete
 priority: must
-requirements: [FR-2, FR-27]
-created: 2026-11-04T16:00:00Z
+requirements:
+  - FR-2
+  - FR-27
+created: '2026-11-04T16:00:00Z'
 assigned_bolt: 005-batch-recipe
-implemented: false
+implemented: true
 ---
 
 # Story: 002-select-batch-by-touch-or-scan

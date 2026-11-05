@@ -2,12 +2,13 @@
 id: 001-view-batch-queue
 unit: 003-batch-recipe
 intent: 001-assisted-weighing-station
-status: draft
+status: complete
 priority: must
-requirements: [FR-1]
-created: 2026-11-04T16:00:00Z
+requirements:
+  - FR-1
+created: '2026-11-04T16:00:00Z'
 assigned_bolt: 005-batch-recipe
-implemented: false
+implemented: true
 ---
 
 # Story: 001-view-batch-queue

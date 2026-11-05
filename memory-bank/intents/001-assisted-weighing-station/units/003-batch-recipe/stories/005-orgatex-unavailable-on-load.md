@@ -2,12 +2,13 @@
 id: 005-orgatex-unavailable-on-load
 unit: 003-batch-recipe
 intent: 001-assisted-weighing-station
-status: draft
+status: complete
 priority: must
-requirements: [FR-24]
-created: 2026-11-04T16:00:00Z
+requirements:
+  - FR-24
+created: '2026-11-04T16:00:00Z'
 assigned_bolt: 005-batch-recipe
-implemented: false
+implemented: true
 ---
 
 # Story: 005-orgatex-unavailable-on-load
