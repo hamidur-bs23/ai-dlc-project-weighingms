@@ -1,0 +1,92 @@
+# STEP 21: scale API through WeighingMS.Api (http://localhost:5080). The UI calls only the Api; the Api reads the dummy scales (:5090).
+# Captured 2026-11-04T20:31:52Z. Sign-in as OP-1001 first (cookie + XSRF).
+
+$ GET /api/scales
+{
+    "items": [
+        {
+            "scaleId": "scale-3kg",
+            "name": "3 kg precision",
+            "scaleClass": "precision",
+            "capacity": {
+                "value": 3200.0,
+                "unit": "g"
+            },
+            "resolution": {
+                "value": 0.1,
+                "unit": "g"
+            },
+            "status": "ready"
+        },
+        {
+            "scaleId": "scale-32kg",
+            "name": "32 kg floor",
+            "scaleClass": "heavyDuty",
+            "capacity": {
+                "value": 32.0,
+                "unit": "kg"
+            },
+            "resolution": {
+                "value": 0.001,
+                "unit": "kg"
+            },
+            "status": "ready"
+        }
+    ],
+    "pollIntervalMs": 250
+}
+
+## Yellow RGB 94.0 g ± 0.5 g  →  3 kg precision (scale-3kg)
+$ POST /api/scales/scale-3kg/tare
+{"scaleId":"scale-3kg","tare":{"value":214.0,"unit":"g"},"taredAt":"2026-11-04T20:31:52.429395+00:00"}
+(simulator control: enterRange, target 94.0 g, tolerance 0.5 g)
+$ GET /api/scales/scale-3kg/weight   # pouring
+{"scaleId":"scale-3kg","net":{"value":55.3,"unit":"g"},"stable":false,"validity":"valid","readAt":"2026-11-04T20:31:54.490746+00:00","onlineSince":"2026-11-04T20:31:52.407172+00:00"}
+$ GET /api/scales/scale-3kg/weight   # settled
+{"scaleId":"scale-3kg","net":{"value":94.2,"unit":"g"},"stable":true,"validity":"valid","readAt":"2026-11-04T20:32:01.531584+00:00","onlineSince":"2026-11-04T20:31:52.407172+00:00"}
+
+## Sodium Sulphate 24.000 kg  →  32 kg floor (scale-32kg)
+$ POST /api/scales/scale-32kg/tare
+{"scaleId":"scale-32kg","tare":{"value":1.850,"unit":"kg"},"taredAt":"2026-11-04T20:32:01.547238+00:00"}
+(simulator control: rising, target 24.000 kg)
+$ GET /api/scales/scale-32kg/weight
+{"scaleId":"scale-32kg","net":{"value":24.000,"unit":"kg"},"stable":true,"validity":"valid","readAt":"2026-11-04T20:32:10.582777+00:00","onlineSince":"2026-11-04T20:31:52.408992+00:00"}
+
+## Scale offline (simulator fault on scale-3kg)
+$ GET /api/scales/scale-3kg/weight
+{"type":"Scale.Unavailable","title":"Scale 'scale-3kg' is offline.","status":503,"detail":"Scale 'scale-3kg' is offline.","traceId":"00-bfb7346ecfae7ea8b56ce1e9b63efbdf-9ac4df9569b8c6d9-01","errorCode":"Scale.Unavailable"}   HTTP 503
+$ GET /api/devices/health
+{
+    "items": [
+        {
+            "device": "scale-3kg",
+            "kind": "scale",
+            "status": "offline",
+            "since": "2026-11-04T20:32:10.620582+00:00"
+        },
+        {
+            "device": "scale-32kg",
+            "kind": "scale",
+            "status": "ready",
+            "since": "2026-11-04T20:31:52.408992+00:00"
+        },
+        {
+            "device": "scanner",
+            "kind": "scanner",
+            "status": "ready",
+            "since": "2026-11-04T20:32:10.645093+00:00"
+        },
+        {
+            "device": "printer",
+            "kind": "printer",
+            "status": "ready",
+            "since": "2026-11-04T20:32:10.647683+00:00"
+        },
+        {
+            "device": "orgatex",
+            "kind": "orgatex",
+            "status": "ready",
+            "since": "2026-11-04T20:32:10.650891+00:00"
+        }
+    ]
+}

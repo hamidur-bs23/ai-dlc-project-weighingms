@@ -30,8 +30,13 @@ internal static class IntegrationsRegistration
         return services;
     }
 
+    /// <summary>
+    /// Resilience waits (attempt timeout, retry delay, circuit break) are wall-clock waits on I/O, so they always use the
+    /// real clock (<see cref="TimeProvider.System"/>), independent of the application's injected business clock.
+    /// </summary>
     private static void Configure(ResiliencePipelineBuilder<HttpResponseMessage> builder, SimulatorIntegrationOptions options)
     {
+        builder.TimeProvider = TimeProvider.System;
         builder.AddRetry(new HttpRetryStrategyOptions
         {
             MaxRetryAttempts = 1,

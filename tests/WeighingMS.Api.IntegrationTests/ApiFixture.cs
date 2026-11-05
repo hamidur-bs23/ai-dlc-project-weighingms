@@ -84,13 +84,17 @@ public sealed class ApiFixture : IAsyncLifetime
     public WeighingDbContext NewDbContext() =>
         new(new DbContextOptionsBuilder<WeighingDbContext>().UseNpgsql(ConnectionString).UseSnakeCaseNamingConvention().Options);
 
-    /// <summary>Creates an Api host on the test database. <paramref name="settings"/> overrides configuration.</summary>
-    public WebApplicationFactory<Program> CreateApi(IDictionary<string, string?>? settings = null) =>
+    /// <summary>
+    /// Creates an Api host on the test database. <paramref name="settings"/> overrides configuration;
+    /// <paramref name="simulator"/>, if given, receives every outgoing device call (typed HttpClients).
+    /// </summary>
+    public WebApplicationFactory<Program> CreateApi(IDictionary<string, string?>? settings = null, SimulatorHost? simulator = null) =>
         new WebApplicationFactory<Program>().WithWebHostBuilder(b =>
         {
             b.UseEnvironment("Test");
             b.UseSetting("ConnectionStrings:Db", ConnectionString);
             b.UseSetting("RateLimits:AuthPermitLimitPerMinute", "1000");
+            b.UseSetting("Integrations:Simulators:CircuitBreakerMinimumThroughput", "1000");
             foreach (var (key, value) in settings ?? new Dictionary<string, string?>())
             {
                 b.UseSetting(key, value);
@@ -100,6 +104,11 @@ public sealed class ApiFixture : IAsyncLifetime
             {
                 services.RemoveAll<TimeProvider>();
                 services.AddSingleton<TimeProvider>(_ => Clock);
+                if (simulator is not null)
+                {
+                    services.ConfigureAll<Microsoft.Extensions.Http.HttpClientFactoryOptions>(o =>
+                        o.HttpMessageHandlerBuilderActions.Add(h => h.PrimaryHandler = simulator.Server.CreateHandler()));
+                }
             });
         });
 

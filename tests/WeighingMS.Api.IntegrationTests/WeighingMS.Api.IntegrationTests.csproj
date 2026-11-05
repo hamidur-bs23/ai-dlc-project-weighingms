@@ -5,10 +5,13 @@
     <PackageReference Include="Microsoft.Extensions.TimeProvider.Testing" />
     <PackageReference Include="Testcontainers.PostgreSql" />
     <PackageReference Include="Respawn" />
+    <PackageReference Include="OpenTelemetry.Exporter.InMemory" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="../../src/WeighingMS.Api/WeighingMS.Api.csproj" />
+    <!-- The dummies run in-process; aliased because both hosts define a global Program type. -->
+    <ProjectReference Include="../../src/WeighingMS.Simulators.Host/WeighingMS.Simulators.Host.csproj" Aliases="sim" />
   </ItemGroup>
 
 </Project>

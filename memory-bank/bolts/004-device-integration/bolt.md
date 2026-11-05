@@ -14,11 +14,14 @@ stories:
 created: 2026-11-04T17:00:00Z
 started: 2026-11-04T21:50:00Z
 completed: null
-current_stage: implement
+current_stage: test
 stages_completed:
   - name: plan
     completed: 2026-11-04T22:10:00Z
     artifact: implementation-plan.md
+  - name: implement
+    completed: 2026-11-04T22:25:00Z
+    artifact: implementation-walkthrough.md
 
 requires_bolts: [001-station-simulators, 002-station-simulators]
 enables_bolts: [005-batch-recipe, 006-assisted-weighing-station-ui, 007-weighing-station]
@@ -61,8 +64,8 @@ Story files: `memory-bank/intents/001-assisted-weighing-station/units/004-device
 ## Stages
 
 - ✅ **1. plan**: Complete → implementation-plan.md
-- ⏳ **2. implement**: In Progress → src/
-- [ ] **3. test**: Pending → test-report.md
+- ✅ **2. implement**: Complete → src/, implementation-walkthrough.md
+- ⏳ **3. test**: In Progress → test-walkthrough.md
 
 Every stage stops at a human validation checkpoint (workbook STEP 15, CHECKPOINT 5).
 

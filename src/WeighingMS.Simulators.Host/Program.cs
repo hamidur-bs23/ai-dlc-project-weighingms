@@ -50,12 +50,12 @@ builder.Services
 builder.Services.AddProblemDetails();
 builder.Services.AddOpenApi();
 
-// OpenTelemetry (OTEL-TIMING): the Api's W3C trace context continues here; healthy weight polls are not traced.
+// OpenTelemetry (OTEL-TIMING): the Api's W3C trace context continues here; healthy weight polls are dropped after
+// they finish, failed ones stay traced.
 // Export only when OTEL_EXPORTER_OTLP_ENDPOINT is set.
 var telemetry = builder.Services.AddOpenTelemetry()
     .ConfigureResource(r => r.AddService("weighingms-simulators"))
-    .WithTracing(t => t.AddAspNetCoreInstrumentation(o => o.Filter = ctx =>
-        !(HttpMethods.IsGet(ctx.Request.Method) && ctx.Request.Path.Value?.EndsWith("/weight", StringComparison.Ordinal) == true)))
+    .WithTracing(t => t.AddAspNetCoreInstrumentation().AddProcessor(new HealthyWeightPollFilter()))
     .WithMetrics(m => m.AddAspNetCoreInstrumentation().AddRuntimeInstrumentation());
 if (!string.IsNullOrWhiteSpace(builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"]))
 {

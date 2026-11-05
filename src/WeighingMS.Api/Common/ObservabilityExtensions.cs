@@ -9,7 +9,8 @@ namespace WeighingMS.Api.Common;
 
 /// <summary>
 /// OpenTelemetry for WeighingMS.Api (tech-stack → Observability; decision OTEL-TIMING). Traces cover ASP.NET Core,
-/// HttpClient (W3C trace context flows to the simulator) and Npgsql; healthy weight polls are not traced. Export
+/// HttpClient (W3C trace context flows to the simulator) and Npgsql; healthy weight polls are dropped after
+/// they finish (<see cref="HealthyWeightPollFilter"/>), failed ones keep their trace. Export
 /// is enabled only when <c>OTEL_EXPORTER_OTLP_ENDPOINT</c> is set.
 /// </summary>
 public static class ObservabilityExtensions
@@ -24,9 +25,10 @@ public static class ObservabilityExtensions
             .ConfigureResource(r => r.AddService(ServiceName))
             .WithTracing(t => t
                 .AddSource(WmsTelemetry.Name)
-                .AddAspNetCoreInstrumentation(o => o.Filter = ctx => !IsWeightPoll(ctx.Request.Method, ctx.Request.Path.Value))
-                .AddHttpClientInstrumentation(o => o.FilterHttpRequestMessage = r => !IsWeightPoll(r.Method.Method, r.RequestUri?.AbsolutePath))
-                .AddNpgsql())
+                .AddAspNetCoreInstrumentation()
+                .AddHttpClientInstrumentation()
+                .AddNpgsql()
+                .AddProcessor(new HealthyWeightPollFilter()))
             .WithMetrics(m => m
                 .AddMeter(WmsTelemetry.Name)
                 .AddAspNetCoreInstrumentation()
