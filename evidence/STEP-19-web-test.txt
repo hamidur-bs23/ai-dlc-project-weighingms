@@ -1,0 +1,95 @@
+$ npm run test:web -- --reporters=verbose
+Application bundle generation complete. [0.735 seconds] - 2026-11-05T17:00:43.570Z
+
+
+ RUN  v5.1.0 /Users/bs01368/hamidpioneer/Projects/weighingms/web
+
+ ✓  web  src/app/core/clock/plant-clock.service.spec.ts > PlantClockService > should show the Api time in the plant time zone, not the terminal time 80ms
+ ✓  web  src/app/core/clock/plant-clock.service.spec.ts > PlantClockService > should tick every second 11ms
+ ✓  web  src/app/core/devices/device-health.service.spec.ts > DeviceHealthService > should list every device with its scale name and state 43ms
+ ✓  web  src/app/core/devices/device-health.service.spec.ts > DeviceHealthService > should show a faulted device as offline on the next poll 6ms
+ ✓  web  src/app/core/devices/device-health.service.spec.ts > DeviceHealthService > should never claim ready when the Api cannot be reached 2ms
+ ✓  web  src/app/core/devices/device-health.service.spec.ts > DeviceHealthService > should stop polling and clear the strip on stop 14ms
+ ✓  web  src/app/core/clock/plant-clock.service.spec.ts > PlantClockService > should format any instant as plant time 27ms
+ ✓  web  src/app/core/clock/plant-clock.service.spec.ts > PlantClockService > should show no clock rather than a wrong one when the station cannot be read 5ms
+ ✓  web  src/app/core/auth/session.service.spec.ts > SessionService > should restore the session from the cookie 71ms
+ ✓  web  src/app/core/auth/session.service.spec.ts > SessionService > should treat 401 on restore as no session, not an error 4ms
+ ✓  web  src/app/core/auth/session.service.spec.ts > SessionService > should sign in with the badge and shift 4ms
+ ✓  web  src/app/core/auth/session.service.spec.ts > SessionService > should fetch the XSRF cookie first if start-up could not 4ms
+ ✓  web  src/app/core/auth/session.service.spec.ts > SessionService > should forget the session on sign-out even if the Api fails 4ms
+ ✓  web  src/app/core/scanner/scanner.service.spec.ts > ScannerService > should skip scans made before it started and deliver each later scan once, in order 5ms
+ ✓  web  src/app/core/scanner/scanner.service.spec.ts > ScannerService > should keep polling when the scanner is offline, and prime once it is back 3ms
+ ✓  web  src/app/core/scanner/scanner.service.spec.ts > ScannerService > should ignore blank codes 1ms
+ ✓  web  src/app/core/scanner/scanner.service.spec.ts > ScannerService > should stop polling when unsubscribed 1ms
+ ✓  web  src/app/core/keyboard/function-keys.service.spec.ts > FunctionKeysService > should run the action the current screen registered for the key 1ms
+ ✓  web  src/app/core/auth/station-startup.spec.ts > stationStartup > should fetch the XSRF cookie, then restore the session 2ms
+ ✓  web  src/app/core/auth/station-startup.spec.ts > stationStartup > should still open the station (on sign-in) when the Api is unreachable 3ms
+ ✓  web  src/app/core/errors/error.interceptor.spec.ts > errorInterceptor > should map ProblemDetails to the error code, status and trace id 4ms
+ ✓  web  src/app/core/errors/error.interceptor.spec.ts > errorInterceptor > should map a body without an error code to Unknown 3ms
+ ✓  web  src/app/core/errors/error.interceptor.spec.ts > errorInterceptor > should map an unreachable Api to Network.Unavailable 4ms
+ ✓  web  src/app/core/errors/error.interceptor.spec.ts > errorInterceptor > should end the session and go to sign-in on a 401 from another endpoint 3ms
+ ✓  web  src/app/core/errors/error.interceptor.spec.ts > errorInterceptor > should leave a 401 from the session endpoint to the caller 3ms
+ ✓  web  src/app/core/keyboard/function-keys.service.spec.ts > FunctionKeysService > should ignore keys no screen uses, and let the browser have them 0ms
+ ✓  web  src/app/core/keyboard/function-keys.service.spec.ts > FunctionKeysService > should not run a disabled action 1ms
+ ✓  web  src/app/core/keyboard/function-keys.service.spec.ts > FunctionKeysService > should ignore modified keys and other keys 0ms
+ ✓  web  src/app/core/keyboard/function-keys.service.spec.ts > FunctionKeysService > should drop the action when its screen is destroyed 0ms
+ ✓  web  src/app/core/keyboard/function-keys.service.spec.ts > FunctionKeysService > should keep the newer screen action when an older screen is destroyed 0ms
+ ✓  web  src/app/core/errors/app-error.spec.ts > AppError > should take the ref from the trace-id part of a W3C trace context 0ms
+ ✓  web  src/app/core/errors/app-error.spec.ts > AppError > should take the first 8 characters of any other trace id 0ms
+ ✓  web  src/app/core/errors/app-error.spec.ts > AppError > should have no ref without a trace id 0ms
+ ✓  web  src/app/core/errors/app-error.spec.ts > AppError > should turn anything that is not an AppError into an unknown error 0ms
+ ✓  web  src/app/core/errors/app-error.spec.ts > AppError > should pass an AppError through unchanged 0ms
+ ✓  web  src/app/core/format/weight.pipe.spec.ts > WeightPipe > should show { value: 94, unit: 'g' } as 94.0 g 0ms
+ ✓  web  src/app/core/format/weight.pipe.spec.ts > WeightPipe > should show { value: 1240, unit: 'g' } as 1240.0 g 0ms
+ ✓  web  src/app/core/format/weight.pipe.spec.ts > WeightPipe > should show { value: 24, unit: 'kg' } as 24.000 kg 0ms
+ ✓  web  src/app/core/format/weight.pipe.spec.ts > WeightPipe > should show { value: 9.6, unit: 'kg' } as 9.600 kg 0ms
+ ✓  web  src/app/core/format/weight.pipe.spec.ts > WeightPipe > should use the decimals given for the active scale 0ms
+ ✓  web  src/app/core/format/weight.pipe.spec.ts > WeightPipe > should show a dash when there is no quantity 0ms
+ ✓  web  src/app/core/auth/auth.guards.spec.ts > station guards > should send a station without a session to sign-in 3ms
+ ✓  web  src/app/core/auth/auth.guards.spec.ts > station guards > should let a signed-in operator in, and skip sign-in for them 1ms
+ ✓  web  src/app/shared/ui/banner/banner.component.spec.ts > BannerComponent > should show the translated message for the code and the Ref, never raw detail 117ms
+ ✓  web  src/app/shared/ui/banner/banner.component.spec.ts > BannerComponent > should fall back to the generic message for a code without a translation 8ms
+ ✓  web  src/app/shared/ui/banner/banner.component.spec.ts > BannerComponent > should emit retry when Retry is touched 31ms
+ ✓  web  src/app/shared/ui/banner/banner.component.spec.ts > BannerComponent > should show an info message as a status, not an alert 5ms
+ ✓  web  src/app/features/shell/status-strip.component.spec.ts > StatusStripComponent > should list both scales, the scanner, the printer and OrgaTEX with their state in text 134ms
+ ✓  web  src/app/features/shell/status-strip.component.spec.ts > StatusStripComponent > should show the language and the plant-time clock 15ms
+ ✓  web  src/app/features/shell/status-strip.component.spec.ts > StatusStripComponent > should follow device changes 14ms
+ ✓  web  src/app/app.component.spec.ts > App (station shell) > should show the top bar, the screen and the status strip 121ms
+ ✓  web  src/app/features/batch-opened/batch-opened.component.spec.ts > BatchOpenedComponent > should load only the recipe when opened from the queue (the STEP 19 third call) 155ms
+ ✓  web  src/app/features/batch-opened/batch-opened.component.spec.ts > BatchOpenedComponent > should fetch the batch header first after a reload 10ms
+ ✓  web  src/app/features/batch-opened/batch-opened.component.spec.ts > BatchOpenedComponent > should offer Retry when OrgaTEX is down for a batch not yet snapshotted 28ms
+ ✓  web  src/app/features/batch-opened/batch-opened.component.spec.ts > BatchOpenedComponent > should not offer Retry for a batch that does not exist 6ms
+ ✓  web  src/app/features/batch-opened/batch-opened.component.spec.ts > BatchOpenedComponent > should go back to the queue and clear the open batch 14ms
+ ✓  web  src/app/features/shell/top-bar.component.spec.ts > TopBarComponent > should show WeighingMS, the station and the operator chip with name and shift 114ms
+ ✓  web  src/app/features/shell/top-bar.component.spec.ts > TopBarComponent > should show the BATCH · ORDER · MACHINE crumb only while a batch is open 10ms
+ ✓  web  src/app/features/shell/top-bar.component.spec.ts > TopBarComponent > should sign out from the operator chip and return to sign-in 86ms
+ ✓  web  src/app/features/shell/top-bar.component.spec.ts > TopBarComponent > should close the operator menu with Escape 15ms
+ ✓  web  src/app/app.component.spec.ts > App (station shell) > should poll device health and read the plant clock only while signed in 137ms
+ ✓  web  src/app/app.component.spec.ts > App (station shell) > should forward function keys to the current screen 5ms
+ ✓  web  src/app/features/batch-queue/batch-queue.component.spec.ts > BatchQueueComponent (screen 1 · Select batch) > should show the scan prompt and the queue from GET /api/batches with every column 176ms
+ ✓  web  src/app/features/batch-queue/batch-queue.component.spec.ts > BatchQueueComponent (screen 1 · Select batch) > should label every status in text, never by colour alone 16ms
+ ✓  web  src/app/features/batch-queue/batch-queue.component.spec.ts > BatchQueueComponent (screen 1 · Select batch) > should show only what the Api sends: a batch removed upstream is not on screen 11ms
+ ✓  web  src/app/features/sign-in/sign-in.component.spec.ts > SignInComponent > should open the batch queue for a known badge 226ms
+ ✓  web  src/app/features/sign-in/sign-in.component.spec.ts > SignInComponent > should show a translated error with Ref for an unknown badge, and stay 50ms
+ ✓  web  src/app/features/sign-in/sign-in.component.spec.ts > SignInComponent > should ask for a badge instead of calling the Api with an empty one 19ms
+ ✓  web  src/app/features/batch-queue/batch-queue.component.spec.ts > BatchQueueComponent (screen 1 · Select batch) > should open a touched batch after checking it with GET /api/batches/{id} 75ms
+ ✓  web  src/app/features/batch-queue/batch-queue.component.spec.ts > BatchQueueComponent (screen 1 · Select batch) > should open a batch from the keyboard too 81ms
+ ✓  web  src/app/features/sign-in/sign-in.component.spec.ts > SignInComponent > should sign in with F1, the key labelled on OK 71ms
+ ✓  web  src/app/features/batch-queue/batch-queue.component.spec.ts > BatchQueueComponent (screen 1 · Select batch) > should open a scanned batch ID 59ms
+ ✓  web  src/app/features/batch-queue/batch-queue.component.spec.ts > BatchQueueComponent (screen 1 · Select batch) > should show "not found" for an unknown scanned ID and stay on the queue 16ms
+ ✓  web  src/app/features/batch-queue/batch-queue.component.spec.ts > BatchQueueComponent (screen 1 · Select batch) > should offer Retry when a batch cannot be opened because OrgaTEX is down 69ms
+ ✓  web  src/app/features/batch-queue/batch-queue.component.spec.ts > BatchQueueComponent (screen 1 · Select batch) > should ignore a second selection while one is opening 60ms
+ ✓  web  src/app/features/batch-queue/batch-queue.component.spec.ts > BatchQueueComponent (screen 1 · Select batch) > should offer Retry when OrgaTEX is down, and load the queue once it is back 21ms
+ ✓  web  src/app/features/batch-queue/batch-queue.component.spec.ts > BatchQueueComponent (screen 1 · Select batch) > should say so when no batches are released 5ms
+
+ Test Files  17 passed (17)
+      Tests  77 passed (77)
+   Start at  23:00:43
+   Duration  1.56s (environment 51%, tests 17%, setup 14%, import 11%, transform 6%, worker 1%)
+
+
+$ npm run lint  (ESLint incl. wms/no-batch-literals, Stylelint, rule self-check)
+Linting "web"...
+All files pass linting.
+ok   src/app/lint-fixture.ts: 1 batch-literal error(s), expected ≥ 1
+ok   src/app/lint-fixture.spec.ts: 0 batch-literal error(s), expected 0
