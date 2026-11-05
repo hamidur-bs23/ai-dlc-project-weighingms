@@ -86,9 +86,10 @@ public sealed class ApiFixture : IAsyncLifetime
 
     /// <summary>
     /// Creates an Api host on the test database. <paramref name="settings"/> overrides configuration;
-    /// <paramref name="simulator"/>, if given, receives every outgoing device call (typed HttpClients).
+    /// <paramref name="simulator"/>, if given, receives every outgoing device call (typed HttpClients);
+    /// <paramref name="services"/> adds or replaces services (for example a test <c>IBatchCompletedHandler</c>).
     /// </summary>
-    public WebApplicationFactory<Program> CreateApi(IDictionary<string, string?>? settings = null, SimulatorHost? simulator = null) =>
+    public WebApplicationFactory<Program> CreateApi(IDictionary<string, string?>? settings = null, SimulatorHost? simulator = null, Action<IServiceCollection>? services = null) =>
         new WebApplicationFactory<Program>().WithWebHostBuilder(b =>
         {
             b.UseEnvironment("Test");
@@ -100,15 +101,17 @@ public sealed class ApiFixture : IAsyncLifetime
                 b.UseSetting(key, value);
             }
 
-            b.ConfigureTestServices(services =>
+            b.ConfigureTestServices(collection =>
             {
-                services.RemoveAll<TimeProvider>();
-                services.AddSingleton<TimeProvider>(_ => Clock);
+                collection.RemoveAll<TimeProvider>();
+                collection.AddSingleton<TimeProvider>(_ => Clock);
                 if (simulator is not null)
                 {
-                    services.ConfigureAll<Microsoft.Extensions.Http.HttpClientFactoryOptions>(o =>
+                    collection.ConfigureAll<Microsoft.Extensions.Http.HttpClientFactoryOptions>(o =>
                         o.HttpMessageHandlerBuilderActions.Add(h => h.PrimaryHandler = simulator.Server.CreateHandler()));
                 }
+
+                services?.Invoke(collection);
             });
         });
 

@@ -1,0 +1,85 @@
+WeighingMS - workbook STEP 24: overshoot implementation tests (bolt 009, test stage)
+Run: 2026-11-05T18:59:03Z - xUnit v3 + Shouldly on Microsoft.Testing.Platform
+
+Decision (PD-05, option 1, evidence/STEP-24-overshoot-decision.md):
+  an overweight component remains unconfirmed; the operator brings it back into range, quits and
+  re-weighs, or obtains a supervisor override (badge + PIN of another supervisor, reason), which
+  records the true class (Overweight), the surplus and OVR. No surplus limit; no recalculation.
+
+Flow: observed problem -> business rule -> implementation -> test
+
+== 1. Domain: overshoot rule, recovery paths, override rules, surplus
+$ dotnet test --project tests/WeighingMS.Domain.Tests --filter-class "*OvershootAndOverrideTests" --output Detailed
+  PASS Override_BlockedTolerance_IsNotPossible
+  PASS Override_BySameBadgeAsTheOperator_IsFourEyes
+  PASS Override_InRange_IsNotNeeded(grams: 93.5)
+  PASS Override_InRange_IsNotNeeded(grams: 94)
+  PASS Override_InRange_IsNotNeeded(grams: 94.5)
+  PASS Override_NoUsableReading_IsRejected
+  PASS Override_NotActiveOrDoneOrUnknown_IsRejected
+  PASS Override_ReasonUpTo500Characters_IsAcceptedAndLongerIsNot
+  PASS Override_StillNeedsLotContainerTareAndAStableReading
+  PASS Override_WithoutReason_ChangesNothing(reason: "   ")
+  PASS Override_WithoutReason_ChangesNothing(reason: "")
+  PASS Override_WithoutReason_ChangesNothing(reason: null)
+  PASS Overshoot_BlocksConfirmAndReportsTheSurplusAgainstTheTarget
+  PASS Overshoot_BroughtBackIntoRange_IsConfirmedNormally
+  PASS Overshoot_LargeSurplus_CanStillBeOverridden
+  PASS Overshoot_NeverChangesAnotherComponentsTarget
+  PASS Overshoot_Override_RecordsTrueClassSurplusAndOvr
+  PASS Overshoot_QuitAndReWeigh_StartsAFreshAttemptWithNoRecord
+  PASS Surplus_IsAgainstTheTargetAsAPercentOfTarget(target: 420, net: 429.6, amount: 9.6, percent: 2.3)
+  PASS Surplus_IsAgainstTheTargetAsAPercentOfTarget(target: 94, net: 94.6, amount: 0.6, percent: 0.6)
+  PASS Surplus_IsAgainstTheTargetAsAPercentOfTarget(target: 94, net: 96.4, amount: 2.4, percent: 2.6)
+  PASS Surplus_OnTheFloorScale_IsInKilograms
+  PASS Surplus_OnlyForOverweight
+  PASS Underweight_Override_RecordsUnderweightWithoutSurplus
+
+== 2. Domain: completion (only when all N are recorded) and the frozen session
+$ dotnet test --project tests/WeighingMS.Domain.Tests --filter-class "*CompletionTests" --output Detailed
+  PASS Complete_WhenAlreadyComplete_IsIdempotent
+  PASS Complete_WhileAnyIsPending_IsIncomplete
+  PASS CompletedSession_IsFrozen
+  PASS LastRecord_ByOverride_AlsoCompletes
+  PASS LastRecord_CompletesTheBatchAutomaticallyAndRaisesBatchCompletedOnce
+
+== 3. Application: override grant flow (checked first, consumed with the record), completion handlers, summary
+$ dotnet test --project tests/WeighingMS.Application.Tests --filter-class "*WeighingOutcomeServiceTests" --output Detailed
+  PASS Complete_AfterAutoCompletion_ReturnsTheSummaryWithoutSavingAgain
+  PASS Complete_WhilePending_IsIncomplete
+  PASS LastConfirm_CompletesAndCallsTheHandlersBeforeTheSave
+  PASS ListCompleted_IsNewestFirstPagedBy20
+  PASS Override_FixableRejection_LeavesTheGrantUnused(reason: "", code: "Request.Invalid")
+  PASS Override_FixableRejection_LeavesTheGrantUnused(reason: "ok", code: "Weighing.OverrideNotNeeded")
+  PASS Override_NoSession_IsNotFound
+  PASS Override_NotActiveComponent_IsRejectedBeforeTheGrantIsLookedAt
+  PASS Override_Overweight_RecordsOvrAndConsumesTheGrantInTheSameSave
+  PASS Override_SupervisorIsTheOperator_IsFourEyesAndTheGrantStaysUnused
+  PASS Override_UnknownUsedExpiredOrOtherActionGrant_IsGrantInvalidWithoutReadingTheScale
+  PASS Summary_OfTheMockupBatch_MatchesViewThree
+  PASS Summary_WithAnOverride_IsNotAllWithinToleranceAndCountsIt
+
+== 4. Api (PostgreSQL 17 + in-process simulator): overshoot, override, completion transaction, summary, review
+$ dotnet test --project tests/WeighingMS.Api.IntegrationTests --filter-class "*WeighingOutcomeEndpointsTests" --output Detailed
+  PASS CompletedBatch_IsFrozen
+  PASS Completion_AFailingHandler_RollsBackTheLastRecordAndTheCompletion
+  PASS Completion_HandlersRunInsideTheCompletingTransaction
+  PASS Completion_WhilePending_Is409AndTheLastConfirmCompletesAutomatically
+  PASS Migration_IsApplied
+  PASS Override_FixableRejection_LeavesTheGrantForTheNextTry
+  PASS Override_InRange_Is409UseConfirm
+  PASS Override_SixConcurrentRequestsWithOneGrant_WriteOneRecord (1s 329ms)
+  PASS Override_SupervisorSignedInAsTheOperator_Is403FourEyes
+  PASS Override_WithoutGrantId_Is422
+  PASS Override_WrongPin_NoGrantAndNothingChanges
+  PASS ReviewList_ShowsCompletedBatchesNewestFirst
+  PASS Step24_OtherTargetsAreUnchangedAfterAnOvershootAndOverride
+  PASS Step24_Override_RecordsOverweightSurplusAndOvrAndUsesTheGrantOnce
+  PASS Step24_Overshoot_IsBlockedWithTheSurplusAndOverrideOffered
+  PASS Summary_AfterCompletion_ShowsViewThreeAndSurvivesARestart
+
+== Whole solution
+$ dotnet test --solution WeighingMS.sln
+  total: 582
+  failed: 0
+  succeeded: 582
