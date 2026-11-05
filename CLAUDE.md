@@ -41,7 +41,7 @@ Working now (after bolt 006 Implement):
 | Start Postgres for dev | `docker compose up -d postgres` (needs `.env`; copy `.env.example`). Host port **5433** (`POSTGRES_PORT`) |
 | Simulators in a container | `docker compose --profile full up --wait` |
 
-Lab users (Development seed, `appsettings.Development.json`): operators `OP-1001` (R. Karim) and `OP-1002`, supervisor `SV-2001` (PIN in that file). Api session endpoints: `GET /api/antiforgery` → `POST|GET|DELETE /api/session`, `POST /api/session/step-up`, `GET /api/station`; state-changing calls need the `X-XSRF-TOKEN` header.
+Lab users (Development seed, `appsettings.Development.json`): operators `OP-1001` (R. Karim) and `OP-1002`, supervisor `SV-2001` (PIN in that file). Api session endpoints: `GET /api/antiforgery` → `POST|GET|DELETE /api/session`, `POST /api/session/step-up`, `GET /api/station`; state-changing calls need the `X-XSRF-TOKEN` header. Weighing session (bolt 007): `POST|GET /api/batches/{id}/session` (start 201 / resume 200), `POST /api/batches/{id}/session/selection {"sequence":n}`, `GET /api/batches/{id}/session/reading` (active component's own scale, classified). Scale selection is configured in `Weighing:ScaleSelection` (Api appsettings).
 
 Planned (added by later bolts): `npx playwright test` (bolt 014), `docker compose --profile observability up -d` (observability bolt).
 

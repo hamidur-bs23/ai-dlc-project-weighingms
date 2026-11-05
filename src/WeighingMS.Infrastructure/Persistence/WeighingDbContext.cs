@@ -3,6 +3,7 @@ using WeighingMS.Application.Abstractions;
 using WeighingMS.Domain.Access;
 using WeighingMS.Domain.Audit;
 using WeighingMS.Domain.Batches;
+using WeighingMS.Domain.Weighing;
 
 namespace WeighingMS.Infrastructure.Persistence;
 
@@ -20,6 +21,9 @@ public sealed class WeighingDbContext(DbContextOptions<WeighingDbContext> option
 
     /// <summary>Recipe snapshots (one per batch, immutable).</summary>
     public DbSet<RecipeSnapshot> RecipeSnapshots => Set<RecipeSnapshot>();
+
+    /// <summary>Weighing sessions (one per batch).</summary>
+    public DbSet<WeighingSession> WeighingSessions => Set<WeighingSession>();
 
     /// <summary>Append-only audit trail.</summary>
     public DbSet<AuditEntry> AuditEntries => Set<AuditEntry>();

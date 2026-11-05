@@ -4,10 +4,12 @@ using Microsoft.Extensions.DependencyInjection;
 using WeighingMS.Application.Abstractions;
 using WeighingMS.Application.Access;
 using WeighingMS.Application.Batches;
+using WeighingMS.Application.Weighing;
 using WeighingMS.Infrastructure.Access;
 using WeighingMS.Infrastructure.Batches;
 using WeighingMS.Infrastructure.Integrations;
 using WeighingMS.Infrastructure.Persistence;
+using WeighingMS.Infrastructure.Weighing;
 
 namespace WeighingMS.Infrastructure;
 
@@ -29,6 +31,8 @@ public static class DependencyInjection
         services.AddScoped<DevelopmentUserSeeder>();
         services.AddScoped<IRecipeSnapshotStore, RecipeSnapshotStore>();
         services.AddSingleton<IToleranceCatalogue, ToleranceCatalogue>();
+        services.AddScoped<IWeighingSessionRepository, WeighingSessionRepository>();
+        services.AddSingleton<IScaleSelectionSource, ScaleSelectionSource>();
         services.AddDeviceIntegrations(configuration);
         return services;
     }

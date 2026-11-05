@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using WeighingMS.Application.Access;
 using WeighingMS.Application.Batches;
 using WeighingMS.Application.Devices;
+using WeighingMS.Application.Weighing;
 
 namespace WeighingMS.Application;
 
@@ -17,6 +18,7 @@ public static class DependencyInjection
         services.AddSingleton<DeviceHealthTracker>();
         services.AddScoped<DeviceService>();
         services.AddScoped<BatchService>();
+        services.AddScoped<WeighingSessionService>();
         return services;
     }
 }

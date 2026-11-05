@@ -26,6 +26,36 @@ public sealed record Quantity
     /// <summary>The amount in kilograms (exact decimal conversion).</summary>
     public decimal InKilograms => Unit == MassUnit.Gram ? Value / 1000m : Value;
 
+    /// <summary>Creates a quantity from a value and a known unit.</summary>
+    public static Quantity Of(decimal value, MassUnit unit) => new(value, unit);
+
+    /// <summary>The same mass in another unit (exact: 1 kg = 1000 g).</summary>
+    public Quantity ConvertTo(MassUnit unit)
+    {
+        if (unit == Unit)
+        {
+            return this;
+        }
+
+        return new Quantity(unit == MassUnit.Gram ? Value * 1000m : Value / 1000m, unit);
+    }
+
+    /// <summary>
+    /// Rounds to a whole number of <paramref name="step"/>s (a scale resolution), half away from zero
+    /// (decision WEIGH-ROUNDING: 93.45 g on a 0.1 g scale is 93.5 g, as the indicator shows it). Keeps this unit.
+    /// </summary>
+    public Quantity RoundTo(Quantity step)
+    {
+        ArgumentNullException.ThrowIfNull(step);
+        var size = step.ConvertTo(Unit).Value;
+        if (size <= 0m)
+        {
+            throw new ArgumentOutOfRangeException(nameof(step), step, "A rounding step must be greater than zero.");
+        }
+
+        return new Quantity(Math.Round(Value / size, MidpointRounding.AwayFromZero) * size, Unit);
+    }
+
     /// <summary>Creates a quantity from a value and a unit symbol (<c>g</c> or <c>kg</c>).</summary>
     public static ErrorOr<Quantity> Create(decimal value, string? unitSymbol) =>
         ParseUnit(unitSymbol) is { } unit
@@ -42,6 +72,9 @@ public sealed record Quantity
 
         return Create(value, unitSymbol);
     }
+
+    /// <summary>The symbol of a unit: <c>g</c> or <c>kg</c>.</summary>
+    public static string SymbolOf(MassUnit unit) => unit == MassUnit.Gram ? "g" : "kg";
 
     /// <summary>The unit for a symbol, or null if unknown.</summary>
     public static MassUnit? ParseUnit(string? symbol) => symbol?.Trim() switch

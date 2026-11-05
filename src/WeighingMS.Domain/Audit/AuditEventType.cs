@@ -38,4 +38,16 @@ public enum AuditEventType
 
     /// <summary>An OrgaTEX write-back reached "sync failed" (bolt 011).</summary>
     SyncFailed,
+
+    /// <summary>A weighing session was started for a batch (bolt 007).</summary>
+    WeighingSessionStarted,
+
+    /// <summary>An existing weighing session was opened again (bolt 007).</summary>
+    WeighingSessionResumed,
+
+    /// <summary>A component was selected for weighing (bolt 007).</summary>
+    ComponentSelected,
+
+    /// <summary>A weighing attempt was abandoned by switching component (bolt 007).</summary>
+    AttemptAbandoned,
 }

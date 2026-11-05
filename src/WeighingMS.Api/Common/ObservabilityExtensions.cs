@@ -47,6 +47,6 @@ public static class ObservabilityExtensions
     public static bool IsWeightPoll(string method, string? path) =>
         HttpMethods.IsGet(method)
         && path is not null
-        && path.StartsWith("/api/scales/", StringComparison.Ordinal)
-        && path.EndsWith("/weight", StringComparison.Ordinal);
+        && ((path.StartsWith("/api/scales/", StringComparison.Ordinal) && path.EndsWith("/weight", StringComparison.Ordinal))
+            || (path.StartsWith("/api/batches/", StringComparison.Ordinal) && path.EndsWith("/session/reading", StringComparison.Ordinal)));
 }
