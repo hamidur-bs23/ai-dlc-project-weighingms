@@ -1,0 +1,143 @@
+{
+  "_note": "Workbook STEP 25 - confirmation transaction. Live run of WeighingMS.Api (bolt 008) against the dummy scale, captured 2026-11-05T18:18:02Z (Development, spare ports). Training scenario B-24187 / Remazol Yellow RGB 94.0 g +/- 0.5 g on the 3 kg precision scale. Before this call: lot and container captured, tare taken through POST .../session/tare (214.0 g), scale settled at 94.2 g; the server read the scale itself (CONFIRM-SERVER-READ) and re-checked the confirm rule.",
+  "request": {
+    "method": "POST",
+    "url": "/api/batches/B-24187/session/confirmation",
+    "headers": {
+      "X-XSRF-TOKEN": "<antiforgery token>",
+      "Cookie": "<station session>"
+    },
+    "body": {
+      "sequence": 3
+    }
+  },
+  "response": {
+    "status": 201,
+    "location": "/api/batches/B-24187/session",
+    "body": {
+      "record": {
+        "recordId": "01a1acee-a1ea-7b4f-9eb5-361e4e1a9185",
+        "batchId": "B-24187",
+        "sequence": 3,
+        "chemicalId": "DYE-4471",
+        "chemicalName": "Remazol Yellow RGB",
+        "required": {
+          "value": 94.0,
+          "unit": "g"
+        },
+        "actual": {
+          "value": 94.2,
+          "unit": "g"
+        },
+        "class": "withinRange",
+        "tolerance": {
+          "plusMinus": {
+            "value": 0.5,
+            "unit": "g"
+          },
+          "source": "recipe"
+        },
+        "scaleId": "scale-3kg",
+        "scaleClass": "precision",
+        "lot": "2026-0387",
+        "container": "C-12",
+        "tare": {
+          "value": 214.0,
+          "unit": "g"
+        },
+        "operator": "OP-1001",
+        "confirmedAt": "2026-11-05T18:18:02.602428+00:00"
+      },
+      "session": {
+        "batchId": "B-24187",
+        "status": "inProgress",
+        "progress": {
+          "done": 1,
+          "total": 5
+        },
+        "suggestedSequence": 1,
+        "activeSequence": 4,
+        "readyToComplete": false,
+        "components": [
+          {
+            "sequence": 1,
+            "name": "Remazol Brill. Blue RSPL",
+            "state": "pending",
+            "record": null,
+            "attempt": null
+          },
+          {
+            "sequence": 2,
+            "name": "Remazol Red RB",
+            "state": "pending",
+            "record": null,
+            "attempt": null
+          },
+          {
+            "sequence": 3,
+            "name": "Remazol Yellow RGB",
+            "state": "done",
+            "record": {
+              "recordId": "01a1acee-a1ea-7b4f-9eb5-361e4e1a9185",
+              "actual": {
+                "value": 94.2,
+                "unit": "g"
+              },
+              "class": "withinRange",
+              "operator": "OP-1001",
+              "confirmedAt": "2026-11-05T18:18:02.602428+00:00"
+            },
+            "attempt": null
+          },
+          {
+            "sequence": 4,
+            "name": "Sodium Sulphate",
+            "state": "active",
+            "record": null,
+            "attempt": {
+              "lot": null,
+              "container": null,
+              "tare": null,
+              "taredAt": null
+            }
+          },
+          {
+            "sequence": 5,
+            "name": "Soda Ash",
+            "state": "pending",
+            "record": null,
+            "attempt": null
+          }
+        ]
+      }
+    }
+  },
+  "step25Fields": {
+    "actualWeight": {
+      "value": 94.2,
+      "unit": "g"
+    },
+    "operator": "OP-1001",
+    "component": {
+      "sequence": 3,
+      "chemicalId": "DYE-4471",
+      "name": "Remazol Yellow RGB"
+    },
+    "lot": "2026-0387",
+    "container": "C-12",
+    "tare": {
+      "value": 214.0,
+      "unit": "g"
+    },
+    "scale": "scale-3kg",
+    "timestamp": "2026-11-05T18:18:02.602428+00:00"
+  },
+  "repeatedRequest": {
+    "body": {
+      "sequence": 3
+    },
+    "status": 409,
+    "errorCode": "Weighing.AlreadyConfirmed",
+    "meaning": "double tap: one record only (A8)"
+  }
+}

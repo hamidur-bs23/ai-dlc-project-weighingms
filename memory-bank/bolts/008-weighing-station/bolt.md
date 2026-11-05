@@ -13,7 +13,7 @@ stories:
 created: 2026-11-04T17:00:00Z
 started: 2026-11-05T18:08:29Z
 completed: null
-current_stage: implement
+current_stage: test
 stages_completed:
   - name: model
     completed: '2026-11-05T18:20:00Z'
@@ -24,6 +24,9 @@ stages_completed:
   - name: adr
     completed: '2026-11-05T18:35:00Z'
     artifact: skipped (T1–T3 in decision-index)
+  - name: implement
+    completed: '2026-11-05T18:21:00Z'
+    artifact: implementation-walkthrough.md
 
 requires_bolts: [007-weighing-station]
 enables_bolts: [009-weighing-station]
@@ -67,8 +70,8 @@ Story files: `memory-bank/intents/001-assisted-weighing-station/units/005-weighi
 - ✅ **1. model**: Complete → ddd-01-domain-model.md
 - ✅ **2. design**: Complete → ddd-02-technical-design.md
 - ✅ **3. adr**: Skipped (approved; T1–T3 recorded in decision-index)
-- ⏳ **4. implement**: In Progress → implementation-walkthrough.md
-- [ ] **5. test**: Pending → ddd-03-test-report.md
+- ✅ **4. implement**: Complete → implementation-walkthrough.md
+- ⏳ **5. test**: In Progress → ddd-03-test-report.md
 
 Every stage stops at a human validation checkpoint (workbook STEP 15, CHECKPOINT 5).
 
