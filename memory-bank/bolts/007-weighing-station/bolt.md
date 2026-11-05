@@ -3,17 +3,17 @@ id: 007-weighing-station
 unit: 005-weighing-station
 intent: 001-assisted-weighing-station
 type: ddd-construction-bolt
-status: in-progress
+status: complete
 stories:
   - 001-start-or-resume-weighing-session
   - 002-select-pending-component
   - 003-automatic-scale-selection
   - 006-classify-reading-four-classes
   - 007-resolve-tolerance-source
-created: 2026-11-04T17:00:00Z
-started: 2026-11-05T17:29:20Z
-completed: null
-current_stage: test
+created: '2026-11-04T17:00:00Z'
+started: '2026-11-05T17:29:20Z'
+completed: '2026-11-05T18:07:04Z'
+current_stage: null
 stages_completed:
   - name: model
     completed: '2026-11-05T17:40:00Z'
@@ -27,12 +27,17 @@ stages_completed:
   - name: implement
     completed: '2026-11-05T17:56:00Z'
     artifact: implementation-walkthrough.md
-
-requires_bolts: [003-station-access, 004-device-integration, 005-batch-recipe]
-enables_bolts: [008-weighing-station]
-requires_units: [002-station-access, 003-batch-recipe, 004-device-integration]
+requires_bolts:
+  - 003-station-access
+  - 004-device-integration
+  - 005-batch-recipe
+enables_bolts:
+  - 008-weighing-station
+requires_units:
+  - 002-station-access
+  - 003-batch-recipe
+  - 004-device-integration
 blocks: true
-
 complexity:
   avg_complexity: 3
   avg_uncertainty: 1

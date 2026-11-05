@@ -2,12 +2,16 @@
 id: 006-classify-reading-four-classes
 unit: 005-weighing-station
 intent: 001-assisted-weighing-station
-status: draft
+status: complete
 priority: must
-requirements: [FR-9, FR-10, FR-11, FR-12]
-created: 2026-11-04T16:00:00Z
+requirements:
+  - FR-9
+  - FR-10
+  - FR-11
+  - FR-12
+created: '2026-11-04T16:00:00Z'
 assigned_bolt: 007-weighing-station
-implemented: false
+implemented: true
 ---
 
 # Story: 006-classify-reading-four-classes
