@@ -3,16 +3,16 @@ id: 009-weighing-station
 unit: 005-weighing-station
 intent: 001-assisted-weighing-station
 type: ddd-construction-bolt
-status: in-progress
+status: complete
 stories:
   - 010-overshoot-warn-and-block
   - 011-supervisor-override
   - 013-complete-batch-all-confirmed
   - 014-weighing-records-and-review
-created: 2026-11-04T17:00:00Z
-started: 2026-11-05T18:37:11Z
-completed: null
-current_stage: test
+created: '2026-11-04T17:00:00Z'
+started: '2026-11-05T18:37:11Z'
+completed: '2026-11-05T19:05:26Z'
+current_stage: null
 stages_completed:
   - name: model
     completed: '2026-11-05T18:50:00Z'
@@ -26,12 +26,15 @@ stages_completed:
   - name: implement
     completed: '2026-11-05T18:52:00Z'
     artifact: implementation-walkthrough.md
-
-requires_bolts: [003-station-access, 008-weighing-station]
-enables_bolts: [010-assisted-weighing-station-ui, 011-consumption-writeback, 012-ticket-printing]
+requires_bolts:
+  - 003-station-access
+  - 008-weighing-station
+enables_bolts:
+  - 010-assisted-weighing-station-ui
+  - 011-consumption-writeback
+  - 012-ticket-printing
 requires_units: []
 blocks: true
-
 complexity:
   avg_complexity: 3
   avg_uncertainty: 3

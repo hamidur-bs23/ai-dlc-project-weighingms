@@ -2,12 +2,13 @@
 id: 013-complete-batch-all-confirmed
 unit: 005-weighing-station
 intent: 001-assisted-weighing-station
-status: draft
+status: complete
 priority: must
-requirements: [FR-18]
-created: 2026-11-04T16:00:00Z
+requirements:
+  - FR-18
+created: '2026-11-04T16:00:00Z'
 assigned_bolt: 009-weighing-station
-implemented: false
+implemented: true
 ---
 
 # Story: 013-complete-batch-all-confirmed

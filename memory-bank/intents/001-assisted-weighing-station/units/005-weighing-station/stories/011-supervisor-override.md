@@ -2,12 +2,13 @@
 id: 011-supervisor-override
 unit: 005-weighing-station
 intent: 001-assisted-weighing-station
-status: draft
+status: complete
 priority: must
-requirements: [FR-15]
-created: 2026-11-04T16:00:00Z
+requirements:
+  - FR-15
+created: '2026-11-04T16:00:00Z'
 assigned_bolt: 009-weighing-station
-implemented: false
+implemented: true
 ---
 
 # Story: 011-supervisor-override
