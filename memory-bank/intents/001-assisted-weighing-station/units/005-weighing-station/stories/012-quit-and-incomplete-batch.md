@@ -2,12 +2,13 @@
 id: 012-quit-and-incomplete-batch
 unit: 005-weighing-station
 intent: 001-assisted-weighing-station
-status: draft
+status: complete
 priority: must
-requirements: [FR-14]
-created: 2026-11-04T16:00:00Z
+requirements:
+  - FR-14
+created: '2026-11-04T16:00:00Z'
 assigned_bolt: 008-weighing-station
-implemented: false
+implemented: true
 ---
 
 # Story: 012-quit-and-incomplete-batch

@@ -2,12 +2,14 @@
 id: 004-capture-lot-and-container
 unit: 005-weighing-station
 intent: 001-assisted-weighing-station
-status: draft
+status: complete
 priority: must
-requirements: [FR-5, FR-6]
-created: 2026-11-04T16:00:00Z
+requirements:
+  - FR-5
+  - FR-6
+created: '2026-11-04T16:00:00Z'
 assigned_bolt: 008-weighing-station
-implemented: false
+implemented: true
 ---
 
 # Story: 004-capture-lot-and-container

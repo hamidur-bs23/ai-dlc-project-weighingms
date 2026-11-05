@@ -2,12 +2,13 @@
 id: 009-progress-to-next-component
 unit: 005-weighing-station
 intent: 001-assisted-weighing-station
-status: draft
+status: complete
 priority: must
-requirements: [FR-17]
-created: 2026-11-04T16:00:00Z
+requirements:
+  - FR-17
+created: '2026-11-04T16:00:00Z'
 assigned_bolt: 008-weighing-station
-implemented: false
+implemented: true
 ---
 
 # Story: 009-progress-to-next-component

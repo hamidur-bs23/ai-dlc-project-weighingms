@@ -3,17 +3,17 @@ id: 008-weighing-station
 unit: 005-weighing-station
 intent: 001-assisted-weighing-station
 type: ddd-construction-bolt
-status: in-progress
+status: complete
 stories:
   - 004-capture-lot-and-container
   - 005-tare-required-and-re-tare
   - 008-confirm-valid-weighing
   - 009-progress-to-next-component
   - 012-quit-and-incomplete-batch
-created: 2026-11-04T17:00:00Z
-started: 2026-11-05T18:08:29Z
-completed: null
-current_stage: test
+created: '2026-11-04T17:00:00Z'
+started: '2026-11-05T18:08:29Z'
+completed: '2026-11-05T18:35:45Z'
+current_stage: null
 stages_completed:
   - name: model
     completed: '2026-11-05T18:20:00Z'
@@ -27,12 +27,12 @@ stages_completed:
   - name: implement
     completed: '2026-11-05T18:21:00Z'
     artifact: implementation-walkthrough.md
-
-requires_bolts: [007-weighing-station]
-enables_bolts: [009-weighing-station]
+requires_bolts:
+  - 007-weighing-station
+enables_bolts:
+  - 009-weighing-station
 requires_units: []
 blocks: true
-
 complexity:
   avg_complexity: 3
   avg_uncertainty: 1
