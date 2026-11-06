@@ -6,15 +6,17 @@ const DEFAULT_DECIMALS: Readonly<Partial<Record<string, number>>> = { g: 1, kg: 
 
 /**
  * Formats a quantity with its unit, never mixing g and kg in one value (ux-guide). Pass the active
- * scale's decimals when known; otherwise the unit's default applies.
+ * scale's decimals when known; otherwise the unit's default applies. `withUnit = false` gives the bare number, for
+ * ranges such as "(93.5 – 94.5)" where the unit is already shown.
  */
 @Pipe({ name: 'weight' })
 export class WeightPipe implements PipeTransform {
-  transform(quantity: Quantity | null | undefined, decimals?: number): string {
+  transform(quantity: Quantity | null | undefined, decimals?: number, withUnit = true): string {
     if (!quantity) {
       return '—';
     }
     const places = decimals ?? DEFAULT_DECIMALS[quantity.unit] ?? 3;
-    return `${quantity.value.toFixed(places)} ${quantity.unit}`;
+    const value = quantity.value.toFixed(places);
+    return withUnit ? `${value} ${quantity.unit}` : value;
   }
 }

@@ -15,11 +15,19 @@ export const routes: Routes = [
       import('@features/batch-queue/batch-queue.component').then((m) => m.BatchQueueComponent),
   },
   {
-    // The Weigh screen (bolt 010) is built on this route; for now it shows the opened batch.
+    // Screen 2 · Weigh (bolt 010).
     path: 'batches/:batchId/weigh',
     canActivate: [signedInGuard],
+    loadComponent: () => import('@features/weigh/weigh.component').then((m) => m.WeighComponent),
+  },
+  {
+    // The interim batch summary after completion (INTERIM-SUMMARY); bolt 013 makes it Confirm & print.
+    path: 'batches/:batchId/summary',
+    canActivate: [signedInGuard],
     loadComponent: () =>
-      import('@features/batch-opened/batch-opened.component').then((m) => m.BatchOpenedComponent),
+      import('@features/batch-summary/batch-summary.component').then(
+        (m) => m.BatchSummaryComponent,
+      ),
   },
   { path: '', pathMatch: 'full', redirectTo: 'batches' },
   { path: '**', redirectTo: 'batches' },

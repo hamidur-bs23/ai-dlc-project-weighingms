@@ -1,0 +1,195 @@
+@let session = store.session();
+@if (store.loadError(); as e) {
+  <div class="weigh-page">
+    <wms-banner [error]="e" [retryable]="true" (retry)="store.open(batchId())" />
+  </div>
+} @else if (session) {
+  <div class="stage">
+    <wms-recipe-rail
+      [session]="session"
+      [shade]="store.recipe()?.shade ?? ''"
+      [colourOf]="store.colourOf()"
+      [disabled]="store.isBusy()"
+      (selected)="store.select($event)"
+    />
+
+    <section class="weigh" [attr.aria-label]="'weigh.label' | transloco">
+      @if (active(); as c) {
+        <div class="weigh__head">
+          <div class="who">
+            <h1 class="who__name">{{ c.name }}</h1>
+            <span class="who__meta mono">
+              {{ c.code }} · {{ 'weigh.header.lot' | transloco }} {{ attempt()?.lot ?? '—' }} ·
+              {{ 'weigh.header.container' | transloco }} {{ attempt()?.container ?? '—' }} ·
+              {{ 'weigh.header.tare' | transloco }}
+              {{ attempt()?.tare ? (attempt()?.tare | weight) : '—' }}
+            </span>
+          </div>
+          <div class="scale-badge" data-testid="scale-badge">
+            <span class="scale-badge__k">{{ 'weigh.header.scaleSelected' | transloco }}</span>
+            <span class="scale-badge__v mono">{{ scaleName() }}</span>
+            <span class="scale-badge__auto">{{ 'weigh.header.automatic' | transloco }}</span>
+          </div>
+        </div>
+
+        <div class="capture">
+          <label class="field">
+            <span class="field__label">{{ 'weigh.capture.lot' | transloco }}</span>
+            <input
+              class="field__input mono"
+              autocomplete="off"
+              spellcheck="false"
+              maxlength="32"
+              [value]="lotDraft()"
+              (input)="lotDraft.set(inputValue($event))"
+              (keydown.enter)="saveLot()"
+              (blur)="saveLot()"
+            />
+          </label>
+          <label class="field">
+            <span class="field__label">{{ 'weigh.capture.container' | transloco }}</span>
+            <input
+              class="field__input mono"
+              autocomplete="off"
+              spellcheck="false"
+              maxlength="32"
+              [value]="containerDraft()"
+              (input)="containerDraft.set(inputValue($event))"
+              (keydown.enter)="saveContainer()"
+              (blur)="saveContainer()"
+            />
+          </label>
+        </div>
+
+        @let r = reading();
+        <div class="readout">
+          <div class="cell cell--live" [attr.data-zone]="zone()">
+            <span class="cell__k">
+              {{ 'weigh.readout.now' | transloco }}
+              @if (r && !r.stable) {
+                <span class="tag-unstable">{{ 'weigh.readout.unstable' | transloco }}</span>
+              }
+            </span>
+            <span class="cell__v mono" data-testid="weighed-now">{{
+              r?.net ? (r?.net | weight) : '—'
+            }}</span>
+          </div>
+          <div class="cell">
+            <span class="cell__k">{{ 'weigh.readout.remaining' | transloco }}</span>
+            <span class="cell__v mono" data-testid="still-to-weigh">{{
+              r?.remaining ? (r?.remaining | weight) : (c.target | weight)
+            }}</span>
+          </div>
+          <div class="cell">
+            <span class="cell__k">{{ 'weigh.readout.target' | transloco }}</span>
+            <span class="cell__v mono">{{ c.target | weight }}</span>
+          </div>
+        </div>
+
+        <wms-weigh-bar [band]="r?.band ?? null" [net]="r?.net ?? null" [zone]="zone()" />
+
+        <div
+          class="status-line mono"
+          role="status"
+          [attr.data-zone]="zone()"
+          data-testid="status-line"
+        >
+          @switch (weightClass()) {
+            @case ('underweight') {
+              {{ 'weigh.status.dispense' | transloco: { remaining: (r?.remaining | weight) } }}
+              @if (nearTarget()) {
+                · {{ 'weigh.status.nearTarget' | transloco }}
+              }
+            }
+            @case ('withinRange') {
+              {{ 'weigh.status.within' | transloco }}
+            }
+            @case ('targetAchieved') {
+              {{ 'weigh.status.target' | transloco }}
+            }
+            @case ('overweight') {
+              {{
+                'weigh.status.over'
+                  | transloco
+                    : {
+                        amount: (r?.surplus?.amount | weight),
+                        percent: r?.surplus?.percentOfTarget,
+                      }
+              }}
+            }
+            @default {
+              @if (c.tolerance.status === 'blocked') {
+                {{ 'weigh.status.noTolerance' | transloco }}
+              } @else {
+                {{ 'weigh.status.waiting' | transloco }}
+              }
+            }
+          }
+        </div>
+
+        @if (weightClass() === 'overweight') {
+          <p class="surplus" data-testid="surplus">{{ 'weigh.status.overActions' | transloco }}</p>
+        }
+
+        @if (missingHints().length > 0) {
+          <ul class="hints" [attr.aria-label]="'weigh.hints.label' | transloco">
+            @for (m of missingHints(); track m) {
+              <li>{{ 'weigh.hints.' + m | transloco }}</li>
+            }
+          </ul>
+        }
+
+        @if (store.commandError(); as e) {
+          <wms-banner [error]="e" />
+        }
+        @if (store.readingError(); as e) {
+          <wms-banner [error]="e" />
+        }
+
+        <div class="actions">
+          <button
+            type="button"
+            class="key key--ok"
+            [disabled]="!store.canConfirm()"
+            (click)="confirm()"
+          >
+            {{ 'weigh.actions.confirm' | transloco }} <span class="key__fn">F1</span>
+          </button>
+          <button type="button" class="key" [disabled]="store.isBusy()" (click)="store.tare()">
+            {{ (attempt()?.tare ? 'weigh.actions.retare' : 'weigh.actions.tare') | transloco }}
+            <span class="key__fn">F2</span>
+          </button>
+          <button type="button" class="key key--ghost" [disabled]="store.isBusy()" (click)="quit()">
+            {{ (quitArmed() ? 'weigh.actions.quitConfirm' : 'weigh.actions.quit') | transloco }}
+            <span class="key__fn">F4</span>
+          </button>
+          @if (quitArmed()) {
+            <button type="button" class="key key--ghost key--small" (click)="quitArmed.set(false)">
+              {{ 'weigh.actions.keep' | transloco }}
+            </button>
+          }
+          @if (store.overrideOffered()) {
+            <button type="button" class="key key--ghost actions__override" (click)="openOverride()">
+              {{ 'weigh.actions.override' | transloco }}
+            </button>
+          }
+        </div>
+      } @else {
+        <p class="weigh__idle">{{ 'weigh.idle' | transloco }}</p>
+      }
+
+      <div class="leave">
+        <button
+          type="button"
+          class="key key--ghost key--small"
+          [disabled]="store.isBusy()"
+          (click)="backToQueue()"
+        >
+          {{ 'weigh.actions.back' | transloco }}
+        </button>
+      </div>
+    </section>
+  </div>
+} @else {
+  <p class="weigh-page weigh__idle" role="status">{{ 'weigh.loading' | transloco }}</p>
+}

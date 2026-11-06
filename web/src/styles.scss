@@ -1,3 +1,7 @@
 // Global styles only: tokens, mixins and base rules (ux-guide). Component styles stay component-scoped.
 @use 'tokens';
 @use 'base';
+@use '@angular/cdk' as cdk;
+
+// CDK overlay: the override dialog's backdrop and positioning.
+@include cdk.overlay;

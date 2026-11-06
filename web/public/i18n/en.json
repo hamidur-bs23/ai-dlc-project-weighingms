@@ -60,24 +60,6 @@
       "weighing": "WEIGHING"
     }
   },
-  "batchOpened": {
-    "recipe": "Recipe · {{ shade }}",
-    "components": "{{ count }} components",
-    "loading": "Loading the recipe…",
-    "loadedAt": "Recipe loaded at {{ time }}",
-    "weighingNext": "Weighing controls arrive with the Weigh screen.",
-    "back": "Back to queue",
-    "columns": {
-      "sequence": "#",
-      "code": "Code",
-      "chemical": "Chemical",
-      "target": "Target",
-      "tolerance": "Tolerance",
-      "container": "Container"
-    },
-    "configuredTolerance": "configured",
-    "noContainer": "—"
-  },
   "banner": {
     "ref": "Ref {{ ref }}",
     "retry": "Retry",
@@ -96,6 +78,141 @@
     "Request.Invalid": "That entry is not valid.",
     "Request.AntiforgeryInvalid": "The station needs to reload. Refresh the page.",
     "Network.Unavailable": "The WeighingMS server cannot be reached.",
-    "Unknown": "Something went wrong. Try again or ask a supervisor."
+    "Unknown": "Something went wrong. Try again or ask a supervisor.",
+    "Weighing.SessionNotFound": "This batch has not been opened for weighing.",
+    "Weighing.ComponentNotFound": "That component is not in the recipe.",
+    "Weighing.ComponentDone": "That component is already weighed.",
+    "Weighing.ComponentNotActive": "Select the component first.",
+    "Weighing.NoActiveComponent": "Select a component first.",
+    "Weighing.AlreadyConfirmed": "That component is already confirmed.",
+    "Weighing.NotConfirmable": "Not ready to confirm yet.",
+    "Weighing.OutOfTolerance": "The weight is outside the tolerance.",
+    "Weighing.OverrideNotNeeded": "The weight is within tolerance: confirm it normally.",
+    "Weighing.BatchCompleted": "This batch is already complete.",
+    "Weighing.ScaleNotAvailable": "The scale for this chemical is not available at this station.",
+    "Batch.Incomplete": "Not all components are weighed yet.",
+    "Concurrency.Conflict": "This batch was changed elsewhere. Reload and try again.",
+    "Auth.StepUpFailed": "Supervisor badge or PIN not accepted.",
+    "Auth.SupervisorRequired": "That badge is not a supervisor.",
+    "Auth.FourEyesRequired": "Another supervisor must authorise this override.",
+    "Auth.GrantInvalid": "The supervisor authorisation has expired or was already used. Try again."
+  },
+  "weigh": {
+    "label": "Weighing",
+    "loading": "Opening the batch…",
+    "idle": "Select a pending component to weigh.",
+    "rail": {
+      "label": "Recipe",
+      "recipe": "Recipe · {{ shade }}",
+      "count": "{{ done }} of {{ total }} components weighed",
+      "weighing": "WEIGHING",
+      "pending": "PENDING",
+      "ovr": "OVR"
+    },
+    "scaleClass": {
+      "precision": "precision",
+      "heavyDuty": "heavy-duty"
+    },
+    "header": {
+      "lot": "LOT",
+      "container": "CONTAINER",
+      "tare": "TARE",
+      "scaleSelected": "Scale selected",
+      "automatic": "automatic"
+    },
+    "capture": {
+      "lot": "Lot (scan or type)",
+      "container": "Container"
+    },
+    "readout": {
+      "now": "Weighed now",
+      "remaining": "Still to weigh",
+      "target": "Target",
+      "unstable": "UNSTABLE"
+    },
+    "bar": {
+      "label": "Weighing progress",
+      "tolerance": "TOLERANCE ±{{ plusMinus }} ({{ lower }} – {{ upper }})"
+    },
+    "status": {
+      "dispense": "DISPENSE — {{ remaining }} REMAINING",
+      "nearTarget": "NEAR TARGET",
+      "within": "WITHIN TOLERANCE — PRESS OK TO CONFIRM",
+      "target": "TARGET ACHIEVED — PRESS OK TO CONFIRM",
+      "over": "OVER TOLERANCE — SURPLUS +{{ amount }} (+{{ percent }}%)",
+      "overActions": "Over tolerance: remove material until the weight is back in range, quit and re-weigh, or ask a supervisor to override.",
+      "noTolerance": "NO TOLERANCE DEFINED — ASK A SUPERVISOR",
+      "waiting": "WAITING FOR THE SCALE…"
+    },
+    "class": {
+      "underweight": "Underweight",
+      "withinRange": "Within tolerance",
+      "targetAchieved": "Target achieved",
+      "overweight": "Over tolerance"
+    },
+    "hints": {
+      "label": "Before you can confirm",
+      "tolerance": "No tolerance is defined for this chemical.",
+      "lot": "Enter or scan the lot.",
+      "container": "Enter the container.",
+      "tare": "Tare the empty container (F2).",
+      "tareStale": "The scale was offline: tare again (F2).",
+      "reading": "The scale reading can't be used.",
+      "stable": "Wait for a stable reading."
+    },
+    "actions": {
+      "confirm": "OK · Confirm",
+      "tare": "Tare",
+      "retare": "Re-tare",
+      "quit": "Quit",
+      "quitConfirm": "Discard attempt?",
+      "keep": "Keep weighing",
+      "override": "Supervisor override",
+      "back": "Back to queue"
+    }
+  },
+  "override": {
+    "title": "Supervisor override",
+    "hint": "Another supervisor records this weighing outside tolerance. It keeps its true class and is marked OVR.",
+    "badge": "Supervisor badge",
+    "pin": "PIN",
+    "reason": "Reason (required)",
+    "required": "Badge, PIN and a reason are required.",
+    "submit": "Authorise override",
+    "cancel": "Cancel"
+  },
+  "summary": {
+    "title": "Batch {{ batchId }} weighed",
+    "weighed": "Components weighed",
+    "nOfN": "{{ done }} of {{ total }}",
+    "withinTolerance": "All within tolerance",
+    "yes": "YES",
+    "noOverrides": "NO · {{ count }} override(s)",
+    "total": "Total dispensed",
+    "elapsed": "Elapsed",
+    "duration": "{{ minutes }} min {{ seconds }} s",
+    "operator": "Operator",
+    "completedAt": "Completed",
+    "orgatex": "Written to OrgaTEX",
+    "state": {
+      "notAvailable": "—"
+    },
+    "lines": "Components",
+    "columns": {
+      "chemical": "Chemical",
+      "required": "Required",
+      "actual": "Actual",
+      "status": "Status"
+    },
+    "status": {
+      "withinRange": "Within tolerance",
+      "targetAchieved": "Target achieved",
+      "underweight": "Underweight",
+      "overweight": "Overweight",
+      "pending": "Pending",
+      "active": "Weighing"
+    },
+    "back": "Back to queue",
+    "loading": "Loading the summary…"
   }
 }

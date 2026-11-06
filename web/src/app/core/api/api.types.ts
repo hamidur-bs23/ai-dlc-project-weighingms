@@ -18,5 +18,16 @@ export type Scale = Schemas['ScaleResponse'];
 export type ScaleList = Schemas['ScaleListResponse'];
 export type ScanList = Schemas['ScanListResponse'];
 
+export type WeighingSession = Schemas['WeighingSessionResponse'];
+export type WeighingComponent = Schemas['WeighingComponentResponse'];
+export type WeighingReading = Schemas['WeighingReadingResponse'];
+export type WeighingRecord = Schemas['WeighingRecordResponse'];
+export type ConfirmationResult = Schemas['ConfirmationResponse'];
+export type BatchSummary = Schemas['BatchSummaryResponse'];
+export type StepUpGrant = Schemas['StepUpResponse'];
+
+/** The four reading classes the server computes (FR-12). */
+export type WeightClass = 'underweight' | 'withinRange' | 'targetAchieved' | 'overweight';
+
 /** The WeighingMS queue status (bolts 009/011/012 add complete, print and sync pending). */
 export type BatchStatus = 'queued' | 'weighing';
