@@ -1,0 +1,35 @@
+STEP 27 / STEP 28 UI: live browser run, 2026-11-06. Api :5180, simulators :5190, web :4210, throwaway PostgreSQL container. Dummy printer: a training contract, not a real printer.
+
+=== Tickets and print attempts in the WeighingMS database
+ batch_id |    status    | print_count 
+----------+--------------+-------------
+ B-24187  | Printed      |           2
+ B-24188  | Printed      |           2
+ B-24191  | PrintPending |           0
+(3 rows)
+
+ batch_id | is_reprint |           idempotency_key            |     error_code      
+----------+------------+--------------------------------------+---------------------
+ B-24187  | f          | 01a1afe1-8e8b-7ac7-a46e-49e7861331e2 | 
+ B-24187  | t          | 9e622a2a-d87d-b0b9-26fc-2cf878b9a717 | 
+ B-24188  | f          | 01a1b00e-2a9c-7828-b251-e59599f4cbb3 | Printer.Unavailable
+ B-24188  | f          | 01a1b00e-2a9c-7828-b251-e59599f4cbb3 | 
+ B-24188  | t          | 25762d32-abf8-9cf2-3211-e297f8a640f2 | 
+(5 rows)
+
+=== Audit
+      type       | actor_badge_id | subject | reason  
+-----------------+----------------+---------+---------
+ TicketPrinted   | OP-1001        | B-24187 | print 1
+ TicketReprinted | OP-1001        | B-24187 | print 2
+ TicketPrinted   | OP-1001        | B-24188 | print 1
+ TicketReprinted | OP-1001        | B-24188 | print 2
+(4 rows)
+
+=== Print requests in the Api log
+[14:03:04 INF] HTTP POST /api/batches/B-24187/session/ticket/print responded 200
+[14:03:04 INF] HTTP POST /api/batches/B-24187/session/ticket/print responded 200
+[14:51:27 WRN] HTTP POST /api/batches/B-24188/session/ticket/print responded 503
+[14:51:32 INF] HTTP POST /api/batches/B-24188/session/ticket/print responded 200
+[14:52:22 INF] HTTP POST /api/batches/B-24188/session/ticket/print responded 200
+[14:52:22 INF] HTTP POST /api/batches/B-24188/session/ticket/print responded 409
