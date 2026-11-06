@@ -46,6 +46,7 @@
     "notFound": "Batch {{ batchId }} not found. Check the card or choose a batch from the list.",
     "opening": "Opening {{ batchId }}…",
     "openRow": "Open batch {{ batchId }}",
+    "completedBatches": "Completed batches",
     "trainingOnly": "TRAINING",
     "columns": {
       "batch": "Batch",
@@ -232,8 +233,43 @@
       "pending": "Pending",
       "active": "Weighing"
     },
-    "back": "Back to queue",
+    "nextBatch": "Next batch",
+    "backToReview": "Back to completed batches",
+    "readOnly": "Review · read-only",
+    "consumptionPosted": "Actual consumption posted against the batch.",
     "loading": "Loading the summary…",
     "retrySync": "Retry"
+  },
+  "ticket": {
+    "print": "Print ticket",
+    "reprint": "Reprint ticket",
+    "loading": "Loading the ticket…",
+    "preview": "Ticket preview",
+    "barcode": "Code 128 barcode of {{ value }}",
+    "state": {
+      "printPending": "Print pending",
+      "printed": "Printed ({{ count }})"
+    },
+    "nextIsReprint": "The next copy will be marked REPRINT."
+  },
+  "review": {
+    "title": "Completed batches",
+    "caption": "Completed batches, newest first",
+    "loading": "Loading completed batches…",
+    "empty": "No batches have been completed yet.",
+    "openRow": "Review batch {{ batchId }}",
+    "back": "Back to queue",
+    "previous": "Previous",
+    "next": "Next",
+    "page": "Page {{ page }} of {{ pages }}",
+    "columns": {
+      "batch": "Batch",
+      "order": "Order",
+      "machine": "Machine",
+      "shade": "Shade",
+      "completed": "Completed",
+      "operators": "Operator",
+      "overrides": "Overrides"
+    }
   }
 }

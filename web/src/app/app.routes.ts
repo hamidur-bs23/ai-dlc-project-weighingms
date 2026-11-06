@@ -21,9 +21,26 @@ export const routes: Routes = [
     loadComponent: () => import('@features/weigh/weigh.component').then((m) => m.WeighComponent),
   },
   {
-    // The interim batch summary after completion (INTERIM-SUMMARY); bolt 013 makes it Confirm & print.
+    // Screen 3 · Confirm & print (bolt 013).
     path: 'batches/:batchId/summary',
     canActivate: [signedInGuard],
+    loadComponent: () =>
+      import('@features/batch-summary/batch-summary.component').then(
+        (m) => m.BatchSummaryComponent,
+      ),
+  },
+  {
+    // The completed-batch review list (bolt 013).
+    path: 'review',
+    canActivate: [signedInGuard],
+    loadComponent: () =>
+      import('@features/batch-review/batch-review.component').then((m) => m.BatchReviewComponent),
+  },
+  {
+    // The same screen as Confirm & print, read-only (REVIEW-READ-ONLY).
+    path: 'review/:batchId',
+    canActivate: [signedInGuard],
+    data: { readOnly: true },
     loadComponent: () =>
       import('@features/batch-summary/batch-summary.component').then(
         (m) => m.BatchSummaryComponent,

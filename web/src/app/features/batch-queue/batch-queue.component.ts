@@ -77,6 +77,10 @@ export class BatchQueueComponent {
     }
   }
 
+  protected async openReview(): Promise<void> {
+    await this.router.navigate(['/review']);
+  }
+
   protected isNotFound(error: AppError): boolean {
     return error.code === 'Batch.NotFound';
   }

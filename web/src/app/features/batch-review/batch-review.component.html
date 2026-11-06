@@ -1,0 +1,81 @@
+<section class="review">
+  <h1 class="review__title">{{ 'review.title' | transloco }}</h1>
+
+  @if (error(); as e) {
+    <wms-banner [error]="e" [retryable]="true" (retry)="load(page())" />
+  }
+
+  @if (list(); as l) {
+    @if (l.items.length === 0) {
+      <wms-banner kind="info" messageKey="review.empty" />
+    } @else {
+      <div class="review__table-wrap">
+        <table class="r">
+          <caption class="visually-hidden">
+            {{
+              'review.caption' | transloco
+            }}
+          </caption>
+          <thead>
+            <tr>
+              <th scope="col">{{ 'review.columns.batch' | transloco }}</th>
+              <th scope="col">{{ 'review.columns.order' | transloco }}</th>
+              <th scope="col">{{ 'review.columns.machine' | transloco }}</th>
+              <th scope="col">{{ 'review.columns.shade' | transloco }}</th>
+              <th scope="col">{{ 'review.columns.completed' | transloco }}</th>
+              <th scope="col">{{ 'review.columns.operators' | transloco }}</th>
+              <th scope="col" class="num">{{ 'review.columns.overrides' | transloco }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (b of l.items; track b.batchId) {
+              <tr
+                class="r__row"
+                tabindex="0"
+                [attr.aria-label]="'review.openRow' | transloco: { batchId: b.batchId }"
+                (click)="open(b.batchId)"
+                (keydown.enter)="open(b.batchId)"
+                (keydown.space)="$event.preventDefault(); open(b.batchId)"
+              >
+                <td class="mono">{{ b.batchId }}</td>
+                <td class="mono">{{ b.orderId }}</td>
+                <td class="mono">{{ b.machine }}</td>
+                <td>{{ b.shade }}</td>
+                <td class="mono">{{ b.completedAt | plantDateTime }}</td>
+                <td>{{ b.operators.join(', ') }}</td>
+                <td class="mono num" data-testid="review-overrides">{{ b.overrideCount }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  } @else if (loading()) {
+    <p class="review__note" role="status">{{ 'review.loading' | transloco }}</p>
+  }
+
+  <div class="review__actions">
+    <button type="button" class="key" (click)="back()">{{ 'review.back' | transloco }}</button>
+    @if (pages() > 1) {
+      <button
+        type="button"
+        class="key key--small"
+        [disabled]="loading() || page() <= 1"
+        (click)="load(page() - 1)"
+      >
+        {{ 'review.previous' | transloco }}
+      </button>
+      <span class="review__page" data-testid="review-page">
+        {{ 'review.page' | transloco: { page: page(), pages: pages() } }}
+      </span>
+      <button
+        type="button"
+        class="key key--small"
+        [disabled]="loading() || page() >= pages()"
+        (click)="load(page() + 1)"
+      >
+        {{ 'review.next' | transloco }}
+      </button>
+    }
+  </div>
+</section>

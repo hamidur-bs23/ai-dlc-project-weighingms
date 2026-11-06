@@ -1,0 +1,77 @@
+@use 'mixins' as m;
+
+.review {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-5) var(--space-6);
+}
+
+.review__title {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 650;
+}
+
+.review__note {
+  margin: 0;
+  color: var(--hmi-muted);
+}
+
+.review__table-wrap {
+  overflow-x: auto;
+}
+
+.review__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: center;
+}
+
+.review__page {
+  color: var(--hmi-muted);
+  font-family: var(--mono);
+  font-size: 12px;
+}
+
+.r {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+
+  th {
+    @include m.caption;
+
+    padding: 0 var(--space-3) var(--space-2) 0;
+    border-bottom: 1px solid var(--hmi-line);
+    font-size: 10px;
+    font-weight: 650;
+    letter-spacing: 0.13em;
+    text-align: left;
+  }
+
+  td {
+    height: 48px; // touch target: the whole row opens the batch
+    padding: var(--space-3) var(--space-3) var(--space-3) 0;
+    border-bottom: 1px solid var(--hmi-line);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .num {
+    text-align: right;
+  }
+
+  &__row {
+    cursor: pointer;
+
+    &:hover td {
+      background: var(--hmi-panel-2);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--steel);
+      outline-offset: -2px;
+    }
+  }
+}

@@ -2128,6 +2128,7 @@ export interface components {
             allWithinTolerance: boolean;
             /** Format: int32 */
             overrideCount: number;
+            operators: string[];
         };
         ComponentCommandRequest: {
             /** Format: int32 */

@@ -13,3 +13,13 @@ export class PlantTimePipe implements PipeTransform {
     return instant ? this.clock.format(instant, withSeconds) : '—';
   }
 }
+
+/** Shows an instant as a plant date and time, for records older than today. */
+@Pipe({ name: 'plantDateTime', pure: false })
+export class PlantDateTimePipe implements PipeTransform {
+  private readonly clock = inject(PlantClockService);
+
+  transform(instant: Date | string | null | undefined): string {
+    return instant ? this.clock.formatDateTime(instant) : '—';
+  }
+}

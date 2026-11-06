@@ -3,10 +3,12 @@ import { Injectable, inject } from '@angular/core';
 import type { Observable } from 'rxjs';
 import type {
   BatchSummary,
+  CompletedBatchPage,
   ConfirmationResult,
   OrgatexState,
   ScaleList,
   StepUpGrant,
+  Ticket,
   WeighingReading,
   WeighingSession,
 } from '@core/api/api.types';
@@ -83,6 +85,23 @@ export class WeighingApiService {
   /** Manual retry of a sync-failed OrgaTEX write-back (bolt 011). */
   retryWriteBack(batchId: string): Observable<OrgatexState> {
     return this.http.post<OrgatexState>(this.url(batchId, '/write-back/retry'), null);
+  }
+
+  /** The batch's frozen ticket: the same content as the printed ticket (bolt 012). */
+  ticket(batchId: string): Observable<Ticket> {
+    return this.http.get<Ticket>(this.url(batchId, '/ticket'));
+  }
+
+  /** Prints the ticket. `expectedPrintCount` is the count on screen, so a stale press is refused. */
+  printTicket(batchId: string, expectedPrintCount: number): Observable<Ticket> {
+    return this.http.post<Ticket>(this.url(batchId, '/ticket/print'), { expectedPrintCount });
+  }
+
+  /** One page of completed batches, newest first (REVIEW-LIST). */
+  completedBatches(page: number): Observable<CompletedBatchPage> {
+    return this.http.get<CompletedBatchPage>('/api/weighing-sessions', {
+      params: { status: 'completed', page },
+    });
   }
 
   scales(): Observable<ScaleList> {

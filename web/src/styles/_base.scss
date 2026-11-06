@@ -31,7 +31,8 @@ select {
   font-family: var(--mono);
 }
 
-.visually-hidden {
+.visually-hidden,
+.cdk-visually-hidden {
   position: absolute;
   width: 1px;
   height: 1px;
@@ -98,5 +99,22 @@ select {
     font-size: 10.5px;
     font-weight: 400;
     opacity: 0.7;
+  }
+}
+
+// A browser print shows only the ticket (ux-guide): black on white, nothing else on the page.
+@media print {
+  html,
+  body {
+    background: none;
+  }
+
+  body * {
+    visibility: hidden;
+  }
+
+  .ticket,
+  .ticket * {
+    visibility: visible;
   }
 }

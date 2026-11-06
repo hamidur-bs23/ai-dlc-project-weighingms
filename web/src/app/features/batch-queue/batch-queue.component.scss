@@ -73,6 +73,11 @@
   color: var(--hmi-muted);
 }
 
+.queue__actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
 .queue__table-wrap {
   overflow-x: auto;
 }

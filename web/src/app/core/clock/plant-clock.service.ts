@@ -40,6 +40,19 @@ export class PlantClockService {
     }).format(new Date(instant));
   }
 
+  /** Formats an instant as a plant date and time (yyyy-MM-dd HH:mm), the same form as the ticket. */
+  formatDateTime(instant: Date | string | number): string {
+    return new Intl.DateTimeFormat('sv-SE', {
+      timeZone: this.timeZone() ?? undefined,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      hourCycle: 'h23',
+    }).format(new Date(instant));
+  }
+
   constructor() {
     inject(DestroyRef).onDestroy(() => {
       this.stop();

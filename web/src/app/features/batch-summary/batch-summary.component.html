@@ -1,0 +1,170 @@
+<section class="summary-page">
+  @if (error(); as e) {
+    <wms-banner [error]="e" [retryable]="true" (retry)="load(batchId())" />
+  } @else if (summary(); as s) {
+    <div class="done-stage">
+      <div class="done-stage__main">
+        <h1 class="summary-page__title">
+          {{ 'summary.title' | transloco: { batchId: s.batchId } }}
+        </h1>
+        @if (readOnly()) {
+          <p class="summary-page__mode" data-testid="read-only">
+            {{ 'summary.readOnly' | transloco }}
+          </p>
+        }
+        @if (printError(); as e) {
+          <wms-banner [error]="e" />
+        }
+        <dl class="summary">
+          <div class="summary__row">
+            <dt>{{ 'summary.weighed' | transloco }}</dt>
+            <dd data-testid="summary-weighed">
+              {{ 'summary.nOfN' | transloco: { done: s.done, total: s.total } }}
+            </dd>
+          </div>
+          <div class="summary__row">
+            <dt>{{ 'summary.withinTolerance' | transloco }}</dt>
+            <dd [class.good]="s.allWithinTolerance" [class.bad]="!s.allWithinTolerance">
+              @if (s.allWithinTolerance) {
+                {{ 'summary.yes' | transloco }}
+              } @else {
+                {{ 'summary.noOverrides' | transloco: { count: s.overrideCount } }}
+              }
+            </dd>
+          </div>
+          <div class="summary__row">
+            <dt>{{ 'summary.total' | transloco }}</dt>
+            <dd class="mono">{{ s.totalDispensed | weight }}</dd>
+          </div>
+          <div class="summary__row">
+            <dt>{{ 'summary.elapsed' | transloco }}</dt>
+            <dd>
+              {{ 'summary.duration' | transloco: { minutes: minutes(s), seconds: seconds(s) } }}
+            </dd>
+          </div>
+          <div class="summary__row">
+            <dt>{{ 'summary.operator' | transloco }}</dt>
+            <dd>{{ s.operators.join(', ') }}</dd>
+          </div>
+          <div class="summary__row">
+            <dt>{{ 'summary.completedAt' | transloco }}</dt>
+            <dd class="mono">{{ s.completedAt | plantTime: true }}</dd>
+          </div>
+          <div class="summary__row">
+            <dt>{{ 'summary.orgatex' | transloco }}</dt>
+            <dd
+              data-testid="orgatex-state"
+              [class.good]="s.orgatex.state === 'sent'"
+              [class.bad]="s.orgatex.state === 'syncFailed'"
+            >
+              @switch (s.orgatex.state) {
+                @case ('sent') {
+                  {{
+                    'summary.state.sent'
+                      | transloco: { time: (s.orgatex.writtenAt | plantTime: true) }
+                  }}
+                }
+                @case ('pending') {
+                  {{ 'summary.state.pending' | transloco }}
+                }
+                @case ('syncFailed') {
+                  {{ 'summary.state.syncFailed' | transloco }}
+                  @if (!readOnly()) {
+                    <button
+                      type="button"
+                      class="key key--small summary__retry"
+                      [disabled]="retrying()"
+                      (click)="retry()"
+                    >
+                      {{ 'summary.retrySync' | transloco }}
+                    </button>
+                  }
+                }
+                @default {
+                  {{ 'summary.state.notAvailable' | transloco }}
+                }
+              }
+            </dd>
+          </div>
+          <div class="summary__row">
+            <dt>{{ 'summary.ticket' | transloco }}</dt>
+            <dd data-testid="ticket-state">
+              @if (ticketState(); as t) {
+                {{ 'summary.ticketState.' + t.state | transloco: { count: t.printCount } }}
+              }
+            </dd>
+          </div>
+        </dl>
+
+        @if (s.orgatex.state === 'sent') {
+          <p class="summary-page__note" data-testid="consumption-note">
+            {{ 'summary.consumptionPosted' | transloco }}
+          </p>
+        }
+
+        <div class="actions">
+          @if (readOnly()) {
+            <button type="button" class="key" (click)="backToReview()">
+              {{ 'summary.backToReview' | transloco }}
+            </button>
+          } @else {
+            @if (hasTicket()) {
+              <button type="button" class="key key--ok" [disabled]="!canPrint()" (click)="print()">
+                {{ (isReprint() ? 'ticket.reprint' : 'ticket.print') | transloco }}
+                <span class="key__fn">F1</span>
+              </button>
+            }
+            <button type="button" class="key" (click)="nextBatch()">
+              {{ 'summary.nextBatch' | transloco }} <span class="key__fn">F3</span>
+            </button>
+          }
+        </div>
+
+        <table class="lines">
+          <caption class="visually-hidden">
+            {{
+              'summary.lines' | transloco
+            }}
+          </caption>
+          <thead>
+            <tr>
+              <th scope="col">{{ 'summary.columns.chemical' | transloco }}</th>
+              <th scope="col" class="num">{{ 'summary.columns.required' | transloco }}</th>
+              <th scope="col" class="num">{{ 'summary.columns.actual' | transloco }}</th>
+              <th scope="col">{{ 'summary.columns.status' | transloco }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (l of s.lines; track l.sequence) {
+              <tr>
+                <td>{{ l.chemicalName }}</td>
+                <td class="mono num">{{ l.required | weight }}</td>
+                <td class="mono num">{{ l.actual | weight }}</td>
+                <td>
+                  {{ 'summary.status.' + l.status | transloco }}
+                  @if (l.override) {
+                    <span class="ovr">{{ 'weigh.rail.ovr' | transloco }}</span>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      @if (hasTicket()) {
+        <div class="done-stage__ticket">
+          @if (ticket(); as t) {
+            <wms-ticket-preview [ticket]="t" [showReprintNote]="!readOnly()" />
+          } @else if (ticketError(); as e) {
+            <wms-banner [error]="e" [retryable]="true" (retry)="loadTicket(batchId())" />
+          } @else {
+            <p role="status">{{ 'ticket.loading' | transloco }}</p>
+          }
+        </div>
+      }
+    </div>
+  } @else {
+    <p role="status">{{ 'summary.loading' | transloco }}</p>
+  }
+</section>

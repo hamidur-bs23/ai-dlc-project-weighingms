@@ -24,13 +24,17 @@ export type WeighingReading = Schemas['WeighingReadingResponse'];
 export type WeighingRecord = Schemas['WeighingRecordResponse'];
 export type ConfirmationResult = Schemas['ConfirmationResponse'];
 export type BatchSummary = Schemas['BatchSummaryResponse'];
+export type Ticket = Schemas['TicketResponse'];
+export type CompletedBatch = Schemas['CompletedBatchResponse'];
+export type CompletedBatchPage = Schemas['CompletedBatchPageResponse'];
 export type StepUpGrant = Schemas['StepUpResponse'];
 
 /** The four reading classes the server computes (FR-12). */
 export type WeightClass = 'underweight' | 'withinRange' | 'targetAchieved' | 'overweight';
 
 /** The WeighingMS queue status. */
-export type BatchStatus = 'queued' | 'weighing' | 'complete' | 'syncPending' | 'syncFailed' | 'printPending';
+export type BatchStatus =
+  'queued' | 'weighing' | 'complete' | 'syncPending' | 'syncFailed' | 'printPending';
 
 /** The OrgaTEX write-back of a batch (bolt 011). */
 export type OrgatexState = Schemas['OrgatexStateResponse'];
