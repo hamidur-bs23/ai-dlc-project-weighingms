@@ -1,0 +1,78 @@
+STEP 26: OrgaTEX write-back. Live run, 2026-11-06, dummy OrgaTEX (training contract, not the real OrgaTEX interface).
+Api :5180, simulators :5190, scratch database weighingms_step26. The real background dispatcher posted the consumption.
+
+=== 1. Weighing through the Api, then the state on the summary, queue and status strip
+session: inProgress
+confirmed 2: DYE-2204 actual 386 g
+confirmed 3: DYE-4471 actual 94 g
+confirmed 4: AUX-0101 actual 24 kg
+confirmed 5: AUX-0107 actual 9.6 kg
+orgatex right after completion: pending
+orgatex after 250 ms: {"state":"sent","writtenAt":"2026-11-06T04:02:41.887931+00:00","attempts":1,"nextAttemptAt":null,"errorCode":null}
+queue status: complete
+unsynced at start 0, now 0
+
+=== 2. Stored data: GET /_sim/orgatex/consumption
+[
+    {
+        "batchId": "B-24187",
+        "idempotencyKey": "01a1af05-e53c-73b0-8fd9-c92c265fbd0e",
+        "receivedAt": "2026-11-06T04:02:41.885363+00:00",
+        "lines": [
+            {
+                "chemicalId": "DYE-1180",
+                "actualQuantity": 1240.0,
+                "unit": "g",
+                "lot": "2026-0381"
+            },
+            {
+                "chemicalId": "DYE-2204",
+                "actualQuantity": 386.0,
+                "unit": "g",
+                "lot": "2026-0382"
+            },
+            {
+                "chemicalId": "DYE-4471",
+                "actualQuantity": 94.0,
+                "unit": "g",
+                "lot": "2026-0383"
+            },
+            {
+                "chemicalId": "AUX-0101",
+                "actualQuantity": 24.0,
+                "unit": "kg",
+                "lot": "2026-0384"
+            },
+            {
+                "chemicalId": "AUX-0107",
+                "actualQuantity": 9.6,
+                "unit": "kg",
+                "lot": "2026-0385"
+            }
+        ]
+    }
+]
+
+=== 3. Outbox row in the WeighingMS database
+-[ RECORD 1 ]---+-------------------------------------
+batch_id        | B-24187
+status          | Sent
+attempts        | 1
+idempotency_key | 01a1af05-e53c-73b0-8fd9-c92c265fbd0e
+sent_at         | 2026-11-06 04:02:41.887931+00
+received_at     | 2026-11-06 04:02:41.885363+00
+last_error_code | 
+
+=== 4. Request and 200 OK: the same POST replayed by hand with the stored key and lines
+(The dispatcher's own HTTP exchange isn't logged. This replay shows the same request; a repeated key returns the first receipt.)
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+Date: Fri, 06 Nov 2026 04:03:05 GMT
+Server: Kestrel
+Transfer-Encoding: chunked
+
+{"batchId":"B-24187","idempotencyKey":"01a1af05-e53c-73b0-8fd9-c92c265fbd0e","receivedAt":"2026-11-06T04:02:41.885363+00:00","lines":[{"chemicalId":"DYE-1180","actualQuantity":1240.0000,"unit":"g","lot":"2026-0381"},{"chemicalId":"DYE-2204","actualQuantity":386.0000,"unit":"g","lot":"2026-0382"},{"chemicalId":"DYE-4471","actualQuantity":94.0000,"unit":"g","lot":"2026-0383"},{"chemicalId":"AUX-0101","actualQuantity":24.0000,"unit":"kg","lot":"2026-0384"},{"chemicalId":"AUX-0107","actualQuantity":9.6000,"unit":"kg","lot":"2026-0385"}]}
+Request body: {"lines": [{"chemicalId": "DYE-1180", "actualQuantity": 1240.0, "unit": "g", "lot": "2026-0381"}, {"chemicalId": "DYE-2204", "actualQuantity": 386.0, "unit": "g", "lot": "2026-0382"}, {"chemicalId": "DYE-4471", "actualQuantity": 94.0, "unit": "g", "lot": "2026-0383"}, {"chemicalId": "AUX-0101", "actualQuantity": 24.0, "unit": "kg", "lot": "2026-0384"}, {"chemicalId": "AUX-0107", "actualQuantity": 9.6, "unit": "kg", "lot": "2026-0385"}]}
+
+=== 5. Receipts stored after the replay (still exactly one)
+1 receipt(s), receivedAt 2026-11-06T04:02:41.885363+00:00

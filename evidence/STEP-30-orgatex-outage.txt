@@ -1,0 +1,34 @@
+STEP 30 (OrgaTEX unavailable), live run, 2026-11-06. Real clock, real dispatcher; fault injected with /_sim/faults before the last confirmation.
+
+session: inProgress
+confirmed 1: DYE-1180 actual 1343.3 g
+confirmed 2: DYE-2204 actual 418.2 g
+confirmed 3: DYE-4471 actual 101.8 g
+confirmed 4: AUX-0101 actual 26 kg
+confirmed 5: AUX-0107 actual 10.4 kg
+OrgaTEX outage injected before the last confirmation
+orgatex right after completion: pending
+orgatex after 74000 ms: {"state":"syncFailed","writtenAt":null,"attempts":5,"nextAttemptAt":null,"errorCode":"OrgaTex.Unavailable"}
+
+
+Dispatcher log:
+[10:04:09 WRN] 1 OrgaTEX write-back(s) failed and will be retried
+[10:04:15 WRN] 1 OrgaTEX write-back(s) failed and will be retried
+[10:04:25 WRN] 1 OrgaTEX write-back(s) failed and will be retried
+[10:04:45 WRN] 1 OrgaTEX write-back(s) failed and will be retried
+[10:05:25 ERR] 1 OrgaTEX write-back(s) reached sync failed and need a manual retry
+
+After clearing the fault and pressing Retry in the UI:
+ batch_id | status | attempts |           idempotency_key            | last_error_code 
+----------+--------+----------+--------------------------------------+-----------------
+ B-24188  | Sent   |        1 | 01a1af07-3a01-7ef6-bf2c-3d296556447e | 
+(1 row)
+
+       type       | actor_badge_id | subject |                    reason                    
+------------------+----------------+---------+----------------------------------------------
+ SyncFailed       | system         | B-24188 | 5 attempt(s); last error OrgaTex.Unavailable
+ WriteBackRetried | OP-1001        | B-24188 | 
+(2 rows)
+
+Receipts stored for B-24188:
+1 key 01a1af07-3a01-7ef6-bf2c-3d296556447e lines 5
