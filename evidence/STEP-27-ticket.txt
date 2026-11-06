@@ -1,0 +1,130 @@
+STEP 27: ticket generation and printing. Live run, 2026-11-06, dummy printer (training contract, not a real printer).
+Api :5180, simulators :5190, scratch database weighingms_step27. Label content is invented for the lab (Q18, A-04).
+
+Batch B-24187 completed: completed
+
+GET /api/batches/B-24187/session/ticket -> state printPending, printCount 0, barcode Code128 B-24187
+       FCI DYEING - WEIGHING TICKET
+BATCH    B-24187
+ORDER    SO-9931
+MACHINE  JET-04
+SHADE    Teal 4C
+DATE     2026-11-06 12:03
+OPER.    R. Karim
+------------------------------------------
+COMPONENT                TGT           ACT
+Remazol Brill. Blue RSPL
+                    1240.0 g      1240.0 g
+Remazol Red RB
+                     386.0 g       386.0 g
+Remazol Yellow RGB
+                      94.0 g        94.0 g
+Sodium Sulphate
+                   24.000 kg     24.000 kg
+Soda Ash
+                    9.600 kg      9.600 kg
+------------------------------------------
+           ALL WITHIN TOLERANCE
+
+Printed so far: 0
+Summary ticket: {"state":"printPending","printCount":0}
+POST /api/batches/B-24187/session/ticket/print {"expectedPrintCount":0} -> 200 state printed, printCount 1
+POST /api/batches/B-24187/session/ticket/print {"expectedPrintCount":0} -> 409 Ticket.AlreadyPrinted
+POST /api/batches/B-24187/session/ticket/print {"expectedPrintCount":1} -> 200 state printed, printCount 2
+
+Stored at /_sim/printer/tickets: 2
+- isReprint false, key 01a1af74-6466-71f9-9f48-16c1a845a759, first line "FCI DYEING - WEIGHING TICKET", barcode Code128 B-24187
+- isReprint true, key 6c2168f8-90bd-858e-6735-75f5e45bc952, first line "*** REPRINT ***", barcode Code128 B-24187
+Queue status: syncPending
+
+=== Stored data: GET /_sim/printer/tickets
+[
+    {
+        "printJobId": "045132ee-0376-4d1c-a92b-6c27c7bc4a66",
+        "batchId": "B-24187",
+        "idempotencyKey": "01a1af74-6466-71f9-9f48-16c1a845a759",
+        "isReprint": false,
+        "printedAt": "2026-11-06T06:03:23.220031+00:00",
+        "lines": [
+            "       FCI DYEING - WEIGHING TICKET",
+            "BATCH    B-24187",
+            "ORDER    SO-9931",
+            "MACHINE  JET-04",
+            "SHADE    Teal 4C",
+            "DATE     2026-11-06 12:03",
+            "OPER.    R. Karim",
+            "------------------------------------------",
+            "COMPONENT                TGT           ACT",
+            "Remazol Brill. Blue RSPL",
+            "                    1240.0 g      1240.0 g",
+            "Remazol Red RB",
+            "                     386.0 g       386.0 g",
+            "Remazol Yellow RGB",
+            "                      94.0 g        94.0 g",
+            "Sodium Sulphate",
+            "                   24.000 kg     24.000 kg",
+            "Soda Ash",
+            "                    9.600 kg      9.600 kg",
+            "------------------------------------------",
+            "           ALL WITHIN TOLERANCE"
+        ],
+        "barcode": {
+            "symbology": "Code128",
+            "value": "B-24187"
+        }
+    },
+    {
+        "printJobId": "31378d0d-9472-4837-96f7-584f88568b4a",
+        "batchId": "B-24187",
+        "idempotencyKey": "6c2168f8-90bd-858e-6735-75f5e45bc952",
+        "isReprint": true,
+        "printedAt": "2026-11-06T06:03:23.241481+00:00",
+        "lines": [
+            "             *** REPRINT ***",
+            "       FCI DYEING - WEIGHING TICKET",
+            "BATCH    B-24187",
+            "ORDER    SO-9931",
+            "MACHINE  JET-04",
+            "SHADE    Teal 4C",
+            "DATE     2026-11-06 12:03",
+            "OPER.    R. Karim",
+            "------------------------------------------",
+            "COMPONENT                TGT           ACT",
+            "Remazol Brill. Blue RSPL",
+            "                    1240.0 g      1240.0 g",
+            "Remazol Red RB",
+            "                     386.0 g       386.0 g",
+            "Remazol Yellow RGB",
+            "                      94.0 g        94.0 g",
+            "Sodium Sulphate",
+            "                   24.000 kg     24.000 kg",
+            "Soda Ash",
+            "                    9.600 kg      9.600 kg",
+            "------------------------------------------",
+            "           ALL WITHIN TOLERANCE"
+        ],
+        "barcode": {
+            "symbology": "Code128",
+            "value": "B-24187"
+        }
+    }
+]
+
+=== Tickets and print jobs in the WeighingMS database
+ batch_id | status  | print_count |           first_print_key            |       first_printed_at        |       last_printed_at       
+----------+---------+-------------+--------------------------------------+-------------------------------+-----------------------------
+ B-24187  | Printed |           2 | 01a1af74-6466-71f9-9f48-16c1a845a759 | 2026-11-06 06:03:23.221747+00 | 2026-11-06 06:03:23.2416+00
+(1 row)
+
+ batch_id | is_reprint |           idempotency_key            | operator_badge_id | error_code 
+----------+------------+--------------------------------------+-------------------+------------
+ B-24187  | f          | 01a1af74-6466-71f9-9f48-16c1a845a759 | OP-1001           | 
+ B-24187  | t          | 6c2168f8-90bd-858e-6735-75f5e45bc952 | OP-1001           | 
+(2 rows)
+
+      type       | actor_badge_id | subject | reason  
+-----------------+----------------+---------+---------
+ TicketPrinted   | OP-1001        | B-24187 | print 1
+ TicketReprinted | OP-1001        | B-24187 | print 2
+(2 rows)
+

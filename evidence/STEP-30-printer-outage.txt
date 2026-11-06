@@ -1,0 +1,28 @@
+STEP 30 (printer unavailable), live run, 2026-11-06. Fault injected with /_sim/faults before the last confirmation.
+
+Printer fault injected before the last confirmation.
+Batch B-24188 completed: completed
+GET /api/batches/B-24188/session/ticket -> state printPending, printCount 0, barcode Code128 B-24188
+OPER.    R. Karim
+Printed so far: 0
+Summary ticket: {"state":"printPending","printCount":0}
+Device health, printer: offline
+POST /api/batches/B-24188/session/ticket/print {"expectedPrintCount":0} -> 503 Printer.Unavailable
+Ticket after the refused print: printPending. Printed so far: 0
+
+Fault cleared: 204
+Waited 5 s after recovery, with no press:
+- receipts for B-24188: 0 (no auto-print)
+- ticket: printPending 0
+
+Operator presses Print:
+- 200 state printed printCount 1
+- receipts: 1 isReprint False key 01a1af75-c6dd-7ae8-b10f-7c41a079a60f
+
+Print attempts in the database (same key before and after the outage):
+ is_reprint |           idempotency_key            |     error_code      
+------------+--------------------------------------+---------------------
+ f          | 01a1af75-c6dd-7ae8-b10f-7c41a079a60f | Printer.Unavailable
+ f          | 01a1af75-c6dd-7ae8-b10f-7c41a079a60f | 
+(2 rows)
+
