@@ -44,6 +44,12 @@ describe('PlantClockService', () => {
     expect(clock.format('2026-11-05T01:12:30Z', true)).toBe('07:12:30');
   });
 
+  it('should format a date and time in the plant zone, even across midnight', async () => {
+    await start();
+    expect(clock.formatDateTime('2026-11-05T01:12:30Z')).toBe('2026-11-05 07:12');
+    expect(clock.formatDateTime('2026-11-05T20:00:00Z')).toBe('2026-11-06 02:00');
+  });
+
   it('should show no clock rather than a wrong one when the station cannot be read', async () => {
     const started = clock.start();
     httpMock().expectOne('/api/station').flush({}, { status: 503, statusText: 'x' });

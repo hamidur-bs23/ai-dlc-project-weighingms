@@ -266,6 +266,7 @@ public sealed class WeighingOutcomeServiceTests
         completed.Total.ShouldBe(1);
         var item = completed.Items.ShouldHaveSingleItem();
         (item.BatchId, item.OrderId, item.Done, item.Total, item.AllWithinTolerance).ShouldBe(("B-24187", "SO-9931", 5, 5, true));
+        item.Operators.ShouldBe(["R. Karim"]);
     }
 
     private sealed class RecordingHandler : IBatchCompletedHandler

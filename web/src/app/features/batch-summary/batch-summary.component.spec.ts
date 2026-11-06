@@ -56,7 +56,7 @@ const summary: BatchSummary = {
   ],
 };
 
-describe('BatchSummaryComponent (interim summary)', () => {
+describe('BatchSummaryComponent (summary)', () => {
   beforeEach(async () => {
     await render(BatchSummaryComponent, {
       providers: [provideTestHttp(), provideRouter([]), provideTestTransloco()],
@@ -93,11 +93,11 @@ describe('BatchSummaryComponent (interim summary)', () => {
     expect(await screen.findByText('35.322 kg')).toBeTruthy();
   });
 
-  it('should go back to the queue', async () => {
+  it('should open the queue with Next batch', async () => {
     httpMock().expectOne('/api/batches/B-24187/session/summary').flush(summary);
     const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
 
-    await userEvent.setup().click(await screen.findByRole('button', { name: 'Back to queue' }));
+    await userEvent.setup().click(await screen.findByRole('button', { name: /Next batch/ }));
 
     expect(navigate).toHaveBeenCalledWith(['/batches']);
   });
@@ -153,6 +153,18 @@ describe('BatchSummaryComponent (OrgaTEX write-back)', () => {
       .flush({ ...summary, ticket });
 
     expect((await screen.findByTestId('ticket-state')).textContent.trim()).toBe(expected);
+    if (ticket.state !== 'notAvailable') {
+      httpMock()
+        .expectOne('/api/batches/B-24187/session/ticket')
+        .flush({
+          batchId: 'B-24187',
+          ...ticket,
+          lines: ['BATCH    B-24187'],
+          barcode: { symbology: 'Code128', value: 'B-24187' },
+          firstPrintedAt: null,
+          lastPrintedAt: null,
+        });
+    }
   });
 
   it('should show nothing but a dash before the batch completes', async () => {

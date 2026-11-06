@@ -182,6 +182,20 @@ public sealed class TicketEndpointsTests(ApiFixture fixture) : IAsyncLifetime
     }
 
     [Fact]
+    public async Task ReviewList_ByTwoOperators_ListsBothInTheOrderTheyFirstWeighed()
+    {
+        await WeighAsync(1);
+        fixture.Clock.Advance(TimeSpan.FromMinutes(1));
+        await Expect(Session("/leave"), HttpStatusCode.OK);
+        await RehostAsync("OP-1002");
+
+        await WeighAsync(2, 3, 4, 5);
+
+        var list = await Expect(_client.GetAsync("/api/weighing-sessions?status=completed"), HttpStatusCode.OK);
+        list.GetProperty("items")[0].GetProperty("operators").EnumerateArray().Select(o => o.GetString()).ShouldBe(["R. Karim", "S. Akter"]);
+    }
+
+    [Fact]
     public async Task Completion_AFailingHandler_LeavesNoTicketAndNoCompletion()
     {
         await RehostAsync(services: s => s.AddScoped<IBatchCompletedHandler, FailingHandler>());

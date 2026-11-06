@@ -323,6 +323,7 @@ public sealed class WeighingOutcomeEndpointsTests(ApiFixture fixture) : IAsyncLi
         item.GetProperty("batchId").GetString().ShouldBe("B-24187");
         item.GetProperty("allWithinTolerance").GetBoolean().ShouldBeFalse();
         item.GetProperty("overrideCount").GetInt32().ShouldBe(1);
+        item.GetProperty("operators").EnumerateArray().Select(o => o.GetString()).ShouldBe(["R. Karim"]);
         bad.StatusCode.ShouldBe(HttpStatusCode.UnprocessableEntity);
     }
 

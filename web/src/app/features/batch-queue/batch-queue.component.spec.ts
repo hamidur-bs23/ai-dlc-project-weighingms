@@ -44,6 +44,25 @@ describe('BatchQueueComponent (screen 1 · Select batch)', () => {
 
   const bodyRows = () => screen.getAllByRole('row').slice(1);
 
+  it('should open the completed-batch list', async () => {
+    await loadQueue();
+
+    await userEvent.setup().click(screen.getByRole('button', { name: 'Completed batches' }));
+
+    expect(navigate).toHaveBeenCalledWith(['/review']);
+  });
+
+  it('should keep the completed-batch list reachable when the queue cannot load', async () => {
+    httpMock()
+      .expectOne('/api/batches')
+      .flush(problem('OrgaTex.Unavailable'), { status: 503, statusText: 'Unavailable' });
+
+    await screen.findByRole('alert');
+    await userEvent.setup().click(screen.getByRole('button', { name: 'Completed batches' }));
+
+    expect(navigate).toHaveBeenCalledWith(['/review']);
+  });
+
   it('should tag completed batches with their OrgaTEX write-back status', async () => {
     await loadQueue([
       { ...b24187, batchId: 'B-1', status: 'complete' },
