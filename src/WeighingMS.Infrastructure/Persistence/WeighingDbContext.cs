@@ -4,6 +4,7 @@ using WeighingMS.Domain.Access;
 using WeighingMS.Domain.Audit;
 using WeighingMS.Domain.Batches;
 using WeighingMS.Domain.Weighing;
+using WeighingMS.Domain.WriteBack;
 
 namespace WeighingMS.Infrastructure.Persistence;
 
@@ -27,6 +28,9 @@ public sealed class WeighingDbContext(DbContextOptions<WeighingDbContext> option
 
     /// <summary>Confirmed weighing records (immutable).</summary>
     public DbSet<WeighingRecord> WeighingRecords => Set<WeighingRecord>();
+
+    /// <summary>OrgaTEX consumption write-backs (the outbox, PD-01).</summary>
+    public DbSet<ConsumptionWriteBack> WriteBacks => Set<ConsumptionWriteBack>();
 
     /// <summary>Append-only audit trail.</summary>
     public DbSet<AuditEntry> AuditEntries => Set<AuditEntry>();

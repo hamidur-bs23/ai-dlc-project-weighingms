@@ -3,6 +3,7 @@ using WeighingMS.Application.Abstractions;
 using WeighingMS.Application.Access;
 using WeighingMS.Application.Batches;
 using WeighingMS.Application.Devices;
+using WeighingMS.Application.WriteBack;
 using WeighingMS.Domain.Access;
 using WeighingMS.Domain.Audit;
 using WeighingMS.Domain.Common;
@@ -26,7 +27,8 @@ public sealed class WeighingSessionService(
     IStepUpGrantStore grants,
     IRecipeSnapshotStore snapshots,
     IStationUserRepository users,
-    IEnumerable<IBatchCompletedHandler> completionHandlers)
+    IEnumerable<IBatchCompletedHandler> completionHandlers,
+    IWriteBackRepository writeBacks)
 {
     /// <summary>The step-up action an override needs (ADR-009).</summary>
     public const string OverrideAction = "override";
@@ -417,7 +419,14 @@ public sealed class WeighingSessionService(
             }
         }
 
-        return BatchSummaryBuilder.Build(session, snapshot?.OrderId ?? string.Empty, snapshot?.Machine ?? string.Empty, snapshot?.Shade ?? string.Empty, names);
+        var writeBack = await writeBacks.FindAsync(session.BatchId, cancellationToken);
+        return BatchSummaryBuilder.Build(
+            session,
+            snapshot?.OrderId ?? string.Empty,
+            snapshot?.Machine ?? string.Empty,
+            snapshot?.Shade ?? string.Empty,
+            names,
+            writeBack is null ? null : WriteBackService.View(writeBack));
     }
 
     private async Task<ErrorOr<WeighingSession>> SaveAsync(WeighingSession session, CancellationToken cancellationToken)

@@ -56,4 +56,7 @@ public enum AuditEventType
 
     /// <summary>A batch completed: every component recorded (bolt 009).</summary>
     BatchCompleted,
+
+    /// <summary>A sync-failed write-back was retried manually (bolt 011).</summary>
+    WriteBackRetried,
 }

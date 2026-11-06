@@ -29,7 +29,7 @@ public sealed class WeighingOutcomeServiceTests
         _users.Users.Add(StationUser.CreateOperator("OP-1001", "R. Karim"));
         _users.Users.Add(StationUser.CreateOperator("OP-1002", "S. Akter"));
         _handler.Sessions = _sessions;
-        _service = new WeighingSessionService(_sessions, new BatchService(new FakeOrgatex(), snapshots, clock), new FakeTolerances(), _scales, devices, new FakeSelection(), _audit, clock, _grants, snapshots, _users, [_handler]);
+        _service = new WeighingSessionService(_sessions, new BatchService(new FakeOrgatex(), snapshots, clock, new FakeWriteBacks()), new FakeTolerances(), _scales, devices, new FakeSelection(), _audit, clock, _grants, snapshots, _users, [_handler], new FakeWriteBacks());
     }
 
     private static CancellationToken Ct => TestContext.Current.CancellationToken;
@@ -196,7 +196,7 @@ public sealed class WeighingOutcomeServiceTests
         s.TotalDispensed.ShouldBe(Quantity.Of(35.3221m, MassUnit.Kilogram)); // shown as 35.322 kg
         s.Operators.ShouldBe(["R. Karim", "S. Akter"]);
         s.ElapsedSeconds.ShouldBe((long)(s.CompletedAt!.Value - s.StartedAt).TotalSeconds);
-        s.OrgatexState.ShouldBe(BatchSummaryBuilder.NotAvailable);
+        s.Orgatex.ShouldBeNull(); // no write-back handler in this unit test
         s.TicketState.ShouldBe(BatchSummaryBuilder.NotAvailable);
         s.Lines.Select(l => l.Actual!.Value).ShouldBe([1241.5m, 385.4m, 94.2m, 23.980m, 9.621m]);
         (s.OrderId, s.Machine, s.Shade).ShouldBe(("SO-9931", "JET-04", "Teal 4C"));

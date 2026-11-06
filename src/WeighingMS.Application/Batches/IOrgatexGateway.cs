@@ -1,4 +1,5 @@
 using ErrorOr;
+using WeighingMS.Domain.WriteBack;
 
 namespace WeighingMS.Application.Batches;
 
@@ -17,4 +18,10 @@ public interface IOrgatexGateway
 
     /// <summary>The batch recipe (<c>Batch.NotFound</c> if absent).</summary>
     Task<ErrorOr<OrgatexRecipe>> GetRecipeAsync(string batchId, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Posts a completed batch's actual consumption with its idempotency key (FR-20). Returns when OrgaTEX received it.
+    /// <see cref="OrgatexErrors.Unavailable"/> is transient; <see cref="OrgatexErrors.ConsumptionRejected"/> is not.
+    /// </summary>
+    Task<ErrorOr<DateTimeOffset>> PostConsumptionAsync(string batchId, Guid idempotencyKey, IReadOnlyList<ConsumptionLine> lines, CancellationToken cancellationToken);
 }

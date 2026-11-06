@@ -2382,6 +2382,124 @@
           }
         }
       }
+    },
+    "/api/batches/{batchId}/session/write-back": {
+      "get": {
+        "tags": [
+          "WriteBack"
+        ],
+        "parameters": [
+          {
+            "name": "batchId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrgatexStateResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrgatexStateResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrgatexStateResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/batches/{batchId}/session/write-back/retry": {
+      "post": {
+        "tags": [
+          "WriteBack"
+        ],
+        "parameters": [
+          {
+            "name": "batchId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrgatexStateResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrgatexStateResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrgatexStateResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -2622,7 +2740,7 @@
             }
           },
           "orgatex": {
-            "$ref": "#/components/schemas/IntegrationStateResponse"
+            "$ref": "#/components/schemas/OrgatexStateResponse"
           },
           "ticket": {
             "$ref": "#/components/schemas/IntegrationStateResponse"
@@ -2916,7 +3034,8 @@
       },
       "DeviceHealthListResponse": {
         "required": [
-          "items"
+          "items",
+          "unsyncedWriteBacks"
         ],
         "type": "object",
         "properties": {
@@ -2925,6 +3044,10 @@
             "items": {
               "$ref": "#/components/schemas/DeviceHealthResponse"
             }
+          },
+          "unsyncedWriteBacks": {
+            "type": "integer",
+            "format": "int32"
           }
         }
       },
@@ -2980,6 +3103,45 @@
         "properties": {
           "state": {
             "type": "string"
+          }
+        }
+      },
+      "OrgatexStateResponse": {
+        "required": [
+          "state",
+          "writtenAt",
+          "attempts",
+          "nextAttemptAt",
+          "errorCode"
+        ],
+        "type": "object",
+        "properties": {
+          "state": {
+            "type": "string"
+          },
+          "writtenAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "attempts": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "nextAttemptAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "errorCode": {
+            "type": [
+              "null",
+              "string"
+            ]
           }
         }
       },
@@ -3936,6 +4098,9 @@
     },
     {
       "name": "WeighingSession"
+    },
+    {
+      "name": "WriteBack"
     }
   ]
 }

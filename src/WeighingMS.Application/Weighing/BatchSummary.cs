@@ -1,3 +1,4 @@
+using WeighingMS.Application.WriteBack;
 using WeighingMS.Domain.Common;
 using WeighingMS.Domain.Weighing;
 
@@ -5,7 +6,8 @@ namespace WeighingMS.Application.Weighing;
 
 /// <summary>
 /// The summary of a batch (FR-18): n of N, within tolerance (YES / NO + overrides), total dispensed (A13), elapsed (A14),
-/// operators (A12), OrgaTEX and ticket state (A15: not yet available until bolts 011/012) and one line per chemical.
+/// operators (A12), the OrgaTEX write-back (bolt 011; null until the batch completes) and the ticket state (A15: not yet
+/// available until bolt 012) and one line per chemical.
 /// </summary>
 public sealed record BatchSummary(
     string BatchId,
@@ -22,7 +24,7 @@ public sealed record BatchSummary(
     DateTimeOffset? CompletedAt,
     long? ElapsedSeconds,
     IReadOnlyList<string> Operators,
-    string OrgatexState,
+    WriteBackView? Orgatex,
     string TicketState,
     IReadOnlyList<BatchSummaryLine> Lines);
 
@@ -38,11 +40,11 @@ public sealed record CompletedBatchPage(IReadOnlyList<CompletedBatchItem> Items,
 /// <summary>Builds summaries from a session and its records (pure).</summary>
 public static class BatchSummaryBuilder
 {
-    /// <summary>The state shown for OrgaTEX and the ticket until bolts 011 / 012 provide it (A15).</summary>
+    /// <summary>The state shown for the ticket until bolt 012 provides it (A15).</summary>
     public const string NotAvailable = "notAvailable";
 
     /// <summary>The summary; <paramref name="nameOf"/> turns a badge into the operator's display name.</summary>
-    public static BatchSummary Build(WeighingSession session, string orderId, string machine, string shade, IReadOnlyDictionary<string, string> nameOf)
+    public static BatchSummary Build(WeighingSession session, string orderId, string machine, string shade, IReadOnlyDictionary<string, string> nameOf, WriteBackView? orgatex = null)
     {
         ArgumentNullException.ThrowIfNull(session);
         ArgumentNullException.ThrowIfNull(nameOf);
@@ -68,7 +70,7 @@ public static class BatchSummaryBuilder
             session.CompletedAt,
             elapsed,
             operators,
-            NotAvailable,
+            orgatex,
             NotAvailable,
             [.. session.Components.Select(c => new BatchSummaryLine(
                 c.Sequence, c.ChemicalId, c.Name, c.Target, c.Record?.Actual, c.State, c.Record?.Class, c.Record?.IsOverride ?? false))]);

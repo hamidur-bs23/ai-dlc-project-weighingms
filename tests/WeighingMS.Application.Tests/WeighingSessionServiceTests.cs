@@ -27,7 +27,7 @@ public sealed class WeighingSessionServiceTests
     {
         var clock = new FakePlantClock(_time);
         var devices = new DeviceService(_scales, new NoScanner(), [], new DeviceHealthTracker(_time), new DevicesOptions(), _time);
-        _service = new WeighingSessionService(_sessions, new BatchService(_orgatex, _snapshots, clock), _tolerances, _scales, devices, _selection, _audit, clock, new FakeGrants(), _snapshots, new FakeUsers(), []);
+        _service = new WeighingSessionService(_sessions, new BatchService(_orgatex, _snapshots, clock, new FakeWriteBacks()), _tolerances, _scales, devices, _selection, _audit, clock, new FakeGrants(), _snapshots, new FakeUsers(), [], new FakeWriteBacks());
     }
 
     private static CancellationToken Ct => TestContext.Current.CancellationToken;

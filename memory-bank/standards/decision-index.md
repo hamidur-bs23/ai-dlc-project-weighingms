@@ -197,3 +197,6 @@ Decisions marked *resolved* below were taken by the product owner at STEP 7 on 2
 | COMPLETION-HANDLERS | resolved (bolt 009 design, 2026-11-06) | `BatchCompleted` is handled by in-process `IBatchCompletedHandler`s inside the completing transaction (bolt 011 outbox row, bolt 012 print-pending ticket) |
 | BAR-RANGE | resolved (bolt 010 plan, 2026-11-06) | The Weigh screen's progress bar spans 0 → 1.25 × the upper tolerance bound (from the server's band); readings above it pin the fill at 100% while the numbers stay exact |
 | INTERIM-SUMMARY | resolved (bolt 010 plan, 2026-11-06) | After the last component the UI shows a read-only summary at `/batches/:id/summary` (server summary); bolt 013 extends it into Confirm & print |
+| WRITEBACK-RETRY | resolved (bolt 011 plan, 2026-11-06) | OrgaTEX write-back retries up to 5 attempts with exponential back-off from 5 s, capped at 5 min, then "sync failed"; all values in `WriteBack:*` configuration |
+| WRITEBACK-TRANSIENT | resolved (bolt 011 plan, 2026-11-06) | Only transient failures (unreachable, timeout, 5xx) are retried; a 4xx from OrgaTEX marks the write-back "sync failed" at once with its error code |
+| WRITEBACK-RETRY-ANYONE | resolved (bolt 011 plan, 2026-11-06) | Any signed-in operator may retry a sync-failed write-back; it re-sends the same payload with the same Idempotency-Key and is audited |

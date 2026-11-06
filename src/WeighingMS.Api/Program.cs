@@ -12,6 +12,7 @@ using WeighingMS.Application.Access;
 using WeighingMS.Application.Batches;
 using WeighingMS.Application.Devices;
 using WeighingMS.Application.Weighing;
+using WeighingMS.Application.WriteBack;
 using WeighingMS.Infrastructure;
 
 // WeighingMS.Api: the only service the UI calls (B0). Cookie auth + antiforgery + rate limiting (ADR-009),
@@ -41,6 +42,12 @@ builder.Services.AddOptions<ToleranceSettings>()
     .Bind(builder.Configuration.GetSection(ToleranceSettings.SectionName))
     .Validate(o => o.Validate().Count == 0, "Tolerances: each entry needs a chemicalId, a positive plusMinus, unit g or kg, scaleClass precision or heavyDuty, and no duplicates.")
     .ValidateOnStart();
+
+builder.Services.AddOptions<WriteBackOptions>()
+    .Bind(builder.Configuration.GetSection(WriteBackOptions.SectionName))
+    .Validate(o => o.Validate().Count == 0, "WriteBack: MaxAttempts >= 1, BaseDelay > 0, MaxDelay >= BaseDelay and PollInterval > 0 are required.")
+    .ValidateOnStart();
+builder.Services.AddSingleton(sp => sp.GetRequiredService<IOptions<WriteBackOptions>>().Value);
 
 builder.Services.AddOptions<ScaleSelectionOptions>()
     .Bind(builder.Configuration.GetSection(ScaleSelectionOptions.SectionName))

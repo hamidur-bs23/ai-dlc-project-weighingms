@@ -96,6 +96,7 @@ public sealed class ApiFixture : IAsyncLifetime
             b.UseSetting("ConnectionStrings:Db", ConnectionString);
             b.UseSetting("RateLimits:AuthPermitLimitPerMinute", "1000");
             b.UseSetting("Integrations:Simulators:CircuitBreakerMinimumThroughput", "1000");
+            b.UseSetting("WriteBack:Enabled", "false"); // tests drive WriteBackDispatcher directly
             foreach (var (key, value) in settings ?? new Dictionary<string, string?>())
             {
                 b.UseSetting(key, value);

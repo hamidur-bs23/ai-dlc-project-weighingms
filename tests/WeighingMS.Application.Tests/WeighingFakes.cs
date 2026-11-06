@@ -3,10 +3,12 @@ using Microsoft.Extensions.Time.Testing;
 using WeighingMS.Application.Batches;
 using WeighingMS.Application.Devices;
 using WeighingMS.Application.Weighing;
+using WeighingMS.Application.WriteBack;
 using WeighingMS.Domain.Audit;
 using WeighingMS.Domain.Batches;
 using WeighingMS.Domain.Common;
 using WeighingMS.Domain.Weighing;
+using WeighingMS.Domain.WriteBack;
 
 namespace WeighingMS.Application.Tests;
 
@@ -41,6 +43,8 @@ internal sealed class FakeOrgatex : IOrgatexGateway
         RecipeCalls++;
         return Task.FromResult<ErrorOr<OrgatexRecipe>>(Down ? OrgatexErrors.Unavailable : new OrgatexRecipe(batchId, "Teal 4C", false, Lines()));
     }
+    public Task<ErrorOr<DateTimeOffset>> PostConsumptionAsync(string batchId, Guid idempotencyKey, IReadOnlyList<ConsumptionLine> lines, CancellationToken cancellationToken) =>
+        throw new NotSupportedException();
 }
 
 internal sealed class FakeSnapshots : IRecipeSnapshotStore
@@ -161,4 +165,39 @@ internal sealed class NoScanner : IScanner
     public Task<ErrorOr<IReadOnlyList<ScanEvent>>> GetScansAfterAsync(long after, CancellationToken cancellationToken) => throw new NotSupportedException();
 
     public Task<ErrorOr<DeviceStatus>> GetStatusAsync(CancellationToken cancellationToken) => throw new NotSupportedException();
+}
+
+internal sealed class FakeWriteBacks : IWriteBackRepository
+{
+    public List<ConsumptionWriteBack> Stored { get; } = [];
+
+    public int Saves { get; private set; }
+
+    public bool Conflict { get; set; }
+
+    public void Add(ConsumptionWriteBack writeBack) => Stored.Add(writeBack);
+
+    public Task<ConsumptionWriteBack?> FindAsync(string batchId, CancellationToken cancellationToken) =>
+        Task.FromResult(Stored.FirstOrDefault(w => w.BatchId == batchId));
+
+    public Task<IReadOnlyList<ConsumptionWriteBack>> ListDueAsync(DateTimeOffset now, int take, CancellationToken cancellationToken) =>
+        Task.FromResult<IReadOnlyList<ConsumptionWriteBack>>([.. Stored.Where(w => w.IsDue(now)).OrderBy(w => w.NextAttemptAt).Take(take)]);
+
+    public Task<IReadOnlyDictionary<string, WriteBackStatus>> StatusesAsync(IReadOnlyCollection<string> batchIds, CancellationToken cancellationToken) =>
+        Task.FromResult<IReadOnlyDictionary<string, WriteBackStatus>>(Stored.Where(w => batchIds.Contains(w.BatchId)).ToDictionary(w => w.BatchId, w => w.Status));
+
+    public Task<int> CountUnsyncedAsync(CancellationToken cancellationToken) => Task.FromResult(Stored.Count(w => w.Status != WriteBackStatus.Sent));
+
+    public Task<bool> SaveAsync(CancellationToken cancellationToken)
+    {
+        Saves++;
+        return Task.FromResult(!Conflict);
+    }
+}
+
+internal sealed class FakeSignal : IWriteBackSignal
+{
+    public int Notifications { get; private set; }
+
+    public void Notify() => Notifications++;
 }

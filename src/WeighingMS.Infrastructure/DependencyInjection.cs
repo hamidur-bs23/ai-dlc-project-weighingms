@@ -5,11 +5,13 @@ using WeighingMS.Application.Abstractions;
 using WeighingMS.Application.Access;
 using WeighingMS.Application.Batches;
 using WeighingMS.Application.Weighing;
+using WeighingMS.Application.WriteBack;
 using WeighingMS.Infrastructure.Access;
 using WeighingMS.Infrastructure.Batches;
 using WeighingMS.Infrastructure.Integrations;
 using WeighingMS.Infrastructure.Persistence;
 using WeighingMS.Infrastructure.Weighing;
+using WeighingMS.Infrastructure.WriteBack;
 
 namespace WeighingMS.Infrastructure;
 
@@ -33,6 +35,10 @@ public static class DependencyInjection
         services.AddSingleton<IToleranceCatalogue, ToleranceCatalogue>();
         services.AddScoped<IWeighingSessionRepository, WeighingSessionRepository>();
         services.AddSingleton<IScaleSelectionSource, ScaleSelectionSource>();
+        services.AddScoped<IWriteBackRepository, WriteBackRepository>();
+        services.AddSingleton<WriteBackSignal>();
+        services.AddSingleton<IWriteBackSignal>(sp => sp.GetRequiredService<WriteBackSignal>());
+        services.AddHostedService<WriteBackHostedService>();
         services.AddDeviceIntegrations(configuration);
         return services;
     }

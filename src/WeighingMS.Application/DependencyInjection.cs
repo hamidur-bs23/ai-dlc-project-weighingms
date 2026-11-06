@@ -4,6 +4,7 @@ using WeighingMS.Application.Access;
 using WeighingMS.Application.Batches;
 using WeighingMS.Application.Devices;
 using WeighingMS.Application.Weighing;
+using WeighingMS.Application.WriteBack;
 
 namespace WeighingMS.Application;
 
@@ -19,6 +20,9 @@ public static class DependencyInjection
         services.AddScoped<DeviceService>();
         services.AddScoped<BatchService>();
         services.AddScoped<WeighingSessionService>();
+        services.AddScoped<IBatchCompletedHandler, ConsumptionWriteBackHandler>();
+        services.AddScoped<WriteBackDispatcher>();
+        services.AddScoped<WriteBackService>();
         return services;
     }
 }

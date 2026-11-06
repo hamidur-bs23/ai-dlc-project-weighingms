@@ -22,7 +22,7 @@ public sealed class WeighingAttemptServiceTests
         var clock = new FakePlantClock(_time);
         var devices = new DeviceService(_scales, new NoScanner(), [], new DeviceHealthTracker(_time), new DevicesOptions(), _time);
         var snapshots = new FakeSnapshots();
-        _service = new WeighingSessionService(_sessions, new BatchService(new FakeOrgatex(), snapshots, clock), new FakeTolerances(), _scales, devices, new FakeSelection(), _audit, clock, new FakeGrants(), snapshots, new FakeUsers(), []);
+        _service = new WeighingSessionService(_sessions, new BatchService(new FakeOrgatex(), snapshots, clock, new FakeWriteBacks()), new FakeTolerances(), _scales, devices, new FakeSelection(), _audit, clock, new FakeGrants(), snapshots, new FakeUsers(), [], new FakeWriteBacks());
     }
 
     private static CancellationToken Ct => TestContext.Current.CancellationToken;

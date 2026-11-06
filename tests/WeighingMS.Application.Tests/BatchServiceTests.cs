@@ -2,6 +2,7 @@ using ErrorOr;
 using Microsoft.Extensions.Time.Testing;
 using WeighingMS.Application.Batches;
 using WeighingMS.Domain.Batches;
+using WeighingMS.Domain.WriteBack;
 
 namespace WeighingMS.Application.Tests;
 
@@ -10,11 +11,38 @@ public sealed class BatchServiceTests
     private readonly FakeTimeProvider _time = new(new DateTimeOffset(2026, 11, 3, 21, 48, 22, TimeSpan.Zero));
     private readonly FakeOrgatex _orgatex = new();
     private readonly FakeSnapshots _snapshots = new();
+    private readonly FakeWriteBacks _writeBacks = new();
     private readonly BatchService _service;
 
-    public BatchServiceTests() => _service = new BatchService(_orgatex, _snapshots, new FakePlantClock(_time));
+    public BatchServiceTests() => _service = new BatchService(_orgatex, _snapshots, new FakePlantClock(_time), _writeBacks);
 
     private static CancellationToken Ct => TestContext.Current.CancellationToken;
+
+    [Theory]
+    [InlineData("pending", BatchStatus.SyncPending)]
+    [InlineData("sent", BatchStatus.Complete)]
+    [InlineData("failed", BatchStatus.SyncFailed)]
+    public async Task Queue_ACompletedBatch_TakesItsStatusFromTheWriteBack(string state, BatchStatus expected)
+    {
+        await _service.GetRecipeAsync("B-24187", Ct); // opened: without a write-back it would be Weighing
+        var now = _time.GetUtcNow();
+        var writeBack = ConsumptionWriteBack.Create("B-24187", Guid.CreateVersion7(), [new("DYE-4471", 94.2m, "g", "L-1")], now);
+        if (state == "sent")
+        {
+            writeBack.RecordSent(now, now);
+        }
+        else if (state == "failed")
+        {
+            writeBack.RecordFailure("x", retryable: false, new RetryPolicy(1, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(1)), now);
+        }
+
+        _writeBacks.Add(writeBack);
+
+        var queue = (await _service.GetQueueAsync(Ct)).Value;
+        queue.Single(q => q.Batch.BatchId == "B-24187").Status.ShouldBe(expected);
+        queue.Single(q => q.Batch.BatchId == "B-24188").Status.ShouldBe(BatchStatus.Queued);
+        (await _service.GetBatchAsync("B-24187", Ct)).Value.Status.ShouldBe(expected);
+    }
 
     [Fact]
     public async Task Queue_BeforeAndAfterOpening_IsQueuedThenWeighing()
@@ -130,6 +158,9 @@ public sealed class BatchServiceTests
             var line = new RecipeLine(1, "DYE-4471", "DYE-4471", "Remazol Yellow RGB", "#d9a520", 94.0m, BadUnit ? "lb" : "g", 0.5m, "C-12");
             return Task.FromResult<ErrorOr<OrgatexRecipe>>(new OrgatexRecipe(batchId, "Teal 4C", RecipeTrainingOnly, [line]));
         }
+
+        public Task<ErrorOr<DateTimeOffset>> PostConsumptionAsync(string batchId, Guid idempotencyKey, IReadOnlyList<ConsumptionLine> lines, CancellationToken cancellationToken) =>
+            throw new NotSupportedException();
     }
 
     private sealed class FakeSnapshots : IRecipeSnapshotStore

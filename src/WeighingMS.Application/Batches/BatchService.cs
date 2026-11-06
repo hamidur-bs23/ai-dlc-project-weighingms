@@ -1,6 +1,8 @@
 using ErrorOr;
 using WeighingMS.Application.Abstractions;
+using WeighingMS.Application.WriteBack;
 using WeighingMS.Domain.Batches;
+using WeighingMS.Domain.WriteBack;
 
 namespace WeighingMS.Application.Batches;
 
@@ -8,7 +10,7 @@ namespace WeighingMS.Application.Batches;
 /// Batch use cases: the queue (live from OrgaTEX, with WeighingMS status), one batch, and the recipe snapshot
 /// (taken on first request, served from the database afterwards even if OrgaTEX is down).
 /// </summary>
-public sealed class BatchService(IOrgatexGateway orgatex, IRecipeSnapshotStore snapshots, IPlantClock clock)
+public sealed class BatchService(IOrgatexGateway orgatex, IRecipeSnapshotStore snapshots, IPlantClock clock, IWriteBackRepository writeBacks)
 {
     /// <summary>The released batches with their status. No caching: always read from OrgaTEX.</summary>
     public async Task<ErrorOr<IReadOnlyList<QueuedBatch>>> GetQueueAsync(CancellationToken cancellationToken)
@@ -19,8 +21,10 @@ public sealed class BatchService(IOrgatexGateway orgatex, IRecipeSnapshotStore s
             return batches.Errors;
         }
 
-        var opened = await snapshots.WithSnapshotAsync([.. batches.Value.Select(b => b.BatchId)], cancellationToken);
-        return batches.Value.Select(b => new QueuedBatch(b, opened.Contains(b.BatchId) ? BatchStatus.Weighing : BatchStatus.Queued)).ToList();
+        var ids = batches.Value.Select(b => b.BatchId).ToList();
+        var opened = await snapshots.WithSnapshotAsync(ids, cancellationToken);
+        var synced = await writeBacks.StatusesAsync(ids, cancellationToken);
+        return batches.Value.Select(b => new QueuedBatch(b, StatusOf(b.BatchId, opened, synced))).ToList();
     }
 
     /// <summary>One batch with its status.</summary>
@@ -33,7 +37,8 @@ public sealed class BatchService(IOrgatexGateway orgatex, IRecipeSnapshotStore s
         }
 
         var opened = await snapshots.WithSnapshotAsync([batch.Value.BatchId], cancellationToken);
-        return new QueuedBatch(batch.Value, opened.Count > 0 ? BatchStatus.Weighing : BatchStatus.Queued);
+        var synced = await writeBacks.StatusesAsync([batch.Value.BatchId], cancellationToken);
+        return new QueuedBatch(batch.Value, StatusOf(batch.Value.BatchId, opened, synced));
     }
 
     /// <summary>
@@ -68,5 +73,24 @@ public sealed class BatchService(IOrgatexGateway orgatex, IRecipeSnapshotStore s
         }
 
         return await snapshots.AddOrGetExistingAsync(snapshot.Value, cancellationToken);
+    }
+
+    /// <summary>
+    /// The WeighingMS status of a batch: a write-back exists once it completed (Complete / SyncPending / SyncFailed);
+    /// otherwise Weighing when opened, else Queued.
+    /// </summary>
+    private static BatchStatus StatusOf(string batchId, IReadOnlySet<string> opened, IReadOnlyDictionary<string, WriteBackStatus> synced)
+    {
+        if (!synced.TryGetValue(batchId, out var status))
+        {
+            return opened.Contains(batchId) ? BatchStatus.Weighing : BatchStatus.Queued;
+        }
+
+        return status switch
+        {
+            WriteBackStatus.Sent => BatchStatus.Complete,
+            WriteBackStatus.SyncFailed => BatchStatus.SyncFailed,
+            _ => BatchStatus.SyncPending,
+        };
     }
 }

@@ -3,13 +3,14 @@ using Microsoft.AspNetCore.Mvc;
 using WeighingMS.Api.Common;
 using WeighingMS.Api.Contracts.Devices;
 using WeighingMS.Application.Devices;
+using WeighingMS.Application.WriteBack;
 
 namespace WeighingMS.Api.Controllers;
 
 /// <summary>Aggregated device health for the status strip (scales, scanner, printer, OrgaTEX).</summary>
 [Route("api/devices")]
 [Authorize(Policy = StationPolicies.RequireOperator)]
-public sealed class DevicesController(DeviceService devices) : ApiControllerBase
+public sealed class DevicesController(DeviceService devices, WriteBackService writeBacks) : ApiControllerBase
 {
     /// <summary>Status and since-time of every device and integration.</summary>
     [HttpGet("health")]
@@ -18,6 +19,7 @@ public sealed class DevicesController(DeviceService devices) : ApiControllerBase
     {
         var health = await devices.GetHealthAsync(cancellationToken);
         return new DeviceHealthListResponse(
-            [.. health.Select(h => new DeviceHealthResponse(h.Device, WireNames.Of(h.Kind), WireNames.Of(h.Status), h.Since))]);
+            [.. health.Select(h => new DeviceHealthResponse(h.Device, WireNames.Of(h.Kind), WireNames.Of(h.Status), h.Since))],
+            await writeBacks.CountUnsyncedAsync(cancellationToken));
     }
 }

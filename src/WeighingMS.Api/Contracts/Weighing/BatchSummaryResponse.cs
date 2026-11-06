@@ -18,12 +18,22 @@ public sealed record BatchSummaryResponse(
     DateTimeOffset? CompletedAt,
     long? ElapsedSeconds,
     IReadOnlyList<string> Operators,
-    IntegrationStateResponse Orgatex,
+    OrgatexStateResponse Orgatex,
     IntegrationStateResponse Ticket,
     IReadOnlyList<BatchSummaryLineResponse> Lines);
 
-/// <summary>OrgaTEX write-back or ticket state (A15: <c>notAvailable</c> until bolts 011 / 012).</summary>
+/// <summary>The ticket state (A15: <c>notAvailable</c> until bolt 012).</summary>
 public sealed record IntegrationStateResponse(string State);
+
+/// <summary>
+/// The OrgaTEX write-back (bolt 011): <c>notAvailable</c> (batch not complete) · <c>pending</c> (with attempts and the next
+/// attempt) · <c>sent</c> (with <c>writtenAt</c>) · <c>syncFailed</c> (with the error code; Retry offered).
+/// </summary>
+public sealed record OrgatexStateResponse(string State, DateTimeOffset? WrittenAt, int Attempts, DateTimeOffset? NextAttemptAt, string? ErrorCode)
+{
+    /// <summary>No write-back yet.</summary>
+    public static OrgatexStateResponse NotAvailable { get; } = new("notAvailable", null, 0, null, null);
+}
 
 /// <summary>One chemical: required, actual and final status (<c>pending | active | withinRange | targetAchieved | underweight | overweight</c>).</summary>
 public sealed record BatchSummaryLineResponse(int Sequence, string ChemicalId, string ChemicalName, QuantityResponse Required, QuantityResponse? Actual, string Status, bool Override);
