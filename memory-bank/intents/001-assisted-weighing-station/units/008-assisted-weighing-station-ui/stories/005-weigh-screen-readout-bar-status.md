@@ -2,12 +2,17 @@
 id: 005-weigh-screen-readout-bar-status
 unit: 008-assisted-weighing-station-ui
 intent: 001-assisted-weighing-station
-status: draft
+status: complete
 priority: must
-requirements: [FR-9, FR-10, FR-11, FR-12, FR-16]
-created: 2026-11-04T16:00:00Z
+requirements:
+  - FR-9
+  - FR-10
+  - FR-11
+  - FR-12
+  - FR-16
+created: '2026-11-04T16:00:00Z'
 assigned_bolt: 010-assisted-weighing-station-ui
-implemented: false
+implemented: true
 ---
 
 # Story: 005-weigh-screen-readout-bar-status

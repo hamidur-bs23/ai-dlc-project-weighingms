@@ -128,3 +128,23 @@
 | intents/001-assisted-weighing-station/requirements.md | construction | units-defined | Intent has 8 units (5/8 complete) |
 
 ---
+
+## 2026-11-06T03:29:37.612Z - Status Sync
+
+**Triggered by**: status-integrity script
+
+| Artifact | Old Status | New Status | Reason |
+|----------|------------|------------|--------|
+| intents/001-assisted-weighing-station/units/008-assisted-weighing-station-ui/unit-brief.md | in-progress | stories-defined | Unit has 4 bolts (2/4 complete) |
+
+---
+
+## 2026-11-06T03:29:37.678Z - Status Sync
+
+**Triggered by**: status-integrity script
+
+| Artifact | Old Status | New Status | Reason |
+|----------|------------|------------|--------|
+| intents/001-assisted-weighing-station/requirements.md | construction | units-defined | Intent has 8 units (5/8 complete) |
+
+---

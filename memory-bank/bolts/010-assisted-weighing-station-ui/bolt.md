@@ -3,17 +3,17 @@ id: 010-assisted-weighing-station-ui
 unit: 008-assisted-weighing-station-ui
 intent: 001-assisted-weighing-station
 type: simple-construction-bolt
-status: in-progress
+status: complete
 stories:
   - 004-weigh-screen-rail-and-header
   - 005-weigh-screen-readout-bar-status
   - 006-weigh-actions-and-keys
   - 007-lot-and-container-entry
   - 008-supervisor-override-dialog
-created: 2026-11-04T17:00:00Z
-started: 2026-11-05T19:07:21Z
-completed: null
-current_stage: test
+created: '2026-11-04T17:00:00Z'
+started: '2026-11-05T19:07:21Z'
+completed: '2026-11-06T03:29:37Z'
+current_stage: null
 stages_completed:
   - name: plan
     completed: '2026-11-05T19:20:00Z'
@@ -21,12 +21,14 @@ stages_completed:
   - name: implement
     completed: '2026-11-06T03:15:00Z'
     artifact: implementation-walkthrough.md
-
-requires_bolts: [006-assisted-weighing-station-ui, 009-weighing-station]
-enables_bolts: [013-assisted-weighing-station-ui]
-requires_units: [005-weighing-station]
+requires_bolts:
+  - 006-assisted-weighing-station-ui
+  - 009-weighing-station
+enables_bolts:
+  - 013-assisted-weighing-station-ui
+requires_units:
+  - 005-weighing-station
 blocks: true
-
 complexity:
   avg_complexity: 2
   avg_uncertainty: 1

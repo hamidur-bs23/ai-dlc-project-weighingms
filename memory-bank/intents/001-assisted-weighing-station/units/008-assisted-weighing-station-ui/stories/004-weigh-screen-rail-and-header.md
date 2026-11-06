@@ -2,12 +2,19 @@
 id: 004-weigh-screen-rail-and-header
 unit: 008-assisted-weighing-station-ui
 intent: 001-assisted-weighing-station
-status: draft
+status: complete
 priority: must
-requirements: [FR-3, FR-4, FR-5, FR-6, FR-7, FR-8, FR-17]
-created: 2026-11-04T16:00:00Z
+requirements:
+  - FR-3
+  - FR-4
+  - FR-5
+  - FR-6
+  - FR-7
+  - FR-8
+  - FR-17
+created: '2026-11-04T16:00:00Z'
 assigned_bolt: 010-assisted-weighing-station-ui
-implemented: false
+implemented: true
 ---
 
 # Story: 004-weigh-screen-rail-and-header
