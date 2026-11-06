@@ -134,6 +134,16 @@
     color: var(--warn);
   }
 
+  &--done {
+    border-color: var(--ok);
+    color: var(--ok);
+  }
+
+  &--failed {
+    border-color: var(--over);
+    color: var(--over);
+  }
+
   &--training {
     border-style: dashed;
   }

@@ -1791,6 +1791,106 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/batches/{batchId}/session/write-back": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    batchId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["OrgatexStateResponse"];
+                        "application/json": components["schemas"]["OrgatexStateResponse"];
+                        "text/json": components["schemas"]["OrgatexStateResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/batches/{batchId}/session/write-back/retry": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    batchId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["OrgatexStateResponse"];
+                        "application/json": components["schemas"]["OrgatexStateResponse"];
+                        "text/json": components["schemas"]["OrgatexStateResponse"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1852,7 +1952,7 @@ export interface components {
             /** Format: int64 */
             elapsedSeconds: null | number;
             operators: string[];
-            orgatex: components["schemas"]["IntegrationStateResponse"];
+            orgatex: components["schemas"]["OrgatexStateResponse"];
             ticket: components["schemas"]["IntegrationStateResponse"];
             lines: components["schemas"]["BatchSummaryLineResponse"][];
         };
@@ -1928,6 +2028,8 @@ export interface components {
         };
         DeviceHealthListResponse: {
             items: components["schemas"]["DeviceHealthResponse"][];
+            /** Format: int32 */
+            unsyncedWriteBacks: number;
         };
         DeviceHealthResponse: {
             device: string;
@@ -1944,6 +2046,16 @@ export interface components {
         };
         IntegrationStateResponse: {
             state: string;
+        };
+        OrgatexStateResponse: {
+            state: string;
+            /** Format: date-time */
+            writtenAt: null | string;
+            /** Format: int32 */
+            attempts: number;
+            /** Format: date-time */
+            nextAttemptAt: null | string;
+            errorCode: null | string;
         };
         OverrideOfferResponse: {
             offered: boolean;

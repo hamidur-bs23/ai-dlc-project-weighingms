@@ -6,7 +6,7 @@ import { DeviceHealthService } from '@core/devices/device-health.service';
 /**
  * Status strip (story 001): both scales, the scanner, the printer and OrgaTEX with a dot *and* a
  * READY / OFFLINE label (never colour alone), the language and the plant-time clock.
- * The OrgaTEX unsynced count joins with write-back (bolt 011).
+ * OrgaTEX also shows how many write-backs are not yet sent (bolt 011).
  */
 @Component({
   selector: 'wms-status-strip',
@@ -24,6 +24,11 @@ import { DeviceHealthService } from '@core/devices/device-health.service';
               {{ 'statusStrip.' + d.kind | transloco }}
             }
             · {{ 'statusStrip.state.' + d.state | transloco }}
+            @if (d.kind === 'orgatex' && unsynced() > 0) {
+              <span class="stat__unsynced" data-testid="unsynced">
+                · {{ 'statusStrip.unsynced' | transloco: { count: unsynced() } }}
+              </span>
+            }
           </li>
         }
       </ul>
@@ -70,6 +75,10 @@ import { DeviceHealthService } from '@core/devices/device-health.service';
       color: var(--over);
     }
 
+    .stat__unsynced {
+      color: var(--warn);
+    }
+
     .stat__dot {
       width: 7px;
       height: 7px;
@@ -92,6 +101,8 @@ import { DeviceHealthService } from '@core/devices/device-health.service';
   `,
 })
 export class StatusStripComponent {
-  protected readonly devices = inject(DeviceHealthService).devices;
+  private readonly health = inject(DeviceHealthService);
+  protected readonly devices = this.health.devices;
+  protected readonly unsynced = this.health.unsynced;
   protected readonly time = inject(PlantClockService).time;
 }

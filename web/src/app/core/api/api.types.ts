@@ -29,5 +29,8 @@ export type StepUpGrant = Schemas['StepUpResponse'];
 /** The four reading classes the server computes (FR-12). */
 export type WeightClass = 'underweight' | 'withinRange' | 'targetAchieved' | 'overweight';
 
-/** The WeighingMS queue status (bolts 009/011/012 add complete, print and sync pending). */
-export type BatchStatus = 'queued' | 'weighing';
+/** The WeighingMS queue status (print pending is added by bolt 012). */
+export type BatchStatus = 'queued' | 'weighing' | 'complete' | 'syncPending' | 'syncFailed';
+
+/** The OrgaTEX write-back of a batch (bolt 011). */
+export type OrgatexState = Schemas['OrgatexStateResponse'];

@@ -81,7 +81,12 @@
                     <td>{{ b.shade }}</td>
                     <td class="mono">{{ b.componentCount }}</td>
                     <td>
-                      <span class="tag" [class.tag--now]="b.status === 'weighing'">
+                      <span
+                        class="tag"
+                        [class.tag--now]="b.status === 'weighing' || b.status === 'syncPending'"
+                        [class.tag--done]="b.status === 'complete'"
+                        [class.tag--failed]="b.status === 'syncFailed'"
+                      >
                         {{ 'batchQueue.status.' + b.status | transloco }}
                       </span>
                       @if (b.trainingOnly) {

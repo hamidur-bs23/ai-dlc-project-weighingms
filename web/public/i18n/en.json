@@ -24,7 +24,8 @@
       "unknown": "NO DATA"
     },
     "language": "EN",
-    "clock": "Plant time"
+    "clock": "Plant time",
+    "unsynced": "{{ count }} UNSYNCED"
   },
   "signIn": {
     "title": "Sign in to the station",
@@ -57,7 +58,10 @@
     },
     "status": {
       "queued": "QUEUED",
-      "weighing": "WEIGHING"
+      "weighing": "WEIGHING",
+      "complete": "COMPLETE",
+      "syncPending": "SYNC PENDING",
+      "syncFailed": "SYNC FAILED"
     }
   },
   "banner": {
@@ -95,7 +99,10 @@
     "Auth.StepUpFailed": "Supervisor badge or PIN not accepted.",
     "Auth.SupervisorRequired": "That badge is not a supervisor.",
     "Auth.FourEyesRequired": "Another supervisor must authorise this override.",
-    "Auth.GrantInvalid": "The supervisor authorisation has expired or was already used. Try again."
+    "Auth.GrantInvalid": "The supervisor authorisation has expired or was already used. Try again.",
+    "WriteBack.NotFailed": "The write-back is not in a failed state.",
+    "WriteBack.NotFound": "This batch has no OrgaTEX write-back.",
+    "OrgaTex.ConsumptionRejected": "OrgaTEX rejected the consumption. Ask a supervisor."
   },
   "weigh": {
     "label": "Weighing",
@@ -195,7 +202,10 @@
     "completedAt": "Completed",
     "orgatex": "Written to OrgaTEX",
     "state": {
-      "notAvailable": "—"
+      "notAvailable": "—",
+      "sent": "CONFIRMED {{ time }}",
+      "pending": "Pending sync",
+      "syncFailed": "Sync failed"
     },
     "lines": "Components",
     "columns": {
@@ -213,6 +223,7 @@
       "active": "Weighing"
     },
     "back": "Back to queue",
-    "loading": "Loading the summary…"
+    "loading": "Loading the summary…",
+    "retrySync": "Retry"
   }
 }

@@ -44,6 +44,26 @@ describe('BatchQueueComponent (screen 1 · Select batch)', () => {
 
   const bodyRows = () => screen.getAllByRole('row').slice(1);
 
+  it('should tag completed batches with their OrgaTEX write-back status', async () => {
+    await loadQueue([
+      { ...b24187, batchId: 'B-1', status: 'complete' },
+      { ...b24187, batchId: 'B-2', status: 'syncPending' },
+      { ...b24187, batchId: 'B-3', status: 'syncFailed' },
+    ]);
+
+    const tags = bodyRows().map((r) =>
+      within(r).getAllByRole('cell').at(-1)?.querySelector('.tag'),
+    );
+    expect(tags.map((t) => t?.textContent.trim())).toEqual([
+      'COMPLETE',
+      'SYNC PENDING',
+      'SYNC FAILED',
+    ]);
+    expect(tags[0]?.classList.contains('tag--done')).toBe(true);
+    expect(tags[1]?.classList.contains('tag--now')).toBe(true);
+    expect(tags[2]?.classList.contains('tag--failed')).toBe(true);
+  });
+
   it('should show the scan prompt and the queue from GET /api/batches with every column', async () => {
     expect(screen.getByText('Scan a batch card to begin')).toBeTruthy();
     await loadQueue();

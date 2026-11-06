@@ -7,8 +7,10 @@ import { StatusStripComponent } from './status-strip.component';
 
 describe('StatusStripComponent', () => {
   const devices = signal<DeviceStat[]>([]);
+  const unsynced = signal(0);
 
   beforeEach(async () => {
+    unsynced.set(0);
     devices.set([
       { device: 'scale-3kg', kind: 'scale', name: '3 kg precision', state: 'ready' },
       { device: 'scale-32kg', kind: 'scale', name: '32 kg floor', state: 'offline' },
@@ -19,7 +21,7 @@ describe('StatusStripComponent', () => {
     await render(StatusStripComponent, {
       providers: [
         provideTestTransloco(),
-        { provide: DeviceHealthService, useValue: { devices } },
+        { provide: DeviceHealthService, useValue: { devices, unsynced } },
         { provide: PlantClockService, useValue: { time: signal('07:47:03') } },
       ],
     });
@@ -48,5 +50,22 @@ describe('StatusStripComponent', () => {
       d.map((x) => (x.device === 'scale-32kg' ? { ...x, state: 'ready' as const } : x)),
     );
     expect(await screen.findByText(/SCALE 32 kg floor · READY/)).toBeTruthy();
+  });
+
+  it('should hide the unsynced count when every write-back is sent', () => {
+    expect(screen.queryByTestId('unsynced')).toBeNull();
+  });
+
+  it('should show the unsynced count on OrgaTEX only (STEP 30)', async () => {
+    devices.update((d) =>
+      d.map((x) => (x.device === 'orgatex' ? { ...x, state: 'offline' as const } : x)),
+    );
+    unsynced.set(2);
+
+    const count = await screen.findByTestId('unsynced');
+    expect(count.closest('li')?.textContent.replace(/\s+/g, ' ').trim()).toBe(
+      'ORGATEX · OFFLINE · 2 UNSYNCED',
+    );
+    expect(screen.getAllByTestId('unsynced')).toHaveLength(1);
   });
 });

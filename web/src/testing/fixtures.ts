@@ -171,6 +171,7 @@ export function health(overrides: Record<string, 'ready' | 'offline'> = {}): Dev
       item('printer', 'printer'),
       item('orgatex', 'orgatex'),
     ],
+    unsyncedWriteBacks: 0,
   };
 }
 

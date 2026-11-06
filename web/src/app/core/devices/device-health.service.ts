@@ -24,10 +24,13 @@ export class DeviceHealthService {
   private readonly http = inject(HttpClient);
   private readonly config = inject(STATION_UI_CONFIG);
   private readonly stats = signal<readonly DeviceStat[]>([]);
+  private readonly unsyncedCount = signal(0);
   private scaleNames = new Map<string, string>();
   private polling: Subscription | null = null;
 
   readonly devices = this.stats.asReadonly();
+  /** OrgaTEX write-backs not yet sent (pending or sync failed), for the strip (bolt 011). */
+  readonly unsynced = this.unsyncedCount.asReadonly();
 
   constructor() {
     inject(DestroyRef).onDestroy(() => {
@@ -59,6 +62,7 @@ export class DeviceHealthService {
           this.stats.update((current) => current.map((d) => ({ ...d, state: 'unknown' as const })));
           return;
         }
+        this.unsyncedCount.set(list.unsyncedWriteBacks);
         this.stats.set(
           list.items.map((h) =>
             this.withName({
@@ -76,6 +80,7 @@ export class DeviceHealthService {
     this.polling?.unsubscribe();
     this.polling = null;
     this.stats.set([]);
+    this.unsyncedCount.set(0);
   }
 
   private withName(stat: DeviceStat): DeviceStat {

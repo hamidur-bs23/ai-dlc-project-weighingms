@@ -74,4 +74,35 @@ describe('DeviceHealthService', () => {
     httpMock().expectNone('/api/devices/health');
     expect(service.devices()).toEqual([]);
   });
+
+  it('should follow the unsynced write-back count and clear it on stop', () => {
+    start();
+    httpMock()
+      .expectOne('/api/devices/health')
+      .flush({ ...health(), unsyncedWriteBacks: 2 });
+    expect(service.unsynced()).toBe(2);
+
+    vi.advanceTimersByTime(5000);
+    httpMock().expectOne('/api/devices/health').flush(health());
+    expect(service.unsynced()).toBe(0);
+
+    vi.advanceTimersByTime(5000);
+    httpMock()
+      .expectOne('/api/devices/health')
+      .flush({ ...health(), unsyncedWriteBacks: 1 });
+    service.stop();
+    expect(service.unsynced()).toBe(0);
+  });
+
+  it('should keep the last unsynced count when the Api cannot be reached', () => {
+    start();
+    httpMock()
+      .expectOne('/api/devices/health')
+      .flush({ ...health(), unsyncedWriteBacks: 2 });
+
+    vi.advanceTimersByTime(5000);
+    httpMock().expectOne('/api/devices/health').error(new ProgressEvent('error'), { status: 0 });
+
+    expect(service.unsynced()).toBe(2);
+  });
 });

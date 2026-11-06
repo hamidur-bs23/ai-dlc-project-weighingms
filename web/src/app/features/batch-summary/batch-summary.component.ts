@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   effect,
   inject,
   input,
@@ -17,6 +18,9 @@ import { AppError, toAppError } from '@core/errors/app-error';
 import { WeightPipe } from '@core/format/weight.pipe';
 import { WeighingApiService } from '@core/weighing/weighing-api.service';
 import { BannerComponent } from '@shared/ui/banner/banner.component';
+
+/** How often the summary refreshes while the OrgaTEX write-back is pending. */
+export const SUMMARY_REFRESH_MS = 2000;
 
 /**
  * The interim, read-only batch summary (INTERIM-SUMMARY) shown after the last component: the server's summary (FR-18).
@@ -71,7 +75,37 @@ import { BannerComponent } from '@shared/ui/banner/banner.component';
           </div>
           <div class="summary__row">
             <dt>{{ 'summary.orgatex' | transloco }}</dt>
-            <dd>{{ 'summary.state.' + s.orgatex.state | transloco }}</dd>
+            <dd
+              data-testid="orgatex-state"
+              [class.good]="s.orgatex.state === 'sent'"
+              [class.bad]="s.orgatex.state === 'syncFailed'"
+            >
+              @switch (s.orgatex.state) {
+                @case ('sent') {
+                  {{
+                    'summary.state.sent'
+                      | transloco: { time: (s.orgatex.writtenAt | plantTime: true) }
+                  }}
+                }
+                @case ('pending') {
+                  {{ 'summary.state.pending' | transloco }}
+                }
+                @case ('syncFailed') {
+                  {{ 'summary.state.syncFailed' | transloco }}
+                  <button
+                    type="button"
+                    class="key key--small summary__retry"
+                    [disabled]="retrying()"
+                    (click)="retry()"
+                  >
+                    {{ 'summary.retrySync' | transloco }}
+                  </button>
+                }
+                @default {
+                  {{ 'summary.state.notAvailable' | transloco }}
+                }
+              }
+            </dd>
           </div>
         </dl>
 
@@ -188,6 +222,10 @@ import { BannerComponent } from '@shared/ui/banner/banner.component';
       }
     }
 
+    .summary__retry {
+      margin-left: var(--space-3);
+    }
+
     .ovr {
       margin-left: var(--space-1);
       padding: 0 var(--space-1);
@@ -209,18 +247,52 @@ export class BatchSummaryComponent {
 
   protected readonly summary = signal<BatchSummary | null>(null);
   protected readonly error = signal<AppError | null>(null);
+  protected readonly retrying = signal(false);
+  private refresh: ReturnType<typeof setTimeout> | null = null;
+  private destroyed = false;
 
   constructor() {
     effect(() => {
       const id = this.batchId();
       untracked(() => void this.load(id));
     });
+    inject(DestroyRef).onDestroy(() => {
+      this.destroyed = true;
+      this.stopRefresh();
+    });
+  }
+
+  /** Manual retry of a sync-failed write-back (WRITEBACK-RETRY-ANYONE), then follow it until sent or failed. */
+  protected async retry(): Promise<void> {
+    this.retrying.set(true);
+    try {
+      await firstValueFrom(this.api.retryWriteBack(this.batchId()));
+      await this.load(this.batchId());
+    } catch (e) {
+      this.error.set(toAppError(e));
+    } finally {
+      this.retrying.set(false);
+    }
+  }
+
+  private stopRefresh(): void {
+    if (this.refresh !== null) {
+      clearTimeout(this.refresh);
+      this.refresh = null;
+    }
   }
 
   protected async load(batchId: string): Promise<void> {
     this.error.set(null);
+    this.stopRefresh();
     try {
-      this.summary.set(await firstValueFrom(this.api.summary(batchId)));
+      const summary = await firstValueFrom(this.api.summary(batchId));
+      this.summary.set(summary);
+      // While the write-back is pending, follow it until OrgaTEX confirms it or it fails (story 004).
+      // A response that arrives after the screen closed must not start a timer nothing would clear.
+      if (summary.orgatex.state === 'pending' && !this.destroyed) {
+        this.refresh = setTimeout(() => void this.load(batchId), SUMMARY_REFRESH_MS);
+      }
     } catch (e) {
       this.error.set(toAppError(e));
     }

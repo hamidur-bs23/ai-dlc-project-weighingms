@@ -4,6 +4,7 @@ import type { Observable } from 'rxjs';
 import type {
   BatchSummary,
   ConfirmationResult,
+  OrgatexState,
   ScaleList,
   StepUpGrant,
   WeighingReading,
@@ -77,6 +78,11 @@ export class WeighingApiService {
 
   summary(batchId: string): Observable<BatchSummary> {
     return this.http.get<BatchSummary>(this.url(batchId, '/summary'));
+  }
+
+  /** Manual retry of a sync-failed OrgaTEX write-back (bolt 011). */
+  retryWriteBack(batchId: string): Observable<OrgatexState> {
+    return this.http.post<OrgatexState>(this.url(batchId, '/write-back/retry'), null);
   }
 
   scales(): Observable<ScaleList> {

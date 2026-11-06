@@ -9,7 +9,7 @@ import {
   provideTestHttp,
   provideTestTransloco,
 } from '../../../testing/test-providers';
-import { BatchSummaryComponent } from './batch-summary.component';
+import { BatchSummaryComponent, SUMMARY_REFRESH_MS } from './batch-summary.component';
 
 const summary: BatchSummary = {
   batchId: 'B-24187',
@@ -26,7 +26,13 @@ const summary: BatchSummary = {
   completedAt: '2026-11-05T01:48:22Z',
   elapsedSeconds: 401,
   operators: ['R. Karim', 'S. Akter'],
-  orgatex: { state: 'notAvailable' },
+  orgatex: {
+    state: 'notAvailable',
+    writtenAt: null,
+    attempts: 0,
+    nextAttemptAt: null,
+    errorCode: null,
+  },
   ticket: { state: 'notAvailable' },
   lines: [
     {
@@ -94,5 +100,136 @@ describe('BatchSummaryComponent (interim summary)', () => {
     await userEvent.setup().click(await screen.findByRole('button', { name: 'Back to queue' }));
 
     expect(navigate).toHaveBeenCalledWith(['/batches']);
+  });
+});
+
+describe('BatchSummaryComponent (OrgaTEX write-back)', () => {
+  const SUMMARY_URL = '/api/batches/B-24187/session/summary';
+  const RETRY_URL = '/api/batches/B-24187/session/write-back/retry';
+
+  const withOrgatex = (orgatex: Partial<BatchSummary['orgatex']>): BatchSummary => ({
+    ...summary,
+    orgatex: { ...summary.orgatex, ...orgatex },
+  });
+  const sent = withOrgatex({ state: 'sent', writtenAt: '2026-11-05T01:48:25Z', attempts: 1 });
+  const pending = withOrgatex({ state: 'pending' });
+  const failed = withOrgatex({
+    state: 'syncFailed',
+    attempts: 5,
+    errorCode: 'OrgaTex.Unavailable',
+  });
+
+  const open = () =>
+    render(BatchSummaryComponent, {
+      providers: [provideTestHttp(), provideRouter([]), provideTestTransloco()],
+      inputs: { batchId: 'B-24187' },
+    });
+
+  const orgatexText = async () =>
+    (await screen.findByTestId('orgatex-state')).textContent.replace(/\s+/g, ' ').trim();
+
+  afterEach(() => {
+    httpMock().verify();
+    vi.useRealTimers();
+  });
+
+  it('should show CONFIRMED with the plant time once written (STEP 26)', async () => {
+    await open();
+    httpMock().expectOne(SUMMARY_URL).flush(sent);
+
+    expect(await orgatexText()).toMatch(/^CONFIRMED \d{2}:\d{2}:\d{2}$/);
+    expect(screen.getByTestId('orgatex-state').classList.contains('good')).toBe(true);
+    expect(screen.queryByRole('button', { name: 'Retry' })).toBeNull();
+  });
+
+  it('should show nothing but a dash before the batch completes', async () => {
+    await open();
+    httpMock().expectOne(SUMMARY_URL).flush(summary);
+
+    expect(await orgatexText()).toBe('—');
+  });
+
+  it('should show pending and follow it until OrgaTEX confirms', async () => {
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+    await open();
+    httpMock().expectOne(SUMMARY_URL).flush(pending);
+    await vi.advanceTimersByTimeAsync(0);
+    expect(await orgatexText()).toBe('Pending sync');
+
+    await vi.advanceTimersByTimeAsync(SUMMARY_REFRESH_MS - 1);
+    httpMock().expectNone(SUMMARY_URL);
+    await vi.advanceTimersByTimeAsync(1);
+    httpMock().expectOne(SUMMARY_URL).flush(sent);
+    await vi.advanceTimersByTimeAsync(0);
+    expect(await orgatexText()).toMatch(/^CONFIRMED/);
+
+    await vi.advanceTimersByTimeAsync(SUMMARY_REFRESH_MS * 3);
+    httpMock().expectNone(SUMMARY_URL); // sent: polling has stopped
+  });
+
+  it('should stop following when the write-back fails', async () => {
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+    await open();
+    httpMock().expectOne(SUMMARY_URL).flush(pending);
+    await vi.advanceTimersByTimeAsync(SUMMARY_REFRESH_MS);
+    httpMock().expectOne(SUMMARY_URL).flush(failed);
+    await vi.advanceTimersByTimeAsync(SUMMARY_REFRESH_MS * 3);
+
+    httpMock().expectNone(SUMMARY_URL);
+  });
+
+  it('should stop following when the screen closes', async () => {
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+    const { fixture } = await open();
+    httpMock().expectOne(SUMMARY_URL).flush(pending);
+    await vi.advanceTimersByTimeAsync(0);
+
+    fixture.destroy();
+    await vi.advanceTimersByTimeAsync(SUMMARY_REFRESH_MS * 3);
+
+    httpMock().expectNone(SUMMARY_URL);
+  });
+
+  it('should not start following when the response arrives after the screen closed', async () => {
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+    const { fixture } = await open();
+    const inFlight = httpMock().expectOne(SUMMARY_URL);
+
+    fixture.destroy();
+    inFlight.flush(pending);
+    await vi.advanceTimersByTimeAsync(SUMMARY_REFRESH_MS * 3);
+
+    httpMock().expectNone(SUMMARY_URL);
+  });
+
+  it('should show sync failed with Retry, then post it and follow it to confirmed', async () => {
+    await open();
+    httpMock().expectOne(SUMMARY_URL).flush(failed);
+    expect(await orgatexText()).toBe('Sync failed Retry');
+    expect(screen.getByTestId('orgatex-state').classList.contains('bad')).toBe(true);
+
+    await userEvent.setup().click(screen.getByRole('button', { name: 'Retry' }));
+
+    const retry = httpMock().expectOne(RETRY_URL);
+    expect(retry.request.method).toBe('POST');
+    retry.flush(sent.orgatex);
+    await vi.waitFor(() => {
+      httpMock().expectOne(SUMMARY_URL).flush(sent);
+    });
+    expect(await orgatexText()).toMatch(/^CONFIRMED/);
+  });
+
+  it('should show the error when the retry is refused and allow another try', async () => {
+    await open();
+    httpMock().expectOne(SUMMARY_URL).flush(failed);
+    await screen.findByTestId('orgatex-state');
+
+    await userEvent.setup().click(screen.getByRole('button', { name: 'Retry' }));
+    httpMock()
+      .expectOne(RETRY_URL)
+      .flush(problem('WriteBack.NotFailed'), { status: 409, statusText: 'x' });
+
+    expect(await screen.findByText('The write-back is not in a failed state.')).toBeTruthy();
+    httpMock().expectNone(SUMMARY_URL);
   });
 });
