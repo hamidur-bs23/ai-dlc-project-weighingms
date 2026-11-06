@@ -1,0 +1,76 @@
+WeighingMS - workbook STEPs 20-25 (UI): Weigh screen tests (bolt 010, test stage)
+Run: 2026-11-06T03:23:02Z - Vitest 5 + Testing Library (Angular 22, jsdom)
+
+The screen renders the server's classification; STEP 22 boundary readings for Yellow RGB 94.0 +/- 0.5 g:
+  93.4 cannot confirm | 93.5 can | 94.0 can (TARGET ACHIEVED) | 94.5 can | 94.6 cannot (OVER TOLERANCE)
+
+$ npx ng test --watch=false --reporters=verbose --include src/app/features/weigh --include src/app/features/batch-summary
+
+
+ RUN  v5.1.0 /Users/bs01368/hamidpioneer/Projects/weighingms/web
+
+ ✓  web  src/app/features/weigh/weighing-session.store.spec.ts > WeighingSessionStore > should load the scales, the recipe (STEP 19 flow) and start or resume the session 23ms
+ ✓  web  src/app/features/weigh/weighing-session.store.spec.ts > WeighingSessionStore > should select the suggested component when nothing is active (PD-07) 4ms
+ ✓  web  src/app/features/weigh/weighing-session.store.spec.ts > WeighingSessionStore > should poll the reading at the server interval, one request at a time 3ms
+ ✓  web  src/app/features/weigh/weighing-session.store.spec.ts > WeighingSessionStore > should keep polling after a failed reading and show the device error 3ms
+ ✓  web  src/app/features/weigh/weighing-session.store.spec.ts > WeighingSessionStore > should take can-confirm and the override offer only from the server 2ms
+ ✓  web  src/app/features/weigh/weighing-session.store.spec.ts > WeighingSessionStore > should ignore a reading of another component 2ms
+ ✓  web  src/app/features/weigh/weighing-session.store.spec.ts > WeighingSessionStore > should queue commands in order and never drop one (container blur + lot Enter) 3ms
+ ✓  web  src/app/features/weigh/weighing-session.store.spec.ts > WeighingSessionStore > should show a command error in the banner and carry on with the next command 2ms
+ ✓  web  src/app/features/weigh/weighing-session.store.spec.ts > WeighingSessionStore > should confirm the active component by name and follow the next active one 2ms
+ ✓  web  src/app/features/weigh/weighing-session.store.spec.ts > WeighingSessionStore > should stop polling once the batch is completed 2ms
+ ✓  web  src/app/features/weigh/weighing-session.store.spec.ts > WeighingSessionStore > should return an override error to the dialog instead of the banner 2ms
+ ✓  web  src/app/features/weigh/weighing-session.store.spec.ts > WeighingSessionStore > should report a session that cannot be opened 1ms
+ ✓  web  src/app/features/weigh/weighing-session.store.spec.ts > WeighingSessionStore > should send quit and leave for the batch 7ms
+ ✓  web  src/app/features/weigh/weigh-bar.component.spec.ts > WeighBarComponent (BAR-RANGE) > should show the caption with the range numbers only 39ms
+ ✓  web  src/app/features/weigh/weigh-bar.component.spec.ts > WeighBarComponent (BAR-RANGE) > should fill 0 g to 0 % undefined of 0 – 118.1 g 37ms
+ ✓  web  src/app/features/weigh/weigh-bar.component.spec.ts > WeighBarComponent (BAR-RANGE) > should fill 59.1 g to 50 % undefined of 0 – 118.1 g 6ms
+ ✓  web  src/app/features/weigh/weigh-bar.component.spec.ts > WeighBarComponent (BAR-RANGE) > should fill 94.5 g to 80 % undefined of 0 – 118.1 g 8ms
+ ✓  web  src/app/features/weigh/weigh-bar.component.spec.ts > WeighBarComponent (BAR-RANGE) > should fill 118.1 g to 100 % undefined of 0 – 118.1 g 5ms
+ ✓  web  src/app/features/weigh/weigh-bar.component.spec.ts > WeighBarComponent (BAR-RANGE) > should fill 500 g to 100 % undefined of 0 – 118.1 g 6ms
+ ✓  web  src/app/features/weigh/weigh-bar.component.spec.ts > WeighBarComponent (BAR-RANGE) > should place the band and the target line at about 80 % of the bar 4ms
+ ✓  web  src/app/features/weigh/weigh-bar.component.spec.ts > WeighBarComponent (BAR-RANGE) > should expose the zone for colour (and the text carries the class elsewhere) 4ms
+ ✓  web  src/app/features/weigh/recipe-rail.component.spec.ts > RecipeRailComponent > should show the recipe header and the counter 52ms
+ ✓  web  src/app/features/weigh/recipe-rail.component.spec.ts > RecipeRailComponent > should show every component with code, scale class, target and state 38ms
+ ✓  web  src/app/features/weigh/recipe-rail.component.spec.ts > RecipeRailComponent > should select a pending component when touched 22ms
+ ✓  web  src/app/features/weigh/recipe-rail.component.spec.ts > RecipeRailComponent > should not let done components be selected 16ms
+ ✓  web  src/app/features/batch-summary/batch-summary.component.spec.ts > BatchSummaryComponent (interim summary) > should show the server summary read-only 117ms
+ ✓  web  src/app/features/batch-summary/batch-summary.component.spec.ts > BatchSummaryComponent (interim summary) > should offer Retry when the summary cannot be loaded 25ms
+ ✓  web  src/app/features/batch-summary/batch-summary.component.spec.ts > BatchSummaryComponent (interim summary) > should go back to the queue 14ms
+ ✓  web  src/app/features/weigh/override-dialog.component.spec.ts > OverrideDialogComponent > should require badge, PIN and a reason before anything is sent 132ms
+ ✓  web  src/app/features/weigh/override-dialog.component.spec.ts > OverrideDialogComponent > should mask the PIN 6ms
+ ✓  web  src/app/features/weigh/override-dialog.component.spec.ts > OverrideDialogComponent > should show a wrong PIN, clear it, and record nothing 72ms
+ ✓  web  src/app/features/weigh/weigh.component.spec.ts > WeighComponent (screen 2 · Weigh) > STEP 22: 93.4 g → underweight, Confirm enabled = false 183ms
+ ✓  web  src/app/features/weigh/override-dialog.component.spec.ts > OverrideDialogComponent > should use the grant for the override and close on success 123ms
+ ✓  web  src/app/features/weigh/override-dialog.component.spec.ts > OverrideDialogComponent > should keep the dialog open and show a refused override (four eyes) 54ms
+ ✓  web  src/app/features/weigh/override-dialog.component.spec.ts > OverrideDialogComponent > should cancel 10ms
+ ✓  web  src/app/features/weigh/weigh.component.spec.ts > WeighComponent (screen 2 · Weigh) > STEP 22: 93.5 g → withinRange, Confirm enabled = true 118ms
+ ✓  web  src/app/features/weigh/weigh.component.spec.ts > WeighComponent (screen 2 · Weigh) > STEP 22: 94 g → targetAchieved, Confirm enabled = true 116ms
+ ✓  web  src/app/features/weigh/weigh.component.spec.ts > WeighComponent (screen 2 · Weigh) > STEP 22: 94.5 g → withinRange, Confirm enabled = true 116ms
+ ✓  web  src/app/features/weigh/weigh.component.spec.ts > WeighComponent (screen 2 · Weigh) > STEP 22: 94.6 g → overweight, Confirm enabled = false 125ms
+ ✓  web  src/app/features/weigh/weigh.component.spec.ts > WeighComponent (screen 2 · Weigh) > should show the header, the automatic scale badge and the attempt 119ms
+ ✓  web  src/app/features/weigh/weigh.component.spec.ts > WeighComponent (screen 2 · Weigh) > STEP 21: Sodium Sulphate is weighed on the 32 kg floor scale 120ms
+ ✓  web  src/app/features/weigh/weigh.component.spec.ts > WeighComponent (screen 2 · Weigh) > should show the amber near-target hint at ≥ 90 % of the target 118ms
+ ✓  web  src/app/features/weigh/weigh.component.spec.ts > WeighComponent (screen 2 · Weigh) > should label an unstable reading and say why Confirm is disabled 132ms
+ ✓  web  src/app/features/weigh/weigh.component.spec.ts > WeighComponent (screen 2 · Weigh) > should list what is missing before Confirm is possible 126ms
+ ✓  web  src/app/features/weigh/weigh.component.spec.ts > WeighComponent (screen 2 · Weigh) > should show the surplus and the recovery actions on overshoot, without recalculation 122ms
+ ✓  web  src/app/features/weigh/weigh.component.spec.ts > WeighComponent (screen 2 · Weigh) > should not offer override within tolerance 123ms
+ ✓  web  src/app/features/weigh/weigh.component.spec.ts > WeighComponent (screen 2 · Weigh) > should pre-fill the suggested container and save lot and container on Enter 177ms
+ ✓  web  src/app/features/weigh/weigh.component.spec.ts > WeighComponent (screen 2 · Weigh) > should fill the lot from a scan 176ms
+ ✓  web  src/app/features/weigh/weigh.component.spec.ts > WeighComponent (screen 2 · Weigh) > should confirm with F1 only when the server allows it 120ms
+ ✓  web  src/app/features/weigh/weigh.component.spec.ts > WeighComponent (screen 2 · Weigh) > should confirm with F1 and move to the next component 243ms
+ ✓  web  src/app/features/weigh/weigh.component.spec.ts > WeighComponent (screen 2 · Weigh) > should tare with F2 and label it Re-tare once tared 190ms
+ ✓  web  src/app/features/weigh/weigh.component.spec.ts > WeighComponent (screen 2 · Weigh) > should ask before quitting an attempt with captured data, then quit with F4 183ms
+ ✓  web  src/app/features/weigh/weigh.component.spec.ts > WeighComponent (screen 2 · Weigh) > should quit straight away when nothing was captured 164ms
+ ✓  web  src/app/features/weigh/weigh.component.spec.ts > WeighComponent (screen 2 · Weigh) > should keep weighing when the operator cancels the quit 155ms
+ ✓  web  src/app/features/weigh/weigh.component.spec.ts > WeighComponent (screen 2 · Weigh) > should open the override dialog when offered 158ms
+ ✓  web  src/app/features/weigh/weigh.component.spec.ts > WeighComponent (screen 2 · Weigh) > should open the summary when the last record completes the batch 216ms
+ ✓  web  src/app/features/weigh/weigh.component.spec.ts > WeighComponent (screen 2 · Weigh) > should leave the batch and return to the queue 194ms
+ ✓  web  src/app/features/weigh/weigh.component.spec.ts > WeighComponent (screen 2 · Weigh) > should show a command error with its Ref 190ms
+ ✓  web  src/app/features/weigh/weigh.component.spec.ts > WeighComponent (screen 2 · Weigh) > should say when no tolerance is defined 118ms
+
+ Test Files  6 passed (6)
+      Tests  59 passed (59)
+   Start at  09:23:04
+   Duration  4.78s (tests 48%, environment 29%, setup 9%, import 7%, transform 7%)
+
