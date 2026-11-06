@@ -107,6 +107,14 @@ export const SUMMARY_REFRESH_MS = 2000;
               }
             </dd>
           </div>
+          <div class="summary__row">
+            <dt>{{ 'summary.ticket' | transloco }}</dt>
+            <dd data-testid="ticket-state">
+              {{
+                'summary.ticketState.' + s.ticket.state | transloco: { count: s.ticket.printCount }
+              }}
+            </dd>
+          </div>
         </dl>
 
         <table class="lines">

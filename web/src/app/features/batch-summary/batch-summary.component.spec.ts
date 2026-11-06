@@ -33,7 +33,7 @@ const summary: BatchSummary = {
     nextAttemptAt: null,
     errorCode: null,
   },
-  ticket: { state: 'notAvailable' },
+  ticket: { state: 'notAvailable', printCount: 0 },
   lines: [
     {
       sequence: 1,
@@ -140,6 +140,19 @@ describe('BatchSummaryComponent (OrgaTEX write-back)', () => {
     expect(await orgatexText()).toMatch(/^CONFIRMED \d{2}:\d{2}:\d{2}$/);
     expect(screen.getByTestId('orgatex-state').classList.contains('good')).toBe(true);
     expect(screen.queryByRole('button', { name: 'Retry' })).toBeNull();
+  });
+
+  it.each([
+    [{ state: 'notAvailable', printCount: 0 }, '—'],
+    [{ state: 'printPending', printCount: 0 }, 'Print pending'],
+    [{ state: 'printed', printCount: 2 }, 'Printed (2)'],
+  ])('should show the ticket state %o', async (ticket, expected) => {
+    await open();
+    httpMock()
+      .expectOne(SUMMARY_URL)
+      .flush({ ...summary, ticket });
+
+    expect((await screen.findByTestId('ticket-state')).textContent.trim()).toBe(expected);
   });
 
   it('should show nothing but a dash before the batch completes', async () => {

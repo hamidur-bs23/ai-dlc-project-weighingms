@@ -49,6 +49,7 @@ describe('BatchQueueComponent (screen 1 · Select batch)', () => {
       { ...b24187, batchId: 'B-1', status: 'complete' },
       { ...b24187, batchId: 'B-2', status: 'syncPending' },
       { ...b24187, batchId: 'B-3', status: 'syncFailed' },
+      { ...b24187, batchId: 'B-4', status: 'printPending' },
     ]);
 
     const tags = bodyRows().map((r) =>
@@ -58,10 +59,12 @@ describe('BatchQueueComponent (screen 1 · Select batch)', () => {
       'COMPLETE',
       'SYNC PENDING',
       'SYNC FAILED',
+      'PRINT PENDING',
     ]);
     expect(tags[0]?.classList.contains('tag--done')).toBe(true);
     expect(tags[1]?.classList.contains('tag--now')).toBe(true);
     expect(tags[2]?.classList.contains('tag--failed')).toBe(true);
+    expect(tags[3]?.classList.contains('tag--now')).toBe(true);
   });
 
   it('should show the scan prompt and the queue from GET /api/batches with every column', async () => {

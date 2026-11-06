@@ -811,6 +811,145 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/batches/{batchId}/session/ticket": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    batchId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["TicketResponse"];
+                        "application/json": components["schemas"]["TicketResponse"];
+                        "text/json": components["schemas"]["TicketResponse"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/batches/{batchId}/session/ticket/print": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    batchId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["PrintTicketRequest"];
+                    "text/json": components["schemas"]["PrintTicketRequest"];
+                    "application/*+json": components["schemas"]["PrintTicketRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["TicketResponse"];
+                        "application/json": components["schemas"]["TicketResponse"];
+                        "text/json": components["schemas"]["TicketResponse"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unprocessable Entity */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Service Unavailable */
+                503: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/weighing-sessions": {
         parameters: {
             query?: never;
@@ -1953,7 +2092,7 @@ export interface components {
             elapsedSeconds: null | number;
             operators: string[];
             orgatex: components["schemas"]["OrgatexStateResponse"];
-            ticket: components["schemas"]["IntegrationStateResponse"];
+            ticket: components["schemas"]["TicketStateResponse"];
             lines: components["schemas"]["BatchSummaryLineResponse"][];
         };
         CaptureContainerRequest: {
@@ -2044,9 +2183,6 @@ export interface components {
             /** Format: date-time */
             since: string;
         };
-        IntegrationStateResponse: {
-            state: string;
-        };
         OrgatexStateResponse: {
             state: string;
             /** Format: date-time */
@@ -2073,6 +2209,10 @@ export interface components {
             reason: string;
             /** Format: date-time */
             overriddenAt: string;
+        };
+        PrintTicketRequest: {
+            /** Format: int32 */
+            expectedPrintCount: null | number;
         };
         ProblemDetails: {
             type?: null | string;
@@ -2187,6 +2327,27 @@ export interface components {
             tare: components["schemas"]["QuantityResponse"];
             /** Format: date-time */
             taredAt: string;
+        };
+        TicketBarcodeResponse: {
+            symbology: string;
+            value: string;
+        };
+        TicketResponse: {
+            batchId: string;
+            state: string;
+            /** Format: int32 */
+            printCount: number;
+            lines: string[];
+            barcode: components["schemas"]["TicketBarcodeResponse"];
+            /** Format: date-time */
+            firstPrintedAt: null | string;
+            /** Format: date-time */
+            lastPrintedAt: null | string;
+        };
+        TicketStateResponse: {
+            state: string;
+            /** Format: int32 */
+            printCount: number;
         };
         ToleranceBandResponse: {
             target: components["schemas"]["QuantityResponse"];

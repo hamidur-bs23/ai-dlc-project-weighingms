@@ -61,7 +61,8 @@
       "weighing": "WEIGHING",
       "complete": "COMPLETE",
       "syncPending": "SYNC PENDING",
-      "syncFailed": "SYNC FAILED"
+      "syncFailed": "SYNC FAILED",
+      "printPending": "PRINT PENDING"
     }
   },
   "banner": {
@@ -102,7 +103,10 @@
     "Auth.GrantInvalid": "The supervisor authorisation has expired or was already used. Try again.",
     "WriteBack.NotFailed": "The write-back is not in a failed state.",
     "WriteBack.NotFound": "This batch has no OrgaTEX write-back.",
-    "OrgaTex.ConsumptionRejected": "OrgaTEX rejected the consumption. Ask a supervisor."
+    "OrgaTex.ConsumptionRejected": "OrgaTEX rejected the consumption. Ask a supervisor.",
+    "Ticket.NotFound": "This batch has no ticket.",
+    "Ticket.AlreadyPrinted": "The ticket has already been printed. Check before printing again.",
+    "Printer.Unavailable": "The printer is not responding. The ticket is kept; print it when the printer is back."
   },
   "weigh": {
     "label": "Weighing",
@@ -201,6 +205,12 @@
     "operator": "Operator",
     "completedAt": "Completed",
     "orgatex": "Written to OrgaTEX",
+    "ticket": "Ticket",
+    "ticketState": {
+      "notAvailable": "—",
+      "printPending": "Print pending",
+      "printed": "Printed ({{ count }})"
+    },
     "state": {
       "notAvailable": "—",
       "sent": "CONFIRMED {{ time }}",

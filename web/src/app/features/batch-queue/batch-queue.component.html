@@ -83,7 +83,11 @@
                     <td>
                       <span
                         class="tag"
-                        [class.tag--now]="b.status === 'weighing' || b.status === 'syncPending'"
+                        [class.tag--now]="
+                          b.status === 'weighing' ||
+                          b.status === 'syncPending' ||
+                          b.status === 'printPending'
+                        "
                         [class.tag--done]="b.status === 'complete'"
                         [class.tag--failed]="b.status === 'syncFailed'"
                       >
