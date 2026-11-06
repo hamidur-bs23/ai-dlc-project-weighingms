@@ -59,4 +59,10 @@ public enum AuditEventType
 
     /// <summary>A sync-failed write-back was retried manually (bolt 011).</summary>
     WriteBackRetried,
+
+    /// <summary>A ticket was printed for the first time (bolt 012).</summary>
+    TicketPrinted,
+
+    /// <summary>A ticket was printed again, marked REPRINT (bolt 012).</summary>
+    TicketReprinted,
 }

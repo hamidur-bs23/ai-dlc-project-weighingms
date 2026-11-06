@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using WeighingMS.Application.Access;
 using WeighingMS.Application.Batches;
 using WeighingMS.Application.Devices;
+using WeighingMS.Application.Tickets;
 using WeighingMS.Application.Weighing;
 using WeighingMS.Application.WriteBack;
 
@@ -23,6 +24,8 @@ public static class DependencyInjection
         services.AddScoped<IBatchCompletedHandler, ConsumptionWriteBackHandler>();
         services.AddScoped<WriteBackDispatcher>();
         services.AddScoped<WriteBackService>();
+        services.AddScoped<IBatchCompletedHandler, TicketCompletedHandler>();
+        services.AddScoped<TicketService>();
         return services;
     }
 }

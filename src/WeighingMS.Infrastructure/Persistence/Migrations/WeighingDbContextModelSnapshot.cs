@@ -299,6 +299,119 @@ namespace WeighingMS.Infrastructure.Persistence.Migrations
                     b.ToTable("recipe_snapshot_components", (string)null);
                 });
 
+            modelBuilder.Entity("WeighingMS.Domain.Tickets.PrintJob", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTimeOffset>("AttemptedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("attempted_at");
+
+                    b.Property<string>("BatchId")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasColumnName("batch_id");
+
+                    b.Property<string>("ErrorCode")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("error_code");
+
+                    b.Property<Guid>("IdempotencyKey")
+                        .HasColumnType("uuid")
+                        .HasColumnName("idempotency_key");
+
+                    b.Property<bool>("IsReprint")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_reprint");
+
+                    b.Property<string>("OperatorBadgeId")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasColumnName("operator_badge_id");
+
+                    b.Property<Guid>("TicketId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("ticket_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_print_jobs");
+
+                    b.HasIndex("TicketId")
+                        .HasDatabaseName("ix_print_jobs_ticket_id");
+
+                    b.ToTable("print_jobs", (string)null);
+                });
+
+            modelBuilder.Entity("WeighingMS.Domain.Tickets.Ticket", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("BarcodeValue")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasColumnName("barcode_value");
+
+                    b.Property<string>("BatchId")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasColumnName("batch_id");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<Guid>("FirstPrintKey")
+                        .HasColumnType("uuid")
+                        .HasColumnName("first_print_key");
+
+                    b.Property<DateTimeOffset?>("FirstPrintedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("first_printed_at");
+
+                    b.Property<DateTimeOffset?>("LastPrintedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("last_printed_at");
+
+                    b.Property<int>("PrintCount")
+                        .HasColumnType("integer")
+                        .HasColumnName("print_count");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)")
+                        .HasColumnName("status");
+
+                    b.Property<string>("_lines")
+                        .IsRequired()
+                        .HasColumnType("jsonb")
+                        .HasColumnName("lines");
+
+                    b.Property<uint>("xmin")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
+                    b.HasKey("Id")
+                        .HasName("pk_tickets");
+
+                    b.HasIndex("BatchId")
+                        .IsUnique()
+                        .HasDatabaseName("ix_tickets_batch_id");
+
+                    b.ToTable("tickets", (string)null);
+                });
+
             modelBuilder.Entity("WeighingMS.Domain.Weighing.ComponentWeighing", b =>
                 {
                     b.Property<Guid>("Id")
@@ -783,6 +896,16 @@ namespace WeighingMS.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_recipe_snapshot_components_recipe_snapshots_recipe_snapshot");
+                });
+
+            modelBuilder.Entity("WeighingMS.Domain.Tickets.PrintJob", b =>
+                {
+                    b.HasOne("WeighingMS.Domain.Tickets.Ticket", null)
+                        .WithMany()
+                        .HasForeignKey("TicketId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_print_jobs_tickets_ticket_id");
                 });
 
             modelBuilder.Entity("WeighingMS.Domain.Weighing.ComponentWeighing", b =>

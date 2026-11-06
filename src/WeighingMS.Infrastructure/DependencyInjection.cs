@@ -4,12 +4,14 @@ using Microsoft.Extensions.DependencyInjection;
 using WeighingMS.Application.Abstractions;
 using WeighingMS.Application.Access;
 using WeighingMS.Application.Batches;
+using WeighingMS.Application.Tickets;
 using WeighingMS.Application.Weighing;
 using WeighingMS.Application.WriteBack;
 using WeighingMS.Infrastructure.Access;
 using WeighingMS.Infrastructure.Batches;
 using WeighingMS.Infrastructure.Integrations;
 using WeighingMS.Infrastructure.Persistence;
+using WeighingMS.Infrastructure.Tickets;
 using WeighingMS.Infrastructure.Weighing;
 using WeighingMS.Infrastructure.WriteBack;
 
@@ -35,6 +37,7 @@ public static class DependencyInjection
         services.AddSingleton<IToleranceCatalogue, ToleranceCatalogue>();
         services.AddScoped<IWeighingSessionRepository, WeighingSessionRepository>();
         services.AddSingleton<IScaleSelectionSource, ScaleSelectionSource>();
+        services.AddScoped<ITicketRepository, TicketRepository>();
         services.AddScoped<IWriteBackRepository, WriteBackRepository>();
         services.AddSingleton<WriteBackSignal>();
         services.AddSingleton<IWriteBackSignal>(sp => sp.GetRequiredService<WriteBackSignal>());

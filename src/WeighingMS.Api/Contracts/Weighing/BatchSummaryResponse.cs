@@ -19,11 +19,8 @@ public sealed record BatchSummaryResponse(
     long? ElapsedSeconds,
     IReadOnlyList<string> Operators,
     OrgatexStateResponse Orgatex,
-    IntegrationStateResponse Ticket,
+    TicketStateResponse Ticket,
     IReadOnlyList<BatchSummaryLineResponse> Lines);
-
-/// <summary>The ticket state (A15: <c>notAvailable</c> until bolt 012).</summary>
-public sealed record IntegrationStateResponse(string State);
 
 /// <summary>
 /// The OrgaTEX write-back (bolt 011): <c>notAvailable</c> (batch not complete) · <c>pending</c> (with attempts and the next

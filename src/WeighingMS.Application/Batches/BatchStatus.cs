@@ -12,7 +12,7 @@ public enum BatchStatus
     /// <summary>Opened at the station (its recipe snapshot exists).</summary>
     Weighing,
 
-    /// <summary>Completed, and the consumption is written to OrgaTEX (bolt 011).</summary>
+    /// <summary>Completed, written to OrgaTEX and the ticket printed (bolts 011, 012).</summary>
     Complete,
 
     /// <summary>Completed; the OrgaTEX write-back is still pending (bolt 011).</summary>
@@ -20,4 +20,7 @@ public enum BatchStatus
 
     /// <summary>Completed; the OrgaTEX write-back failed and needs a manual retry (bolt 011).</summary>
     SyncFailed,
+
+    /// <summary>Completed and written to OrgaTEX; the ticket hasn't been printed yet (bolt 012).</summary>
+    PrintPending,
 }

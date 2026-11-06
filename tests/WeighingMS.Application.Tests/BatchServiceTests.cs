@@ -2,6 +2,7 @@ using ErrorOr;
 using Microsoft.Extensions.Time.Testing;
 using WeighingMS.Application.Batches;
 using WeighingMS.Domain.Batches;
+using WeighingMS.Domain.Tickets;
 using WeighingMS.Domain.WriteBack;
 
 namespace WeighingMS.Application.Tests;
@@ -12,11 +13,45 @@ public sealed class BatchServiceTests
     private readonly FakeOrgatex _orgatex = new();
     private readonly FakeSnapshots _snapshots = new();
     private readonly FakeWriteBacks _writeBacks = new();
+    private readonly FakeTickets _tickets = new();
     private readonly BatchService _service;
 
-    public BatchServiceTests() => _service = new BatchService(_orgatex, _snapshots, new FakePlantClock(_time), _writeBacks);
+    public BatchServiceTests() => _service = new BatchService(_orgatex, _snapshots, new FakePlantClock(_time), _writeBacks, _tickets);
 
     private static CancellationToken Ct => TestContext.Current.CancellationToken;
+
+    [Theory]
+    [InlineData(WriteBackStatus.Pending, TicketStatus.PrintPending, BatchStatus.SyncPending)]
+    [InlineData(WriteBackStatus.Pending, TicketStatus.Printed, BatchStatus.SyncPending)]
+    [InlineData(WriteBackStatus.SyncFailed, TicketStatus.PrintPending, BatchStatus.SyncFailed)]
+    [InlineData(WriteBackStatus.SyncFailed, TicketStatus.Printed, BatchStatus.SyncFailed)]
+    [InlineData(WriteBackStatus.Sent, TicketStatus.PrintPending, BatchStatus.PrintPending)]
+    [InlineData(WriteBackStatus.Sent, TicketStatus.Printed, BatchStatus.Complete)]
+    public async Task Queue_ShowsOneTagInOrderOfWhatStillNeedsAttention(WriteBackStatus sync, TicketStatus print, BatchStatus expected)
+    {
+        var now = _time.GetUtcNow();
+        var writeBack = ConsumptionWriteBack.Create("B-24187", Guid.CreateVersion7(), [new("DYE-4471", 94.2m, "g", "L-1")], now);
+        if (sync == WriteBackStatus.Sent)
+        {
+            writeBack.RecordSent(now, now);
+        }
+        else if (sync == WriteBackStatus.SyncFailed)
+        {
+            writeBack.RecordFailure("x", retryable: false, new RetryPolicy(1, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(1)), now);
+        }
+
+        var ticket = Ticket.Create("B-24187", ["line"], now);
+        if (print == TicketStatus.Printed)
+        {
+            ticket.RecordPrinted(now);
+        }
+
+        _writeBacks.Add(writeBack);
+        _tickets.Add(ticket);
+
+        (await _service.GetQueueAsync(Ct)).Value.Single(q => q.Batch.BatchId == "B-24187").Status.ShouldBe(expected);
+        (await _service.GetBatchAsync("B-24187", Ct)).Value.Status.ShouldBe(expected);
+    }
 
     [Theory]
     [InlineData("pending", BatchStatus.SyncPending)]

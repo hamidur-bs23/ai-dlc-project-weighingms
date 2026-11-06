@@ -2,11 +2,13 @@ using ErrorOr;
 using Microsoft.Extensions.Time.Testing;
 using WeighingMS.Application.Batches;
 using WeighingMS.Application.Devices;
+using WeighingMS.Application.Tickets;
 using WeighingMS.Application.Weighing;
 using WeighingMS.Application.WriteBack;
 using WeighingMS.Domain.Audit;
 using WeighingMS.Domain.Batches;
 using WeighingMS.Domain.Common;
+using WeighingMS.Domain.Tickets;
 using WeighingMS.Domain.Weighing;
 using WeighingMS.Domain.WriteBack;
 
@@ -200,4 +202,31 @@ internal sealed class FakeSignal : IWriteBackSignal
     public int Notifications { get; private set; }
 
     public void Notify() => Notifications++;
+}
+
+internal sealed class FakeTickets : ITicketRepository
+{
+    public List<Ticket> Stored { get; } = [];
+
+    public List<PrintJob> Jobs { get; } = [];
+
+    public int Saves { get; private set; }
+
+    public bool Conflict { get; set; }
+
+    public void Add(Ticket ticket) => Stored.Add(ticket);
+
+    public void AddJob(PrintJob job) => Jobs.Add(job);
+
+    public Task<Ticket?> FindAsync(string batchId, CancellationToken cancellationToken) =>
+        Task.FromResult(Stored.FirstOrDefault(t => t.BatchId == batchId));
+
+    public Task<IReadOnlyDictionary<string, TicketStatus>> StatusesAsync(IReadOnlyCollection<string> batchIds, CancellationToken cancellationToken) =>
+        Task.FromResult<IReadOnlyDictionary<string, TicketStatus>>(Stored.Where(t => batchIds.Contains(t.BatchId)).ToDictionary(t => t.BatchId, t => t.Status));
+
+    public Task<bool> SaveAsync(CancellationToken cancellationToken)
+    {
+        Saves++;
+        return Task.FromResult(!Conflict);
+    }
 }

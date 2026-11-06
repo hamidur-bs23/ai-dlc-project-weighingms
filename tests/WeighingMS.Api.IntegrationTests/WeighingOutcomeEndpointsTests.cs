@@ -297,7 +297,7 @@ public sealed class WeighingOutcomeEndpointsTests(ApiFixture fixture) : IAsyncLi
         summary.GetProperty("totalDispensed").GetProperty("unit").GetString().ShouldBe("kg");
         summary.GetProperty("operators").EnumerateArray().Select(o => o.GetString()).ShouldBe(["R. Karim"]);
         summary.GetProperty("orgatex").GetProperty("state").GetString().ShouldBe("pending"); // write-back queued at completion (bolt 011)
-        summary.GetProperty("ticket").GetProperty("state").GetString().ShouldBe("notAvailable");
+        summary.GetProperty("ticket").GetProperty("state").GetString().ShouldBe("printPending"); // composed at completion (bolt 012)
         (summary.GetProperty("orderId").GetString(), summary.GetProperty("machine").GetString(), summary.GetProperty("shade").GetString()).ShouldBe(("SO-9931", "JET-04", "Teal 4C"));
         var lines = summary.GetProperty("lines").EnumerateArray().ToList();
         lines.Select(l => l.GetProperty("status").GetString()).ShouldAllBe(s => s == "targetAchieved");

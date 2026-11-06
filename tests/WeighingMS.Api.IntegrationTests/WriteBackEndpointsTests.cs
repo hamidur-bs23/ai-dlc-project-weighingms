@@ -242,7 +242,7 @@ public sealed class WriteBackEndpointsTests(ApiFixture fixture) : IAsyncLifetime
         state.GetProperty("state").GetString().ShouldBe("sent");
         state.GetProperty("writtenAt").GetDateTimeOffset().ShouldBe(row.SentAt!.Value);
         state.GetProperty("errorCode").ValueKind.ShouldBe(JsonValueKind.Null);
-        (await QueueStatusAsync()).ShouldBe("complete");
+        (await QueueStatusAsync()).ShouldBe("printPending"); // written to OrgaTEX; the ticket is still to be printed (bolt 012)
         (await UnsyncedAsync()).ShouldBe(0);
     }
 

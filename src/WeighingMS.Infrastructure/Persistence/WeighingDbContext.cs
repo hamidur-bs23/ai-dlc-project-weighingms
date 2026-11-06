@@ -3,6 +3,7 @@ using WeighingMS.Application.Abstractions;
 using WeighingMS.Domain.Access;
 using WeighingMS.Domain.Audit;
 using WeighingMS.Domain.Batches;
+using WeighingMS.Domain.Tickets;
 using WeighingMS.Domain.Weighing;
 using WeighingMS.Domain.WriteBack;
 
@@ -31,6 +32,12 @@ public sealed class WeighingDbContext(DbContextOptions<WeighingDbContext> option
 
     /// <summary>OrgaTEX consumption write-backs (the outbox, PD-01).</summary>
     public DbSet<ConsumptionWriteBack> WriteBacks => Set<ConsumptionWriteBack>();
+
+    /// <summary>Weighing tickets, one per completed batch.</summary>
+    public DbSet<Ticket> Tickets => Set<Ticket>();
+
+    /// <summary>Every print attempt of a ticket.</summary>
+    public DbSet<PrintJob> PrintJobs => Set<PrintJob>();
 
     /// <summary>Append-only audit trail.</summary>
     public DbSet<AuditEntry> AuditEntries => Set<AuditEntry>();

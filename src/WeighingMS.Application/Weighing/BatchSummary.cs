@@ -1,3 +1,4 @@
+using WeighingMS.Application.Tickets;
 using WeighingMS.Application.WriteBack;
 using WeighingMS.Domain.Common;
 using WeighingMS.Domain.Weighing;
@@ -6,8 +7,8 @@ namespace WeighingMS.Application.Weighing;
 
 /// <summary>
 /// The summary of a batch (FR-18): n of N, within tolerance (YES / NO + overrides), total dispensed (A13), elapsed (A14),
-/// operators (A12), the OrgaTEX write-back (bolt 011; null until the batch completes) and the ticket state (A15: not yet
-/// available until bolt 012) and one line per chemical.
+/// operators (A12), the OrgaTEX write-back (bolt 011) and the ticket (bolt 012), both null until the batch completes, and
+/// one line per chemical.
 /// </summary>
 public sealed record BatchSummary(
     string BatchId,
@@ -25,7 +26,7 @@ public sealed record BatchSummary(
     long? ElapsedSeconds,
     IReadOnlyList<string> Operators,
     WriteBackView? Orgatex,
-    string TicketState,
+    TicketView? Ticket,
     IReadOnlyList<BatchSummaryLine> Lines);
 
 /// <summary>One chemical of the summary: required, actual (when done) and final status.</summary>
@@ -40,11 +41,8 @@ public sealed record CompletedBatchPage(IReadOnlyList<CompletedBatchItem> Items,
 /// <summary>Builds summaries from a session and its records (pure).</summary>
 public static class BatchSummaryBuilder
 {
-    /// <summary>The state shown for the ticket until bolt 012 provides it (A15).</summary>
-    public const string NotAvailable = "notAvailable";
-
     /// <summary>The summary; <paramref name="nameOf"/> turns a badge into the operator's display name.</summary>
-    public static BatchSummary Build(WeighingSession session, string orderId, string machine, string shade, IReadOnlyDictionary<string, string> nameOf, WriteBackView? orgatex = null)
+    public static BatchSummary Build(WeighingSession session, string orderId, string machine, string shade, IReadOnlyDictionary<string, string> nameOf, WriteBackView? orgatex = null, TicketView? ticket = null)
     {
         ArgumentNullException.ThrowIfNull(session);
         ArgumentNullException.ThrowIfNull(nameOf);
@@ -71,7 +69,7 @@ public static class BatchSummaryBuilder
             elapsed,
             operators,
             orgatex,
-            NotAvailable,
+            ticket,
             [.. session.Components.Select(c => new BatchSummaryLine(
                 c.Sequence, c.ChemicalId, c.Name, c.Target, c.Record?.Actual, c.State, c.Record?.Class, c.Record?.IsOverride ?? false))]);
     }

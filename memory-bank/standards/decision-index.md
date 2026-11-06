@@ -200,3 +200,6 @@ Decisions marked *resolved* below were taken by the product owner at STEP 7 on 2
 | WRITEBACK-RETRY | resolved (bolt 011 plan, 2026-11-06) | OrgaTEX write-back retries up to 5 attempts with exponential back-off from 5 s, capped at 5 min, then "sync failed"; all values in `WriteBack:*` configuration |
 | WRITEBACK-TRANSIENT | resolved (bolt 011 plan, 2026-11-06) | Only transient failures (unreachable, timeout, 5xx) are retried; a 4xx from OrgaTEX marks the write-back "sync failed" at once with its error code |
 | WRITEBACK-RETRY-ANYONE | resolved (bolt 011 plan, 2026-11-06) | Any signed-in operator may retry a sync-failed write-back; it re-sends the same payload with the same Idempotency-Key and is audited |
+| TICKET-PRINT-MANUAL | resolved (bolt 012 plan, 2026-11-06) | The ticket is composed at completion and stays print pending until the operator presses Print (F1), whether or not the printer is up; there is no automatic print. FR-21's "send it to the printer" is read together with PD-02 and FR-24 |
+| TICKET-OPERATORS | resolved (bolt 012 plan, 2026-11-06) | The ticket lists every operator who weighed the batch, in the order they first confirmed |
+| TICKET-LINES | resolved (bolt 012 plan, 2026-11-06) | On the ticket each chemical's full name has its own line, with target and actual beneath; names are never shortened |

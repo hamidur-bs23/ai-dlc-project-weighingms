@@ -350,7 +350,7 @@ public sealed class WeighingSessionController(WeighingSessionService weighing) :
         s.ElapsedSeconds,
         s.Operators,
         WriteBackController.ToResponse(s.Orgatex),
-        new IntegrationStateResponse(s.TicketState),
+        TicketController.ToState(s.Ticket),
         [.. s.Lines.Select(l => new BatchSummaryLineResponse(
             l.Sequence, l.ChemicalId, l.ChemicalName, ToWire(l.Required), l.Actual is { } a ? ToWire(a) : null, LineStatus(l), l.Override))]);
 
