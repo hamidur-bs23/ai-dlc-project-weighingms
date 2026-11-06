@@ -3,16 +3,25 @@ id: 013-assisted-weighing-station-ui
 unit: 008-assisted-weighing-station-ui
 intent: 001-assisted-weighing-station
 type: simple-construction-bolt
-status: planned
+status: complete
 stories:
   - 009-confirm-and-print-screen
   - 010-ticket-preview-and-print
   - 012-completed-batch-review-list
 created: 2026-11-04T17:00:00Z
-started: null
-completed: null
+started: 2026-11-06T06:31:50Z
+completed: '2026-11-06T09:03:14Z'
 current_stage: null
-stages_completed: []
+stages_completed:
+  - name: plan
+    completed: '2026-11-06T06:34:50Z'
+    artifact: implementation-plan.md
+  - name: implement
+    completed: '2026-11-06T06:44:00Z'
+    artifact: implementation-walkthrough.md
+  - name: test
+    completed: '2026-11-06T09:03:14Z'
+    artifact: test-walkthrough.md
 
 requires_bolts: [010-assisted-weighing-station-ui, 011-consumption-writeback, 012-ticket-printing]
 enables_bolts: [014-assisted-weighing-station-ui]
@@ -51,9 +60,9 @@ Story files: `memory-bank/intents/001-assisted-weighing-station/units/008-assist
 
 ## Stages
 
-- [ ] **1. plan**: Pending → implementation-plan.md
-- [ ] **2. implement**: Pending → src/
-- [ ] **3. test**: Pending → test-report.md
+- ✅ **1. plan**: Complete → implementation-plan.md
+- ✅ **2. implement**: Complete → src/, implementation-walkthrough.md
+- ✅ **3. test**: Complete → test-walkthrough.md
 
 Every stage stops at a human validation checkpoint (workbook STEP 15, CHECKPOINT 5).
 
