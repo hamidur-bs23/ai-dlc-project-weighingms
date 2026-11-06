@@ -27,7 +27,7 @@ public sealed class WeighingReviewController(WeighingSessionService weighing) : 
 
         var result = await weighing.ListCompletedAsync(page, cancellationToken);
         return Ok(new CompletedBatchPageResponse(
-            [.. result.Items.Select(i => new CompletedBatchResponse(i.BatchId, i.OrderId, i.Machine, i.Shade, i.CompletedAt, i.Done, i.Total, i.AllWithinTolerance, i.OverrideCount))],
+            [.. result.Items.Select(i => new CompletedBatchResponse(i.BatchId, i.OrderId, i.Machine, i.Shade, i.CompletedAt, i.Done, i.Total, i.AllWithinTolerance, i.OverrideCount, i.Operators))],
             result.Page,
             result.PageSize,
             result.Total));

@@ -36,7 +36,7 @@ public sealed record OrgatexStateResponse(string State, DateTimeOffset? WrittenA
 public sealed record BatchSummaryLineResponse(int Sequence, string ChemicalId, string ChemicalName, QuantityResponse Required, QuantityResponse? Actual, string Status, bool Override);
 
 /// <summary>A completed batch in the review list.</summary>
-public sealed record CompletedBatchResponse(string BatchId, string OrderId, string Machine, string Shade, DateTimeOffset CompletedAt, int Done, int Total, bool AllWithinTolerance, int OverrideCount);
+public sealed record CompletedBatchResponse(string BatchId, string OrderId, string Machine, string Shade, DateTimeOffset CompletedAt, int Done, int Total, bool AllWithinTolerance, int OverrideCount, IReadOnlyList<string> Operators);
 
 /// <summary>A page of completed batches, newest first.</summary>
 public sealed record CompletedBatchPageResponse(IReadOnlyList<CompletedBatchResponse> Items, int Page, int PageSize, int Total);

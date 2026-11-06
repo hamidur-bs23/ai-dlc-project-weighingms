@@ -324,7 +324,7 @@ public sealed class WeighingSessionService(
         foreach (var s in list)
         {
             var summary = await SummaryOfAsync(s, cancellationToken);
-            items.Add(new CompletedBatchItem(s.BatchId, summary.OrderId, summary.Machine, summary.Shade, s.CompletedAt!.Value, summary.Done, summary.Total, summary.AllWithinTolerance, summary.OverrideCount));
+            items.Add(new CompletedBatchItem(s.BatchId, summary.OrderId, summary.Machine, summary.Shade, s.CompletedAt!.Value, summary.Done, summary.Total, summary.AllWithinTolerance, summary.OverrideCount, summary.Operators));
         }
 
         return new CompletedBatchPage(items, current, ReviewPageSize, total);

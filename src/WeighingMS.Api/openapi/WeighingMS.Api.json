@@ -3034,7 +3034,8 @@
           "done",
           "total",
           "allWithinTolerance",
-          "overrideCount"
+          "overrideCount",
+          "operators"
         ],
         "type": "object",
         "properties": {
@@ -3068,6 +3069,12 @@
           "overrideCount": {
             "type": "integer",
             "format": "int32"
+          },
+          "operators": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           }
         }
       },

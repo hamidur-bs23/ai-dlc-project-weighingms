@@ -33,7 +33,7 @@ public sealed record BatchSummary(
 public sealed record BatchSummaryLine(int Sequence, string ChemicalId, string ChemicalName, Quantity Required, Quantity? Actual, ComponentState State, WeightClass? Class, bool Override);
 
 /// <summary>One completed batch in the review list (A18).</summary>
-public sealed record CompletedBatchItem(string BatchId, string OrderId, string Machine, string Shade, DateTimeOffset CompletedAt, int Done, int Total, bool AllWithinTolerance, int OverrideCount);
+public sealed record CompletedBatchItem(string BatchId, string OrderId, string Machine, string Shade, DateTimeOffset CompletedAt, int Done, int Total, bool AllWithinTolerance, int OverrideCount, IReadOnlyList<string> Operators);
 
 /// <summary>A page of the review list.</summary>
 public sealed record CompletedBatchPage(IReadOnlyList<CompletedBatchItem> Items, int Page, int PageSize, int Total);
