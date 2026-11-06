@@ -2,12 +2,14 @@
 id: 004-write-back-status-visible
 unit: 006-consumption-writeback
 intent: 001-assisted-weighing-station
-status: draft
+status: complete
 priority: must
-requirements: [FR-20, FR-24]
-created: 2026-11-04T16:00:00Z
+requirements:
+  - FR-20
+  - FR-24
+created: '2026-11-04T16:00:00Z'
 assigned_bolt: 011-consumption-writeback
-implemented: false
+implemented: true
 ---
 
 # Story: 004-write-back-status-visible
