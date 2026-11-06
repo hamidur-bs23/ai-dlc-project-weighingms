@@ -2,12 +2,14 @@
 id: 001-compose-ticket
 unit: 007-ticket-printing
 intent: 001-assisted-weighing-station
-status: draft
+status: complete
 priority: must
-requirements: [FR-21, FR-22]
-created: 2026-11-04T16:00:00Z
+requirements:
+  - FR-21
+  - FR-22
+created: '2026-11-04T16:00:00Z'
 assigned_bolt: 012-ticket-printing
-implemented: false
+implemented: true
 ---
 
 # Story: 001-compose-ticket

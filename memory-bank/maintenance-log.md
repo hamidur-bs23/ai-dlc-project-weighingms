@@ -158,3 +158,23 @@
 | intents/001-assisted-weighing-station/requirements.md | construction | units-defined | Intent has 8 units (6/8 complete) |
 
 ---
+
+## 2026-11-06T04:19:12.320Z - Status Sync
+
+**Triggered by**: status-integrity script
+
+| Artifact | Old Status | New Status | Reason |
+|----------|------------|------------|--------|
+| intents/001-assisted-weighing-station/units/007-ticket-printing/unit-brief.md | stories-defined | in-progress | Unit has 1 bolts (0/1 complete) |
+
+---
+
+## 2026-11-06T04:19:17.352Z - Status Sync
+
+**Triggered by**: status-integrity script
+
+| Artifact | Old Status | New Status | Reason |
+|----------|------------|------------|--------|
+| intents/001-assisted-weighing-station/requirements.md | units-defined | construction | Intent has 8 units (6/8 complete) |
+
+---
