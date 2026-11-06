@@ -6,6 +6,9 @@ import type {
   ScaleList,
   Session,
   Station,
+  WeighingComponent,
+  WeighingReading,
+  WeighingSession,
 } from '@core/api/api.types';
 
 export const operatorSession: Session = {
@@ -168,5 +171,153 @@ export function health(overrides: Record<string, 'ready' | 'offline'> = {}): Dev
       item('printer', 'printer'),
       item('orgatex', 'orgatex'),
     ],
+  };
+}
+
+// ── Weighing (bolt 010) ─────────────────────────────────────────────────────────
+
+const q = (value: number, unit: 'g' | 'kg') => ({ value, unit });
+
+function component(
+  sequence: number,
+  code: string,
+  name: string,
+  target: number,
+  unit: 'g' | 'kg',
+  tol: number,
+  container: string,
+): WeighingComponent {
+  const precision = unit === 'g';
+  return {
+    sequence,
+    chemicalId: code,
+    code,
+    name,
+    target: q(target, unit),
+    state: 'pending',
+    scale: {
+      scaleId: precision ? 'scale-3kg' : 'scale-32kg',
+      scaleClass: precision ? 'precision' : 'heavyDuty',
+      unit,
+      resolution: q(precision ? 0.1 : 0.001, unit),
+      automatic: true,
+    },
+    tolerance: {
+      status: 'resolved',
+      source: 'recipe',
+      plusMinus: q(tol, unit),
+      lower: q(target - tol, unit),
+      upper: q(target + tol, unit),
+    },
+    suggestedContainer: container,
+    attempt: null,
+    record: null,
+  };
+}
+
+/** B-24187 as the Api returns its session; `active` makes one component active with an empty attempt. */
+export function weighingSession(
+  active: number | null = 3,
+  overrides: Partial<WeighingSession> = {},
+): WeighingSession {
+  const components = [
+    component(1, 'DYE-1180', 'Remazol Brill. Blue RSPL', 1240, 'g', 6, 'C-09'),
+    component(2, 'DYE-2204', 'Remazol Red RB', 386, 'g', 2, 'C-11'),
+    component(3, 'DYE-4471', 'Remazol Yellow RGB', 94, 'g', 0.5, 'C-12'),
+    component(4, 'AUX-0101', 'Sodium Sulphate', 24, 'kg', 0.12, 'D-03'),
+    component(5, 'AUX-0107', 'Soda Ash', 9.6, 'kg', 0.048, 'D-05'),
+  ].map((c) =>
+    c.sequence === active
+      ? {
+          ...c,
+          state: 'active',
+          attempt: { lot: null, container: null, tare: null, taredAt: null },
+        }
+      : c,
+  );
+  return {
+    batchId: 'B-24187',
+    status: 'inProgress',
+    startedAt: '2026-11-05T01:41:41Z',
+    startedBy: 'OP-1001',
+    completedAt: null,
+    completedBy: null,
+    progress: { done: 0, total: 5 },
+    suggestedSequence: 1,
+    activeSequence: active,
+    readyToComplete: false,
+    components,
+    ...overrides,
+  };
+}
+
+/** The same session with the active component's attempt filled in. */
+export function withAttempt(
+  session: WeighingSession,
+  attempt: { lot?: string | null; container?: string | null; tare?: number | null },
+): WeighingSession {
+  return {
+    ...session,
+    components: session.components.map((c) =>
+      c.sequence === session.activeSequence
+        ? {
+            ...c,
+            attempt: {
+              lot: attempt.lot ?? null,
+              container: attempt.container ?? null,
+              tare: attempt.tare != null ? q(attempt.tare, c.target.unit as 'g' | 'kg') : null,
+              taredAt: attempt.tare != null ? '2026-11-05T01:42:00Z' : null,
+            },
+          }
+        : c,
+    ),
+  };
+}
+
+type ReadingClass = 'underweight' | 'withinRange' | 'targetAchieved' | 'overweight' | null;
+
+/** A Yellow RGB reading (94.0 ± 0.5 g) as the server classifies it. */
+export function yellowReading(
+  net: number,
+  cls: ReadingClass,
+  options: {
+    stable?: boolean;
+    canConfirm?: boolean;
+    missing?: string[];
+    surplus?: number;
+    offered?: boolean;
+  } = {},
+): WeighingReading {
+  const stable = options.stable ?? true;
+  const confirmable = cls === 'withinRange' || cls === 'targetAchieved';
+  const missing = options.missing ?? [
+    ...(stable ? [] : ['stable']),
+    ...(confirmable ? [] : ['inTolerance']),
+  ];
+  return {
+    sequence: 3,
+    scaleId: 'scale-3kg',
+    net: q(net, 'g'),
+    stable,
+    validity: 'valid',
+    readAt: '2026-11-05T01:43:00Z',
+    class: cls,
+    remaining: q(Math.max(0, Math.round((94 - Math.max(0, net)) * 10) / 10), 'g'),
+    band: { target: q(94, 'g'), plusMinus: q(0.5, 'g'), lower: q(93.5, 'g'), upper: q(94.5, 'g') },
+    toleranceStatus: 'resolved',
+    confirmation: { canConfirm: options.canConfirm ?? missing.length === 0, missing },
+    surplus:
+      options.surplus != null
+        ? {
+            amount: q(options.surplus, 'g'),
+            percentOfTarget: Math.round((options.surplus / 94) * 1000) / 10,
+          }
+        : null,
+    override: {
+      offered:
+        options.offered ??
+        ((cls === 'underweight' || cls === 'overweight') &&
+          missing.every((m) => m === 'inTolerance')),
+    },
   };
 }
