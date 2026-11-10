@@ -2,12 +2,14 @@
 id: 011-error-and-offline-states
 unit: 008-assisted-weighing-station-ui
 intent: 001-assisted-weighing-station
-status: draft
+status: complete
 priority: must
-requirements: [FR-23, FR-24]
-created: 2026-11-04T16:00:00Z
+requirements:
+  - FR-23
+  - FR-24
+created: '2026-11-04T16:00:00Z'
 assigned_bolt: 014-assisted-weighing-station-ui
-implemented: false
+implemented: true
 ---
 
 # Story: 011-error-and-offline-states

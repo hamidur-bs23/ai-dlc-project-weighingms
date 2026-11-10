@@ -2,7 +2,7 @@
 unit: 008-assisted-weighing-station-ui
 intent: 001-assisted-weighing-station
 created: 2026-11-05T13:54:37Z
-last_updated: 2026-11-06T09:03:14Z
+last_updated: 2026-11-10T18:39:13Z
 ---
 
 # Construction Log: assisted-weighing-station-ui
@@ -49,6 +49,10 @@ last_updated: 2026-11-06T09:03:14Z
 | 2026-11-06T06:34:50Z | 013-assisted-weighing-station-ui | stage-complete | Plan → Implement (D1, D2, D3 option 1) |
 | 2026-11-06T06:44:00Z | 013-assisted-weighing-station-ui | stage-complete | Implement → Test |
 | 2026-11-06T09:03:14Z | 013-assisted-weighing-station-ui | completed | 194 web and 706 backend tests, live browser run, STEP 27 and STEP 28 screen 3 evidence |
+| 2026-11-06T09:04:41Z | 014-assisted-weighing-station-ui | started | Stage 1: plan |
+| 2026-11-06T09:08:55Z | 014-assisted-weighing-station-ui | stage-complete | Plan → Implement (D1 to D4 option 1) |
+| 2026-11-10T17:21:40Z | 014-assisted-weighing-station-ui | stage-complete | Implement → Test (stack built and smoke-tested) |
+| 2026-11-10T18:39:13Z | 014-assisted-weighing-station-ui | completed | 15/15 E2E twice on Compose full, 205 web and 717 backend tests, STEP 28–30 evidence |
 
 ## Execution Summary
 
@@ -56,9 +60,9 @@ last_updated: 2026-11-06T09:03:14Z
 |--------|-------|
 | Original bolts planned | 4 |
 | Current bolt count | 4 |
-| Bolts completed | 3 |
+| Bolts completed | 4 |
 | Bolts in progress | 0 |
-| Bolts remaining | 1 |
+| Bolts remaining | 0 |
 | Replanning events | 0 |
 
 ## Notes

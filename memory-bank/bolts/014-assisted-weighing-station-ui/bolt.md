@@ -3,21 +3,36 @@ id: 014-assisted-weighing-station-ui
 unit: 008-assisted-weighing-station-ui
 intent: 001-assisted-weighing-station
 type: simple-construction-bolt
-status: planned
+status: complete
 stories:
   - 011-error-and-offline-states
   - 013-end-to-end-batch-flow
-created: 2026-11-04T17:00:00Z
-started: null
-completed: null
+created: '2026-11-04T17:00:00Z'
+started: '2026-11-06T09:04:41Z'
+completed: '2026-11-10T18:39:13Z'
 current_stage: null
-stages_completed: []
-
-requires_bolts: [013-assisted-weighing-station-ui]
+stages_completed:
+  - name: plan
+    completed: '2026-11-06T09:08:55Z'
+    artifact: implementation-plan.md
+  - name: implement
+    completed: '2026-11-10T17:21:40Z'
+    artifact: implementation-walkthrough.md
+  - name: test
+    completed: '2026-11-10T18:39:13Z'
+    artifact: test-walkthrough.md
+requires_bolts:
+  - 013-assisted-weighing-station-ui
 enables_bolts: []
-requires_units: [001-station-simulators, 002-station-access, 003-batch-recipe, 004-device-integration, 005-weighing-station, 006-consumption-writeback, 007-ticket-printing]
+requires_units:
+  - 001-station-simulators
+  - 002-station-access
+  - 003-batch-recipe
+  - 004-device-integration
+  - 005-weighing-station
+  - 006-consumption-writeback
+  - 007-ticket-printing
 blocks: true
-
 complexity:
   avg_complexity: 2
   avg_uncertainty: 1
@@ -49,9 +64,9 @@ Story files: `memory-bank/intents/001-assisted-weighing-station/units/008-assist
 
 ## Stages
 
-- [ ] **1. plan**: Pending → implementation-plan.md
-- [ ] **2. implement**: Pending → src/
-- [ ] **3. test**: Pending → test-report.md
+- ✅ **1. plan**: Complete → implementation-plan.md
+- ✅ **2. implement**: Complete → src/, implementation-walkthrough.md
+- ✅ **3. test**: Complete → test-walkthrough.md
 
 Every stage stops at a human validation checkpoint (workbook STEP 15, CHECKPOINT 5).
 

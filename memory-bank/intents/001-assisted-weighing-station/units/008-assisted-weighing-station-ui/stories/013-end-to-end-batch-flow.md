@@ -2,12 +2,17 @@
 id: 013-end-to-end-batch-flow
 unit: 008-assisted-weighing-station-ui
 intent: 001-assisted-weighing-station
-status: draft
+status: complete
 priority: must
-requirements: [FR-1, FR-13, FR-18, FR-20, FR-21]
-created: 2026-11-04T16:00:00Z
+requirements:
+  - FR-1
+  - FR-13
+  - FR-18
+  - FR-20
+  - FR-21
+created: '2026-11-04T16:00:00Z'
 assigned_bolt: 014-assisted-weighing-station-ui
-implemented: false
+implemented: true
 ---
 
 # Story: 013-end-to-end-batch-flow
