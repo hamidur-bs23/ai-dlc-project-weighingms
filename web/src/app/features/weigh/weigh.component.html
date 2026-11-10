@@ -118,7 +118,11 @@
               }}
             }
             @default {
-              @if (c.tolerance.status === 'blocked') {
+              @if (store.scaleOffline()) {
+                {{ 'weigh.status.scaleOffline' | transloco }}
+              } @else if (r?.validity === 'overCapacity') {
+                {{ 'weigh.status.overCapacity' | transloco }}
+              } @else if (c.tolerance.status === 'blocked') {
                 {{ 'weigh.status.noTolerance' | transloco }}
               } @else {
                 {{ 'weigh.status.waiting' | transloco }}
@@ -155,7 +159,7 @@
           >
             {{ 'weigh.actions.confirm' | transloco }} <span class="key__fn">F1</span>
           </button>
-          <button type="button" class="key" [disabled]="store.isBusy()" (click)="store.tare()">
+          <button type="button" class="key" [disabled]="!store.canTare()" (click)="store.tare()">
             {{ (attempt()?.tare ? 'weigh.actions.retare' : 'weigh.actions.tare') | transloco }}
             <span class="key__fn">F2</span>
           </button>

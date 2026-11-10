@@ -12,7 +12,7 @@
             {{ 'summary.readOnly' | transloco }}
           </p>
         }
-        @if (printError(); as e) {
+        @if (actionError(); as e) {
           <wms-banner [error]="e" />
         }
         <dl class="summary">

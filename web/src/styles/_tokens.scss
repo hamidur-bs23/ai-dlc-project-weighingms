@@ -9,7 +9,9 @@
   --hmi-line: #2c3644;
   --hmi-ink: #e9eef4;
   --hmi-muted: #8998a9;
-  --hmi-dim: #63717f;
+
+  /* The mockup's #63717f gives 2.9–3.6:1 on the dark panels; this is the least change that meets WCAG AA 4.5:1 on all of them (ux-guide). */
+  --hmi-dim: #8193a5;
   --hmi-hover: #2a3442;
 
   // Status

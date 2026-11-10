@@ -28,6 +28,9 @@ export const SUMMARY_REFRESH_MS = 2000;
 /** Another press printed this copy first; the screen's print count is out of date. */
 const ALREADY_PRINTED = 'Ticket.AlreadyPrinted';
 
+/** The write-back is no longer failed, so the screen's sync state is out of date. */
+const WRITE_BACK_NOT_FAILED = 'WriteBack.NotFailed';
+
 /**
  * Screen 3 · Confirm & print (stories 009, 010): the server's summary, the ticket preview, Print or
  * Reprint (F1) and Next batch (F3). Opened from the review list it is read-only (REVIEW-READ-ONLY):
@@ -56,7 +59,7 @@ export class BatchSummaryComponent {
   protected readonly ticket = signal<Ticket | null>(null);
   protected readonly ticketError = signal<AppError | null>(null);
   protected readonly printing = signal(false);
-  protected readonly printError = signal<AppError | null>(null);
+  protected readonly actionError = signal<AppError | null>(null);
 
   /** The ticket's own state once loaded: it is newer than a summary refresh already on its way. */
   protected readonly ticketState = computed(() => this.ticket() ?? this.summary()?.ticket ?? null);
@@ -112,14 +115,14 @@ export class BatchSummaryComponent {
       return;
     }
     this.printing.set(true);
-    this.printError.set(null);
+    this.actionError.set(null);
     try {
       this.ticket.set(
         await firstValueFrom(this.api.printTicket(this.batchId(), ticket.printCount)),
       );
     } catch (e) {
       const error = toAppError(e);
-      this.printError.set(error);
+      this.actionError.set(error);
       if (error.code === ALREADY_PRINTED) {
         await this.loadTicket(this.batchId());
       }
@@ -131,11 +134,17 @@ export class BatchSummaryComponent {
   /** Manual retry of a sync-failed write-back (WRITEBACK-RETRY-ANYONE), then follow it until sent or failed. */
   protected async retry(): Promise<void> {
     this.retrying.set(true);
+    this.actionError.set(null);
     try {
       await firstValueFrom(this.api.retryWriteBack(this.batchId()));
       await this.load(this.batchId());
     } catch (e) {
-      this.error.set(toAppError(e));
+      // A refused Retry leaves the summary and preview in place, like a failed print.
+      const error = toAppError(e);
+      this.actionError.set(error);
+      if (error.code === WRITE_BACK_NOT_FAILED) {
+        await this.load(this.batchId());
+      }
     } finally {
       this.retrying.set(false);
     }
@@ -154,6 +163,11 @@ export class BatchSummaryComponent {
     try {
       const summary = await firstValueFrom(this.api.summary(batchId));
       this.summary.set(summary);
+      // Opened by URL or from the review list, nothing has named the batch for the header yet. The
+      // summary carries it, so this also works while OrgaTEX is down.
+      if (!this.destroyed && this.activeBatch.batch()?.batchId !== summary.batchId) {
+        this.activeBatch.open(summary);
+      }
       // The ticket is frozen, so one read is enough; a refresh of the summary doesn't repeat it.
       if (this.hasTicket() && this.ticket() === null && this.ticketError() === null) {
         void this.loadTicket(batchId);
@@ -192,6 +206,7 @@ export class BatchSummaryComponent {
   }
 
   protected async backToReview(): Promise<void> {
+    this.activeBatch.close();
     await this.router.navigate(['/review']);
   }
 }

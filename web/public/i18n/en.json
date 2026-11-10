@@ -81,6 +81,10 @@
     "OrgaTex.InvalidRecipe": "OrgaTEX sent a recipe that cannot be used. Ask a supervisor.",
     "Scanner.Unavailable": "The scanner is not responding.",
     "Scale.Unavailable": "The scale is not responding.",
+    "Scale.NotFound": "That scale is not set up at this station. Ask a supervisor.",
+    "Quantity.NotPositive": "The quantity must be greater than zero. Ask a supervisor.",
+    "Quantity.UnknownUnit": "The quantity uses an unknown unit. Ask a supervisor.",
+    "Weighing.InvalidScalePolicy": "The scale settings for this station are not valid. Ask a supervisor.",
     "Request.Invalid": "That entry is not valid.",
     "Request.AntiforgeryInvalid": "The station needs to reload. Refresh the page.",
     "Network.Unavailable": "The WeighingMS server cannot be reached.",
@@ -154,6 +158,8 @@
       "over": "OVER TOLERANCE — SURPLUS +{{ amount }} (+{{ percent }}%)",
       "overActions": "Over tolerance: remove material until the weight is back in range, quit and re-weigh, or ask a supervisor to override.",
       "noTolerance": "NO TOLERANCE DEFINED — ASK A SUPERVISOR",
+      "scaleOffline": "SCALE OFFLINE — WAIT FOR IT TO RETURN, OR QUIT",
+      "overCapacity": "OVER CAPACITY — REMOVE MATERIAL FROM THE SCALE",
       "waiting": "WAITING FOR THE SCALE…"
     },
     "class": {

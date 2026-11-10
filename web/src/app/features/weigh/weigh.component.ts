@@ -159,7 +159,7 @@ export class WeighComponent {
       'F2',
       {
         run: () => void this.store.tare(),
-        enabled: () => this.active() !== null && !this.store.isBusy(),
+        enabled: () => this.active() !== null && this.store.canTare(),
       },
       destroyRef,
     );

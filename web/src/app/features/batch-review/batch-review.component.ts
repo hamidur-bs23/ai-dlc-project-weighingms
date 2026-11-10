@@ -27,6 +27,8 @@ export class BatchReviewComponent {
   protected readonly page = signal(1);
   protected readonly list = signal<CompletedBatchPage | null>(null);
   protected readonly error = signal<AppError | null>(null);
+  /** The page the failed load asked for, which is the one Retry must ask for again. */
+  protected readonly failedPage = signal(1);
   protected readonly loading = signal(false);
 
   protected readonly pages = computed(() => {
@@ -45,6 +47,7 @@ export class BatchReviewComponent {
       this.list.set(await firstValueFrom(this.api.completedBatches(page)));
       this.page.set(page);
     } catch (e) {
+      this.failedPage.set(page);
       this.error.set(toAppError(e));
     } finally {
       this.loading.set(false);

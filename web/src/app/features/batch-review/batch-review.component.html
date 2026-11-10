@@ -2,7 +2,7 @@
   <h1 class="review__title">{{ 'review.title' | transloco }}</h1>
 
   @if (error(); as e) {
-    <wms-banner [error]="e" [retryable]="true" (retry)="load(page())" />
+    <wms-banner [error]="e" [retryable]="true" (retry)="load(failedPage())" />
   }
 
   @if (list(); as l) {

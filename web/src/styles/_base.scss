@@ -80,6 +80,11 @@ select {
       background: var(--ok);
       filter: brightness(1.1);
     }
+
+    // Faded ink on the green key is 3.8:1; at full strength it is 6.9:1 (WCAG AA, ux-guide).
+    .key__fn {
+      opacity: 1;
+    }
   }
 
   &--ghost {

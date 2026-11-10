@@ -70,8 +70,12 @@ export const WeighingSessionStore = signalStore(
     }),
     isBusy: computed(() => busy()),
   })),
-  withComputed(({ activeReading, isBusy }) => ({
+  withComputed(({ activeReading, isBusy, readingError }) => ({
     canConfirm: computed(() => !isBusy() && activeReading()?.confirmation.canConfirm === true),
+    /** The active component's scale is not answering (story 011). */
+    scaleOffline: computed(() => readingError()?.code === 'Scale.Unavailable'),
+    /** Tare needs a scale that answers, so it waits while readings are failing (story 011). */
+    canTare: computed(() => !isBusy() && readingError() === null),
     overrideOffered: computed(() => !isBusy() && activeReading()?.override.offered === true),
   })),
   withMethods((store, api = inject(WeighingApiService), batches = inject(BatchesApiService)) => {
@@ -94,7 +98,8 @@ export const WeighingSessionStore = signalStore(
           exhaustMap(() =>
             api.reading(batchId).pipe(
               catchError((e: unknown) => {
-                patchState(store, { readingError: toAppError(e) });
+                // A failed read leaves no known weight: the last one must not stay on screen as if it were live.
+                patchState(store, { reading: null, readingError: toAppError(e) });
                 return of(null);
               }),
             ),
@@ -111,7 +116,8 @@ export const WeighingSessionStore = signalStore(
       const activeBefore = store.session()?.activeSequence ?? null;
       patchState(store, { session, commandError: null });
       if (session.activeSequence !== activeBefore || polling === null) {
-        patchState(store, { reading: null });
+        // Another component may use another scale, so the old reading and its failure both go.
+        patchState(store, { reading: null, readingError: null });
         startPolling();
       }
     };
