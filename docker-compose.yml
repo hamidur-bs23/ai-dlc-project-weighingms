@@ -1,7 +1,8 @@
 # WeighingMS local stack (tech-stack → Infrastructure & Deployment).
 #   Development: docker compose up -d postgres   (Api, simulators and web run natively)
-#   Demo/E2E/CI: docker compose --profile full up --wait
-# Later bolts add the migrator, api and observability services.
+#   Demo/E2E/CI: docker compose --profile full up --wait   (the app is then at http://localhost:5080)
+# The full profile runs in the Development environment: the lab users and /_sim/* exist only there.
+# Later bolts add the observability services.
 name: weighingms
 
 services:
@@ -30,12 +31,48 @@ services:
       ASPNETCORE_ENVIRONMENT: ${SIMULATORS_ENVIRONMENT:-Development}
       ASPNETCORE_URLS: http://+:5090
     ports:
-      - "5090:5090"
+      - "${SIMULATORS_PORT:-5090}:5090"
     healthcheck:
       test: ["CMD-SHELL", "curl -fsS http://localhost:5090/api/scales > /dev/null || exit 1"]
       interval: 5s
       timeout: 3s
       retries: 10
+
+  migrator:
+    profiles: ["full"]
+    build:
+      context: .
+      dockerfile: src/WeighingMS.Api/Dockerfile
+      target: migrator
+    environment:
+      ConnectionStrings__Db: Host=postgres;Port=5432;Database=${POSTGRES_DB:-weighingms};Username=${POSTGRES_USER:-weighingms};Password=${POSTGRES_PASSWORD}
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  api:
+    profiles: ["full"]
+    build:
+      context: .
+      dockerfile: src/WeighingMS.Api/Dockerfile
+      target: api
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${API_ENVIRONMENT:-Development}
+      ASPNETCORE_URLS: http://+:5080
+      ConnectionStrings__Db: Host=postgres;Port=5432;Database=${POSTGRES_DB:-weighingms};Username=${POSTGRES_USER:-weighingms};Password=${POSTGRES_PASSWORD}
+      Integrations__Simulators__BaseUrl: http://simulators:5090
+    ports:
+      - "${API_PORT:-5080}:5080"
+    depends_on:
+      migrator:
+        condition: service_completed_successfully
+      simulators:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:5080/health/ready > /dev/null || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
 
 volumes:
   pgdata:

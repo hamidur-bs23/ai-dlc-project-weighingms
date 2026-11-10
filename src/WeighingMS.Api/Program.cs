@@ -148,6 +148,8 @@ if (app.Environment.IsDevelopment())
     app.MapScalarApiReference();
 }
 
+app.UseStationWebFiles();
+
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseRateLimiter();
@@ -155,6 +157,7 @@ app.UseRateLimiter();
 app.MapHealthChecks("/health/live", new() { Predicate = _ => false });
 app.MapHealthChecks("/health/ready", new() { Predicate = c => c.Tags.Contains("ready") });
 app.MapControllers();
+app.MapStationWeb();
 await app.RunAsync();
 
 /// <summary>Entry point; public so integration tests can host it with WebApplicationFactory.</summary>

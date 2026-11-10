@@ -6,3 +6,13 @@ evidence/
 docs/
 memory-bank/
 .env
+web/dist/
+web/.angular/
+web/coverage/
+playwright/test-results/
+playwright/playwright-report/
+.playwright-mcp/
+.remember/
+.specsmd/
+.claude/
+.agents/
