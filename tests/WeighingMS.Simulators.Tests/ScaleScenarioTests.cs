@@ -123,4 +123,30 @@ public sealed class ScaleScenarioTests : IDisposable
         _client.Dispose();
         _factory.Dispose();
     }
+
+    [Fact]
+    public async Task EmptyContainer_AfterAPour_ReadsMinusTheOldPourUntilTaredThenPoursFromZero()
+    {
+        await TareAndStartAsync("scale-3kg", "rising", 1240.0m, "g", null);
+        _factory.Clock.Advance(_pourDuration);
+        (await ReadAsync("scale-3kg")).Net.ShouldBe(1240.0m);
+        (await _client.PostJsonAsync("/api/scales/scale-3kg/tare", new { })).EnsureSuccessStatusCode();
+
+        (await _client.PostJsonAsync("/_sim/scales/scale-3kg/container", new { })).StatusCode.ShouldBe(HttpStatusCode.NoContent);
+        (await ReadAsync("scale-3kg")).Net.ShouldBe(-1240.0m);
+
+        await TareAndStartAsync("scale-3kg", "rising", 386.0m, "g", null);
+        (await ReadAsync("scale-3kg")).Net.ShouldBe(0.0m);
+        _factory.Clock.Advance(_pourDuration);
+        var (net, stable, _) = await ReadAsync("scale-3kg");
+
+        net.ShouldBe(386.0m);
+        stable.ShouldBeTrue();
+    }
+
+    [Fact]
+    public async Task EmptyContainer_UnknownScale_Returns404()
+    {
+        (await _client.PostJsonAsync("/_sim/scales/scale-9kg/container", new { })).StatusCode.ShouldBe(HttpStatusCode.NotFound);
+    }
 }

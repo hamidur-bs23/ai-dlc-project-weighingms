@@ -21,6 +21,9 @@
     "dev": "concurrently -k -n sim,api,web -c cyan,magenta,green \"npm:sim\" \"npm:api\" \"npm:web\"",
     "lint": "npm run lint -w web",
     "test:web": "npm test -w web",
+    "e2e": "npm test -w weighingms-e2e",
+    "e2e:stack:up": "node playwright/stack.mjs up",
+    "e2e:stack:down": "node playwright/stack.mjs down",
     "api:types": "ConnectionStrings__Db=Host=openapi-build-only dotnet build src/WeighingMS.Api -p:OpenApiGenerateDocumentsOnBuild=true && npm run api:types -w web"
   },
   "devDependencies": {
@@ -29,6 +32,7 @@
     "concurrently": "10.0.6"
   },
   "workspaces": [
-    "web"
+    "web",
+    "playwright"
   ]
 }

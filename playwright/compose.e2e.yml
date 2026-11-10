@@ -1,0 +1,11 @@
+# E2E settings on top of docker-compose.yml, applied only by playwright/stack.mjs.
+services:
+  api:
+    environment:
+      # Every test signs in, which would otherwise hit the sign-in rate limit of 10 a minute.
+      RateLimits__AuthPermitLimitPerMinute: "1000"
+      # Reach "sync failed" in seconds rather than the configured minutes, so the outage test stays short.
+      WriteBack__MaxAttempts: "2"
+      WriteBack__BaseDelay: "00:00:01"
+      WriteBack__MaxDelay: "00:00:01"
+      WriteBack__PollInterval: "00:00:00.500"

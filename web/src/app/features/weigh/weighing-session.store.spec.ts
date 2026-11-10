@@ -245,4 +245,65 @@ describe('WeighingSessionStore', () => {
 
     expect(store.active()).toBeNull();
   });
+
+  // ── Story 011: a failed read leaves no known weight ─────────────────────────────
+  it('should clear the shown weight when a reading fails, so an old one never looks live', async () => {
+    await open();
+    httpMock().expectOne(`${SESSION}/reading`).flush(yellowReading(94.0, 'targetAchieved'));
+    expect(store.canConfirm()).toBe(true);
+
+    vi.advanceTimersByTime(250);
+    httpMock()
+      .expectOne(`${SESSION}/reading`)
+      .flush(problem('Scale.Unavailable'), { status: 503, statusText: 'x' });
+
+    expect(store.activeReading()).toBeNull();
+    expect(store.canConfirm()).toBe(false);
+    expect(store.scaleOffline()).toBe(true);
+    expect(store.canTare()).toBe(false);
+  });
+
+  it('should stop tare on any failed read, but call only Scale.Unavailable offline', async () => {
+    await open();
+    httpMock()
+      .expectOne(`${SESSION}/reading`)
+      .flush(problem('Unknown'), { status: 500, statusText: 'x' });
+
+    expect(store.scaleOffline()).toBe(false);
+    expect(store.canTare()).toBe(false);
+  });
+
+  it('should let tare again once readings return', async () => {
+    await open();
+    httpMock()
+      .expectOne(`${SESSION}/reading`)
+      .flush(problem('Scale.Unavailable'), { status: 503, statusText: 'x' });
+    expect(store.canTare()).toBe(false);
+
+    vi.advanceTimersByTime(250);
+    httpMock().expectOne(`${SESSION}/reading`).flush(yellowReading(0, 'underweight'));
+
+    expect(store.scaleOffline()).toBe(false);
+    expect(store.canTare()).toBe(true);
+  });
+
+  it('should forget a failed read when another component, on another scale, becomes active', async () => {
+    await open();
+    httpMock()
+      .expectOne(`${SESSION}/reading`)
+      .flush(problem('Scale.Unavailable'), { status: 503, statusText: 'x' });
+    expect(store.scaleOffline()).toBe(true);
+
+    const selecting = store.select(4);
+    await settle();
+    httpMock().expectOne(`${SESSION}/selection`).flush(weighingSession(4));
+    await selecting;
+
+    expect(store.scaleOffline()).toBe(false);
+    expect(store.canTare()).toBe(true);
+    vi.advanceTimersByTime(0);
+    httpMock()
+      .expectOne(`${SESSION}/reading`)
+      .flush({ ...yellowReading(0, 'underweight'), sequence: 4 });
+  });
 });

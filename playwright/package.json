@@ -1,0 +1,16 @@
+{
+  "name": "weighingms-e2e",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "WeighingMS end-to-end tests against the Compose full profile (STEP 29, STEP 30)",
+  "scripts": {
+    "test": "playwright test",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.14.0",
+    "@playwright/test": "1.65.0",
+    "@types/node": "24.19.2"
+  }
+}

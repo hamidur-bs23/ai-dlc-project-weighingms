@@ -311,4 +311,65 @@ describe('WeighComponent (screen 2 · Weigh)', () => {
 
     expect(status()).toBe('NO TOLERANCE DEFINED — ASK A SUPERVISOR');
   });
+
+  // ── Story 011: scale offline and over capacity ─────────────────────────────────
+  it('should show a dash and SCALE OFFLINE, with Confirm and Tare disabled, while the scale is offline', async () => {
+    await open(ready(), null);
+    (await lastRequest(`${SESSION}/reading`)).flush(problem('Scale.Unavailable'), {
+      status: 503,
+      statusText: 'x',
+    });
+
+    await vi.waitFor(() => {
+      expect(status()).toBe('SCALE OFFLINE — WAIT FOR IT TO RETURN, OR QUIT');
+    });
+    expect(screen.getByTestId('weighed-now').textContent.trim()).toBe('—');
+    expect(confirmButton().disabled).toBe(true);
+    expect(screen.getByRole<HTMLButtonElement>('button', { name: /^Re-tare/ }).disabled).toBe(true);
+    expect(screen.getByRole('alert').textContent).toContain('The scale is not responding.');
+  });
+
+  it('should not tare or confirm with F2 or F1 while the scale is offline', async () => {
+    await open(ready(), null);
+    (await lastRequest(`${SESSION}/reading`)).flush(problem('Scale.Unavailable'), {
+      status: 503,
+      statusText: 'x',
+    });
+    await vi.waitFor(() => {
+      expect(status()).toContain('SCALE OFFLINE');
+    });
+
+    press('F2');
+    press('F1');
+
+    httpMock().expectNone(`${SESSION}/tare`);
+    httpMock().expectNone(`${SESSION}/confirmation`);
+  });
+
+  it('should still allow Quit while the scale is offline (safe exit)', async () => {
+    await open(weighingSession(3), null);
+    (await lastRequest(`${SESSION}/reading`)).flush(problem('Scale.Unavailable'), {
+      status: 503,
+      statusText: 'x',
+    });
+    await vi.waitFor(() => {
+      expect(status()).toContain('SCALE OFFLINE');
+    });
+
+    press('F4');
+
+    (await lastRequest(`${SESSION}/quit`)).flush(weighingSession(null));
+  });
+
+  it('should say OVER CAPACITY and keep Confirm disabled', async () => {
+    await open(ready(), {
+      ...yellowReading(3200, null, { missing: ['reading'] }),
+      validity: 'overCapacity',
+      remaining: null,
+    });
+
+    expect(status()).toBe('OVER CAPACITY — REMOVE MATERIAL FROM THE SCALE');
+    expect(screen.getByText("The scale reading can't be used.")).toBeTruthy();
+    expect(confirmButton().disabled).toBe(true);
+  });
 });

@@ -105,7 +105,7 @@ describe('BatchReviewComponent (completed batches)', () => {
     });
   });
 
-  it('should keep the page it was on when the next one fails, and retry that one', async () => {
+  it('should keep the page it was on when the next one fails, and retry the one that failed', async () => {
     const user = userEvent.setup();
     httpMock().expectOne(LIST_URL(1)).flush(pageOf(1, 21));
     await screen.findByTestId('review-page');
@@ -115,13 +115,15 @@ describe('BatchReviewComponent (completed batches)', () => {
       .expectOne(LIST_URL(2))
       .flush(problem('Unexpected'), { status: 500, statusText: 'Error' });
 
+    expect((await screen.findByTestId('review-page')).textContent.trim()).toBe('Page 1 of 2');
+
     await user.click(await screen.findByRole('button', { name: /Retry/ }));
-    httpMock().expectOne(LIST_URL(1)).flush(pageOf(1, 21));
+    httpMock().expectOne(LIST_URL(2)).flush(pageOf(2, 21));
 
     await vi.waitFor(() => {
-      expect(screen.queryByRole('alert')).toBeNull();
+      expect(screen.getByTestId('review-page').textContent.trim()).toBe('Page 2 of 2');
     });
-    expect(screen.getByTestId('review-page').textContent.trim()).toBe('Page 1 of 2');
+    expect(screen.queryByRole('alert')).toBeNull();
   });
 
   it('should show the error and still offer the way back when the list cannot load', async () => {

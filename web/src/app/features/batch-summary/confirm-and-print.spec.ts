@@ -3,6 +3,7 @@ import { Router, provideRouter } from '@angular/router';
 import { render, screen } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import type { BatchSummary, Ticket } from '@core/api/api.types';
+import { ActiveBatchService } from '@core/batches/active-batch.service';
 import { FunctionKeysService } from '@core/keyboard/function-keys.service';
 import {
   httpMock,
@@ -383,6 +384,26 @@ describe('Confirm & print (screen 3)', () => {
       await userEvent.setup().click(await button(/Back to completed batches/));
 
       expect(navigate).toHaveBeenCalledWith(['/review']);
+    });
+  });
+
+  describe('the header', () => {
+    it('should name the batch in the header when the screen is opened by URL', async () => {
+      await openLoaded();
+
+      expect(TestBed.inject(ActiveBatchService).batch()).toEqual(
+        expect.objectContaining({ batchId: 'B-24187', orderId: 'SO-9931', machine: 'JET-04' }),
+      );
+    });
+
+    it('should name the batch from the review list, and clear it on Back', async () => {
+      await openLoaded(printed(1), printedSummary(1), true);
+      expect(TestBed.inject(ActiveBatchService).batch()?.batchId).toBe('B-24187');
+      vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+
+      await userEvent.setup().click(await button(/Back to completed batches/));
+
+      expect(TestBed.inject(ActiveBatchService).batch()).toBeNull();
     });
   });
 });

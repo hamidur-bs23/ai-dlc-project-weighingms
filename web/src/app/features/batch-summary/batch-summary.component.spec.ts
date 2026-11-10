@@ -244,7 +244,7 @@ describe('BatchSummaryComponent (OrgaTEX write-back)', () => {
     expect(await orgatexText()).toMatch(/^CONFIRMED/);
   });
 
-  it('should show the error when the retry is refused and allow another try', async () => {
+  it('should keep the screen and catch up when the retry is refused', async () => {
     await open();
     httpMock().expectOne(SUMMARY_URL).flush(failed);
     await screen.findByTestId('orgatex-state');
@@ -254,7 +254,26 @@ describe('BatchSummaryComponent (OrgaTEX write-back)', () => {
       .expectOne(RETRY_URL)
       .flush(problem('WriteBack.NotFailed'), { status: 409, statusText: 'x' });
 
+    // The refusal says the state on screen is out of date: the screen stays and catches up.
+    await vi.waitFor(() => {
+      httpMock().expectOne(SUMMARY_URL).flush(failed);
+    });
     expect(await screen.findByText('The write-back is not in a failed state.')).toBeTruthy();
+    expect(screen.getByTestId('orgatex-state')).toBeTruthy();
+  });
+
+  it('should keep the summary and say why, without reloading, when Retry fails', async () => {
+    await open();
+    httpMock().expectOne(SUMMARY_URL).flush(failed);
+    await screen.findByTestId('orgatex-state');
+
+    await userEvent.setup().click(screen.getByRole('button', { name: 'Retry' }));
+    httpMock()
+      .expectOne(RETRY_URL)
+      .flush(problem('OrgaTex.Unavailable'), { status: 503, statusText: 'x' });
+
+    expect(await screen.findByText(/OrgaTEX is not responding/)).toBeTruthy();
+    expect(screen.getByTestId('orgatex-state')).toBeTruthy();
     httpMock().expectNone(SUMMARY_URL);
   });
 });

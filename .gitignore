@@ -27,3 +27,7 @@ TestResults/
 # Angular / Playwright MCP scratch
 .angular/
 .playwright-mcp/
+
+# Playwright (E2E)
+playwright/test-results/
+playwright/playwright-report/
