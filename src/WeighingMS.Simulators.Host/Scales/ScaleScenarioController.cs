@@ -28,4 +28,22 @@ public sealed class ScaleScenarioController(ScaleSimulator scales) : ControllerB
             ? NoContent()
             : SimProblems.Create(StatusCodes.Status400BadRequest, "Scenario.Invalid", "Invalid scenario request", error);
     }
+
+    /// <summary>
+    /// Takes the filled container off the scale and puts an empty one on (between components). The tare stays until the
+    /// operator tares again.
+    /// </summary>
+    [HttpPost("{scaleId}/container")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    public IActionResult PlaceEmptyContainer(string scaleId)
+    {
+        if (scales.Find(scaleId) is null)
+        {
+            return SimProblems.ScaleNotFound(scaleId);
+        }
+
+        scales.PlaceEmptyContainer(scaleId);
+        return NoContent();
+    }
 }

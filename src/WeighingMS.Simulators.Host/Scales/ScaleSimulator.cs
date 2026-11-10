@@ -102,6 +102,19 @@ public sealed class ScaleSimulator
         }
     }
 
+    /// <summary>
+    /// Takes the filled container off and puts an empty one on, as the operator does between components. The tare is
+    /// kept, so until the operator tares again the reading is the new container minus the old tare.
+    /// </summary>
+    public void PlaceEmptyContainer(string scaleId)
+    {
+        var state = _states[scaleId];
+        lock (state)
+        {
+            state.EmptyContainer();
+        }
+    }
+
     /// <summary>Returns every scale to its start state: no tare, empty container, no scenario.</summary>
     public void Reset()
     {
@@ -129,6 +142,13 @@ public sealed class ScaleSimulator
             _landing = landing;
             _held = 0m;
             _pourStartedAt = now;
+        }
+
+        public void EmptyContainer()
+        {
+            _landing = 0m;
+            _held = 0m;
+            _pourStartedAt = null;
         }
 
         public void Reset()
