@@ -31,3 +31,6 @@ TestResults/
 # Playwright (E2E)
 playwright/test-results/
 playwright/playwright-report/
+
+# Workbook evidence capture runs (playwright/playwright.evidence.config.ts)
+playwright/test-results-evidence/
