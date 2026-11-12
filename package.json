@@ -1,6 +1,6 @@
 {
   "name": "weighingms",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "private": true,
   "description": "WeighingMS - assisted dyestuff weighing station (AI-DLC lab)",
   "engines": {

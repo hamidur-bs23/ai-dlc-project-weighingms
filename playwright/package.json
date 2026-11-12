@@ -1,6 +1,6 @@
 {
   "name": "weighingms-e2e",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "private": true,
   "type": "module",
   "description": "WeighingMS end-to-end tests against the Compose full profile (STEP 29, STEP 30)",

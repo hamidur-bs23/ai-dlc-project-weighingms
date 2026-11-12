@@ -24,6 +24,8 @@ services:
 
   simulators:
     profiles: ["full"]
+    # Release builds set WMS_VERSION (e.g. 1.0.0); dev and E2E builds keep the :dev tag.
+    image: weighingms/simulators:${WMS_VERSION:-dev}
     build:
       context: .
       dockerfile: src/WeighingMS.Simulators.Host/Dockerfile
@@ -40,6 +42,8 @@ services:
 
   migrator:
     profiles: ["full"]
+    # Release builds set WMS_VERSION (e.g. 1.0.0); dev and E2E builds keep the :dev tag.
+    image: weighingms/migrator:${WMS_VERSION:-dev}
     build:
       context: .
       dockerfile: src/WeighingMS.Api/Dockerfile
@@ -52,6 +56,8 @@ services:
 
   api:
     profiles: ["full"]
+    # Release builds set WMS_VERSION (e.g. 1.0.0); dev and E2E builds keep the :dev tag.
+    image: weighingms/api:${WMS_VERSION:-dev}
     build:
       context: .
       dockerfile: src/WeighingMS.Api/Dockerfile
