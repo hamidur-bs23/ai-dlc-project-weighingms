@@ -6,6 +6,47 @@ Whole-system releases (OPS-SCOPE-SYSTEM). The environments are defined in OPS-EN
 
 ```yaml
 version: 1.0.0
+environment: prod
+deployed: not deployed (handoff package, OPS-ENVIRONMENTS)
+packaged: 2026-11-12T20:00:00Z
+deployed_by: Hamidur-BS23 (with Claude Code)
+status: handoff-not-production-ready
+```
+
+## Deployment: 1.0.0 → prod (handoff package)
+
+### Details
+
+- **Version:** `1.0.0` (tag `v1.0.0`, commit `586bf5f`)
+- **Environment:** production is one on-premise station or site server per site (brief.md A-11, **unconfirmed**). No such server is available, so production is a **handoff package**, not a deployment (OPS-ENVIRONMENTS, Checkpoint 3).
+- **Package:** `deploy/` (committed: `docker-compose.prod.yml`, `production.env.template`, `README.md` runbook) plus `dist/release/` (gitignored image tarballs: arm64 as built, and linux/amd64 built with buildx from the same tag; checksums in `SHA256SUMS`).
+- **Previous version:** none
+
+### Production rehearsal (local, Production environment, arm64 images)
+
+`deploy/docker-compose.prod.yml` was started exactly as written, as project `weighingms-prodrehearsal`, then removed with `down --volumes`.
+
+| Check | Result |
+|---|---|
+| Stack up | ✅ 24 s: Postgres, simulators and Api healthy, migrator exited 0. Only the Api is published, on `127.0.0.1` |
+| `/_sim/reset` on the simulators | ✅ 404, off outside Development |
+| `GET /api/antiforgery` over plain HTTP | ❌ **500**: "SecurePolicy = Always, but the current request is not an SSL request" |
+| The same through a simulated TLS proxy (`X-Forwarded-Proto: https`) **before** the fix | ❌ 500, because the Api has no forwarded-headers handling |
+| The same **after** adding `ASPNETCORE_FORWARDEDHEADERS_ENABLED=true` | ✅ 204, with `__Host-wms.af` and `XSRF-TOKEN` set as `Secure` and `SameSite=Strict` |
+| `POST /api/session` with `OP-1001` | ❌ **401 `Auth.BadgeNotRecognised`**: `station_users` has 0 rows (OPS-PROD-USERS confirmed) |
+
+### Status
+
+**Not production-ready.** The package installs and runs, but no one can sign in (OPS-PROD-USERS). OPS-FORWARDED-HEADERS was found and mitigated in the stack configuration. OPS-ARCH is resolved by the amd64 tarballs. The full list is in `deploy/README.md` → Known blockers.
+
+### Rollback
+
+Nothing is deployed. The runbook's rollback (database backup, then the previous `WMS_VERSION`) applies from the second release onwards.
+
+---
+
+```yaml
+version: 1.0.0
 environment: staging
 deployed: 2026-11-12T19:40:41Z
 deployed_by: Hamidur-BS23 (with Claude Code)

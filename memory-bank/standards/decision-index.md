@@ -1,5 +1,5 @@
 ---
-last_updated: 2026-11-12T19:48:00Z
+last_updated: 2026-11-12T20:00:00Z
 total_decisions: 15
 ---
 
@@ -215,3 +215,5 @@ Decisions marked *resolved* below were taken by the product owner at STEP 7 on 2
 | OPS-ENVIRONMENTS | resolved (Operations, 2026-11-13) | No real environments exist. dev = `npm run dev`; staging = Compose `full` run as its own project with clean volumes from the versioned images and verified by E2E and smoke checks; production = a versioned release (tag, image tarballs with checksums, `.env` template) plus a runbook ready to hand to FCI, not deployed. The on-premise station server target is brief.md A-11, unconfirmed |
 | OPS-MONITORING-DEFERRED | resolved (Operations, 2026-11-13) | Checkpoint 4 records monitoring as the existing health endpoints and Serilog logs. The observability bolt planned in `tech-stack.md` (OTel Collector, Prometheus, Tempo, Loki, Grafana; profile `observability`) was never added to the bolt plan and remains open follow-up work for Inception or Construction |
 | OPS-STAGING-DEV | resolved (Operations Checkpoint 2, 2026-11-13) | Staging runs the 1.0.0 images in the ASP.NET `Development` environment, the same as the E2E stack, because in `Production` no station users exist (OPS-PROD-USERS). Staging proves the images and the end-to-end workflow, not the production settings. OPS-PROD-USERS blocks a real production deployment until a later bolt adds user provisioning |
+| OPS-PROD-HANDOFF | resolved (Operations Checkpoint 3, 2026-11-13) | Release 1.0.0 goes to production as a handoff package (`deploy/` runbook, image-only `docker-compose.prod.yml`, `production.env.template`, arm64 and linux/amd64 image tarballs with checksums), marked not production-ready until OPS-PROD-USERS is fixed. Construction is not reopened for 1.0.0 |
+| OPS-FORWARDED-HEADERS | resolved (Operations Checkpoint 3, 2026-11-13) | Found in the production rehearsal: outside Development, antiforgery (SecurePolicy=Always) returns 500 on any request that isn't seen as HTTPS, and the Api has no forwarded-headers handling, so even a correct TLS proxy fails. Mitigated in `deploy/docker-compose.prod.yml` with `ASPNETCORE_FORWARDEDHEADERS_ENABLED=true` and the Api bound to 127.0.0.1. A code-level `ForwardedHeadersOptions` with known proxies is follow-up work |
