@@ -1,5 +1,5 @@
 ---
-last_updated: 2026-11-03T21:13:25Z
+last_updated: 2026-11-12T19:36:00Z
 total_decisions: 15
 ---
 
@@ -211,3 +211,6 @@ Decisions marked *resolved* below were taken by the product owner at STEP 7 on 2
 | SCANNER-FALLBACK-SCOPE | resolved (bolt 014 plan, 2026-11-06) | With the scanner down, batches are opened by touch from the queue and lot and container are typed. There is no typed batch ID field, because every batch an operator can open is already a row |
 | TICKET-NO-BROWSER-PRINT | resolved (bolt 014 plan, 2026-11-06) | There is no browser print button: the on-screen preview is STEP 27's print preview and F1 is the print, so every copy is counted and marked REPRINT |
 | SIM-EMPTY-CONTAINER | resolved (bolt 014 test stage, 2026-11-11) | The dummy scale gains `POST /_sim/scales/{scaleId}/container`: the filled container comes off and an empty one goes on, keeping the tare until the operator re-tares. Without it only the first component per scale could be weighed on the real Weigh screen (found by the STEP 29 run) |
+| OPS-SCOPE-SYSTEM | resolved (Operations, 2026-11-13) | The eight units are built, deployed and recorded as one whole-system release (Api image with the web build, migrator, simulators, Postgres) under `memory-bank/operations/deployment/`, not unit by unit |
+| OPS-ENVIRONMENTS | resolved (Operations, 2026-11-13) | No real environments exist. dev = `npm run dev`; staging = Compose `full` run as its own project with clean volumes from the versioned images and verified by E2E and smoke checks; production = a versioned release (tag, image tarballs with checksums, `.env` template) plus a runbook ready to hand to FCI, not deployed. The on-premise station server target is brief.md A-11, unconfirmed |
+| OPS-MONITORING-DEFERRED | resolved (Operations, 2026-11-13) | Checkpoint 4 records monitoring as the existing health endpoints and Serilog logs. The observability bolt planned in `tech-stack.md` (OTel Collector, Prometheus, Tempo, Loki, Grafana; profile `observability`) was never added to the bolt plan and remains open follow-up work for Inception or Construction |
