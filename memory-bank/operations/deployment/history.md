@@ -6,6 +6,48 @@ Whole-system releases (OPS-SCOPE-SYSTEM). The environments are defined in OPS-EN
 
 ```yaml
 version: 1.0.0
+environment: staging
+deployed: 2026-11-12T19:40:41Z
+deployed_by: Hamidur-BS23 (with Claude Code)
+status: success
+```
+
+## Deployment: 1.0.0 → staging
+
+### Details
+
+- **Version:** `1.0.0`. These are the exact release images; nothing was rebuilt (`up --no-build`): `weighingms/api` `4ea6093b7d98`, `weighingms/migrator` `73f4b56a11e2`, `weighingms/simulators` `725670276a82`, `postgres:17`.
+- **Environment:** staging, the Compose project `weighingms-staging` (profile `full`) with its own fresh volume. Ports: Api and web **5380**, simulators **5390**, Postgres **5435**. The env file has a newly generated database password and is kept outside the repo.
+- **ASP.NET environment:** `Development`, for both the Api and the simulators (OPS-STAGING-DEV). This seeds the lab users and is the same as the E2E stack. **Staging therefore proves the images and the workflow, not the production settings.**
+- **Timestamp:** 2026-11-12T19:40:41Z (01:40 Asia/Dhaka)
+- **Duration:** 12 s to healthy (migrator exited 0; Postgres, simulators and Api healthy)
+- **Previous version:** none
+
+### Changes
+
+This is the first staging deployment. Database: all 7 migrations applied to an empty database.
+
+### Commands
+
+```bash
+# env file: WMS_VERSION=1.0.0, API_ENVIRONMENT=Development, SIMULATORS_ENVIRONMENT=Development,
+#           API_PORT=5380, SIMULATORS_PORT=5390, POSTGRES_PORT=5435, POSTGRES_DB/USER=weighingms_staging,
+#           POSTGRES_PASSWORD=<generated>
+docker compose --project-name weighingms-staging --env-file staging.env --profile full up --no-build --detach --wait
+```
+
+### Verification
+
+[`verification-1.0.0-staging.md`](verification-1.0.0-staging.md): passed (smoke checks, plus E2E 15/15 against the same images).
+
+### Rollback
+
+There's no earlier version. To remove it: `docker compose --project-name weighingms-staging --env-file staging.env --profile full down --volumes`.
+
+---
+
+```yaml
+version: 1.0.0
 environment: dev
 deployed: 2026-11-12T19:38:05Z
 deployed_by: Hamidur-BS23 (with Claude Code)

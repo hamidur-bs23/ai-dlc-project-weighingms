@@ -1,5 +1,5 @@
 ---
-last_updated: 2026-11-12T19:36:00Z
+last_updated: 2026-11-12T19:48:00Z
 total_decisions: 15
 ---
 
@@ -214,3 +214,4 @@ Decisions marked *resolved* below were taken by the product owner at STEP 7 on 2
 | OPS-SCOPE-SYSTEM | resolved (Operations, 2026-11-13) | The eight units are built, deployed and recorded as one whole-system release (Api image with the web build, migrator, simulators, Postgres) under `memory-bank/operations/deployment/`, not unit by unit |
 | OPS-ENVIRONMENTS | resolved (Operations, 2026-11-13) | No real environments exist. dev = `npm run dev`; staging = Compose `full` run as its own project with clean volumes from the versioned images and verified by E2E and smoke checks; production = a versioned release (tag, image tarballs with checksums, `.env` template) plus a runbook ready to hand to FCI, not deployed. The on-premise station server target is brief.md A-11, unconfirmed |
 | OPS-MONITORING-DEFERRED | resolved (Operations, 2026-11-13) | Checkpoint 4 records monitoring as the existing health endpoints and Serilog logs. The observability bolt planned in `tech-stack.md` (OTel Collector, Prometheus, Tempo, Loki, Grafana; profile `observability`) was never added to the bolt plan and remains open follow-up work for Inception or Construction |
+| OPS-STAGING-DEV | resolved (Operations Checkpoint 2, 2026-11-13) | Staging runs the 1.0.0 images in the ASP.NET `Development` environment, the same as the E2E stack, because in `Production` no station users exist (OPS-PROD-USERS). Staging proves the images and the end-to-end workflow, not the production settings. OPS-PROD-USERS blocks a real production deployment until a later bolt adds user provisioning |
