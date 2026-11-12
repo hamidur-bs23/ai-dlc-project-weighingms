@@ -32,6 +32,47 @@ The dummy OrgaTEX, scales, scanner and printer (`WeighingMS.Simulators.Host`) ar
 | OrgaTEX write-back | ✓ Screen 3 "Written to OrgaTEX · CONFIRMED", Sync failed with Retry, `n UNSYNCED` on the status strip | ✓ dummy OrgaTEX `POST /api/batches/{id}/consumption` (`Idempotency-Key`, 200 OK), `GET …/session/write-back`, `POST …/session/write-back/retry` | ✓ `src/WeighingMS.Application/WriteBack/WriteBackDispatcher.cs`, `src/WeighingMS.Domain/WriteBack/ConsumptionWriteBack.cs`, `RetryPolicy.cs`, `OrgatexGatewayClient.cs` | ✓ `ConsumptionWriteBackTests`, `WriteBackTests`, `WriteBackEndpointsTests`, `ConsumptionTests`, E2E `02-batch-b24187`, `03-failures` (OrgaTEX unavailable) | `STEP-26-ui.png`, `STEP-26-request.png`, `STEP-26-response.png`, `STEP-26-data.png`, `STEP-26-writeback.txt`, `STEP-30-orgatex-sync-failed.png`, `STEP-30-orgatex-retry-confirmed.png` | ✅ |
 | Ticket | ✓ `/batches/:batchId/summary` (Screen 3 · Confirm & print): 80 mm preview with barcode, F1 Print / Reprint, Print pending | ✓ `GET …/session/ticket`, `POST …/session/ticket/print`, backed by dummy printer `POST /api/tickets` | ✓ `src/WeighingMS.Domain/Tickets/Ticket.cs`, `TicketComposer.cs`, `src/WeighingMS.Application/Tickets/TicketService.cs`, `src/WeighingMS.Infrastructure/Integrations/Printer/PrinterClient.cs` | ✓ `TicketTests` (21), `TicketServiceTests` (9), `TicketEndpointsTests` (23), `PrinterTests` (6), web ticket and summary specs (47), E2E `02-batch-b24187`, `03-failures` (printer unavailable) | `STEP-27-ticket.png`, `STEP-27-printer-api.png`, `STEP-27-ticket-test.png`, `STEP-27-ticket-tests.txt`, `STEP-30-printer-print-pending.png` | ✅ |
 
+## Final evidence package (workbook sections 01–34)
+
+The workbook's submission list numbers its sections differently from the steps (for example `03-context-analysis` covers STEPs 3 and 5, and `13-inception-complete` is STEP 12's checkpoint). `npm run evidence:package` builds `dist/evidence-package/01-…/` … `34-…/` and `dist/evidence-package.zip` from the files below as copies. The originals in `evidence/` are not changed. The script stops if a mapped file is missing or if any file in `evidence/` is not mapped.
+
+| Section | Workbook | Files |
+|---|---|---|
+| 01-project-bootstrap | STEP 0–1 | `evidence/STEP-00-git.png`, `evidence/STEP-01-files.png` |
+| 02-specsmd-installation | STEP 2 | `evidence/STEP-02-installation.png`, `evidence/STEP-02-manifest.txt` |
+| 03-context-analysis | STEP 3, 5 | `evidence/STEP-03-master-agent.png`, `evidence/STEP-05-context-analysis.png` |
+| 04-dashboard | STEP 4 | `evidence/STEP-04-dashboard.png` |
+| 05-intent | STEP 6 | `evidence/STEP-06-intent.png`, `evidence/STEP-06-intent-file.png` |
+| 06-intent-validation | STEP 6 · CHECKPOINT 1 | `evidence/STEP-06-GATE-APPROVED.png` |
+| 07-requirements | STEP 7 · CHECKPOINT 2 | `evidence/STEP-07-requirements.png`, `evidence/STEP-07-GATE-APPROVED.png` |
+| 08-ui-analysis | STEP 8 | `evidence/STEP-08-ui-analysis` |
+| 09-system-context | STEP 9 | `evidence/STEP-09-system-context.png`, `evidence/STEP-09-system-context.md` |
+| 10-units | STEP 10 · CHECKPOINT 3 | `evidence/STEP-10-units.png`, `evidence/STEP-10-unit-map.png` |
+| 11-stories | STEP 11 | `evidence/STEP-11-stories.png` |
+| 12-bolt-plan | STEP 12 | `evidence/STEP-12-bolt-plan.png` |
+| 13-inception-complete | STEP 12 · CHECKPOINT 4 | `evidence/STEP-12-INCEPTION-COMPLETE.png` |
+| 14-bolt-execution | STEP 13–15 · CHECKPOINT 5 | `evidence/STEP-13-bolt-list.png`, `evidence/STEP-14-bolt-start.png`, `evidence/STEP-15-plan.png` |
+| 15-dummy-apis | STEP 16 | `evidence/STEP-17-api-response.png`, `evidence/STEP-21-scale-api.png`, `evidence/STEP-26-request.png`, `evidence/STEP-27-printer-api.png` |
+| 16-dummy-data | STEP 17 | `evidence/STEP-17-dummy-data.json` |
+| 17-api-tests | STEP 18 | `evidence/STEP-18-api-tests.txt`, `evidence/STEP-18-api-results.png` |
+| 18-batch-selection | STEP 19 | `evidence/STEP-19-batch-screen.png`, `evidence/STEP-19-network.png`, `evidence/STEP-19-test.png`, `evidence/STEP-19-api-flow.txt`, `evidence/STEP-19-web-test.txt` |
+| 19-weighing | STEP 20 | `evidence/STEP-20-weigh-screen.png` |
+| 20-scale-integration | STEP 21 | `evidence/STEP-21-scale-switch.png`, `evidence/STEP-21-scale-api.png`, `evidence/STEP-21-scale-api.txt` |
+| 21-tolerance | STEP 22 | `evidence/STEP-22-tolerance-tests.txt`, `evidence/STEP-22-tolerance-ui.png`, `evidence/STEP-22-tolerance-ui-tests.txt` |
+| 22-component-progression | STEP 23 | `evidence/STEP-23-five-component-demo.mp4` |
+| 23-overshoot | STEP 24 | `evidence/STEP-24-overshoot-decision.md`, `evidence/STEP-24-overshoot-test.png`, `evidence/STEP-24-overshoot-ui.png`, `evidence/STEP-24-overshoot-tests.txt` |
+| 24-confirmation | STEP 25 | `evidence/STEP-25-confirmation.png`, `evidence/STEP-25-transaction.json` |
+| 25-orgatex-writeback | STEP 26 | `evidence/STEP-26-ui.png`, `evidence/STEP-26-request.png`, `evidence/STEP-26-response.png`, `evidence/STEP-26-data.png`, `evidence/STEP-26-writeback.txt` |
+| 26-ticket | STEP 27 | `evidence/STEP-27-ticket.png`, `evidence/STEP-27-printer-api.png`, `evidence/STEP-27-ticket-test.png`, `evidence/STEP-27-ticket-tests.txt`, `evidence/STEP-27-ticket-ui.txt`, `evidence/STEP-27-ticket.txt`, `evidence/STEP-27-ticket-override.png` |
+| 27-ui-validation | STEP 28 | `evidence/STEP-28-ui-validation` |
+| 28-e2e | STEP 29 | `evidence/STEP-29-playwright-report`, `evidence/STEP-29-e2e-video.mp4` |
+| 29-failure-tests | STEP 30 | `evidence/STEP-30-failure-tests.md`, `evidence/STEP-30-orgatex-outage.txt`, `evidence/STEP-30-orgatex-sync-failed.png`, `evidence/STEP-30-orgatex-retry-confirmed.png`, `evidence/STEP-30-printer-outage.txt`, `evidence/STEP-30-printer-banner.png`, `evidence/STEP-30-printer-print-pending.png` |
+| 30-final-project-status | STEP 31 | `evidence/STEP-31-project-status.png`, `evidence/STEP-31-project-status.md` |
+| 31-final-dashboard | STEP 32 | `evidence/STEP-32-final-dashboard.png`, `evidence/STEP-32-final-dashboard-specs.png`, `evidence/STEP-32-final-dashboard-bolts.png` |
+| 32-final-validation | STEP 33 | `evidence/STEP-33-final-validation.md` |
+| 33-final-evidence | STEP 34 | `FINAL-EVIDENCE.md` |
+| 34-final-demo | STEP 35 | `evidence/STEP-35-final-demo.mp4` |
+
 ## Workbook evidence index
 
 | Step | Files in `evidence/` |

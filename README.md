@@ -88,7 +88,7 @@ The simulators' Scalar UI is at <http://localhost:5090/scalar> in Development. F
 | `playwright/` | E2E suite (`tests/`) and the workbook evidence scripts (`evidence/`) |
 | `evidence/` | Workbook evidence `STEP-00` … `STEP-35` |
 | `deploy/` | Production handoff: image-only Compose file, env template, runbook |
-| `FINAL-EVIDENCE.md` | Final evidence matrix (workbook STEP 34) |
+| `FINAL-EVIDENCE.md` | Final evidence matrix (workbook STEP 34) and the 34-section package map; `npm run evidence:package` builds the zip |
 
 ## Status
 

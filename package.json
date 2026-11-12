@@ -24,12 +24,13 @@
     "e2e": "npm test -w weighingms-e2e",
     "e2e:stack:up": "node playwright/stack.mjs up",
     "e2e:stack:down": "node playwright/stack.mjs down",
-    "api:types": "ConnectionStrings__Db=Host=openapi-build-only dotnet build src/WeighingMS.Api -p:OpenApiGenerateDocumentsOnBuild=true && npm run api:types -w web"
+    "api:types": "ConnectionStrings__Db=Host=openapi-build-only dotnet build src/WeighingMS.Api -p:OpenApiGenerateDocumentsOnBuild=true && npm run api:types -w web",
+    "evidence:package": "node scripts/evidence-package.mjs"
   },
   "devDependencies": {
+    "concurrently": "10.0.6",
     "fs-extra": "^11.4.1",
-    "js-yaml": "^5.5.0",
-    "concurrently": "10.0.6"
+    "js-yaml": "^5.5.0"
   },
   "workspaces": [
     "web",
