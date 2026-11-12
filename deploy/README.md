@@ -8,14 +8,14 @@ The handoff package for one station or site server running Docker. The on-premis
 
 | File | Purpose |
 |---|---|
-| `weighingms-api-1.0.0-linux-amd64.tar` | Api with the operator terminal (Angular build), for x86-64 servers |
-| `weighingms-migrator-1.0.0-linux-amd64.tar` | Database migrations (EF Core bundle, runs once at every start) |
-| `weighingms-simulators-1.0.0-linux-amd64.tar` | Dummy OrgaTEX, scales, scanner and printer (see "Dummy integrations") |
+| `weighingms-api-1.0.0-linux-amd64.tar.gz` | Api with the operator terminal (Angular build), for x86-64 servers |
+| `weighingms-migrator-1.0.0-linux-amd64.tar.gz` | Database migrations (EF Core bundle, runs once at every start) |
+| `weighingms-simulators-1.0.0-linux-amd64.tar.gz` | Dummy OrgaTEX, scales, scanner and printer (see "Dummy integrations") |
 | `SHA256SUMS` | Checksums of the tarballs |
 | `docker-compose.prod.yml` | The production stack. It only references images; it builds nothing |
 | `production.env.template` | Settings to copy to `production.env` |
 
-The arm64 tarballs in `dist/release/` (no suffix) are for Apple Silicon or ARM hosts. Use the `-linux-amd64` set on an ordinary x86-64 server (OPS-ARCH).
+The arm64 tarballs (`weighingms-*-1.0.0.tar.gz`, no suffix) are for Apple Silicon or ARM hosts. Use the `-linux-amd64` set on an ordinary x86-64 server (OPS-ARCH).
 
 ## Requirements
 
@@ -27,7 +27,7 @@ The arm64 tarballs in `dist/release/` (no suffix) are for Apple Silicon or ARM h
 
 ```bash
 sha256sum -c SHA256SUMS                       # every line must say OK
-for f in weighingms-*-1.0.0-linux-amd64.tar; do docker load -i "$f"; done
+for f in weighingms-*-1.0.0-linux-amd64.tar.gz; do docker load -i "$f"; done
 docker image ls 'weighingms/*'                # weighingms/{api,migrator,simulators}:1.0.0
 
 cp production.env.template production.env && chmod 600 production.env

@@ -41,6 +41,26 @@ ba2808c11b0e2e544306f7e14cb47792cc97db92321c043a0ad8853eec37ecfd  weighingms-mig
 5d59aab6f41b157dadcccaea72a471c97ba54c8d82ed010e7af8b3230aed5831  weighingms-simulators-1.0.0.tar.gz  (95 MB)
 ```
 
+### linux/amd64 set (added at Checkpoint 3, resolves OPS-ARCH)
+
+Built from tag `v1.0.0` with `docker buildx build --builder wms-release` (driver `docker-container`, so it can export) `--platform linux/amd64`, exported straight to tarballs. Each image carries the tags `:1.0.0` and `:1.0.0-586bf5f` and the OCI labels `org.opencontainers.image.version=1.0.0` and `org.opencontainers.image.revision=586bf5f…`. On this machine they are tagged `:1.0.0-linux-amd64`, so the arm64 `:1.0.0` tags stay unchanged.
+
+| Image | Image ID | Build time | Tarball |
+|---|---|---|---|
+| `weighingms/api` | `sha256:6023569278f9…` | 969 s (mostly downloading the amd64 base images) | `weighingms-api-1.0.0-linux-amd64.tar.gz` (105 MB) |
+| `weighingms/migrator` | `sha256:810719e4194b…` | 3 s (cache) | `weighingms-migrator-1.0.0-linux-amd64.tar.gz` (110 MB) |
+| `weighingms/simulators` | `sha256:b7c558b8d730…` | 18 s | `weighingms-simulators-1.0.0-linux-amd64.tar.gz` (102 MB) |
+
+```text
+4b69d21b28a47a3bba788bf07055ace79b7bcb6a6b0a36e00c45633d06c417bd  weighingms-api-1.0.0-linux-amd64.tar.gz
+a2a4ca8daaa078a925bc6a423f2d73bd6556f495cc0b0ccc85568e85c8b22fb1  weighingms-migrator-1.0.0-linux-amd64.tar.gz
+7bdb6314c5ef44bcb9ff55bd4319c316c67fdbf36c3ebd29c1c56b0ec17f479d  weighingms-simulators-1.0.0-linux-amd64.tar.gz
+```
+
+**Checks:** each tarball's own config reads `linux/amd64` with the expected tags and labels. A boot test followed the runbook (`docker load`, then `deploy/docker-compose.prod.yml` in `Production`, under emulation): containers report `x86_64`, healthy in 24 s, migrator exited 0, 7 migrations applied, `health/ready` 200, antiforgery through the proxy 204, web served.
+
+**The full package** in `dist/release/` (gitignored) holds both image sets, `SHA256SUMS` covering all six tarballs, and copies of `deploy/docker-compose.prod.yml`, `production.env.template` and `README.md`.
+
 **The cache was reused but the images match the source.** The build took 61 s. The web stage re-ran (`npm ci`, `ng build`) because `package.json` changed. The app doesn't embed the version, so its output was byte-identical, and BuildKit kept the earlier image IDs, which still show a creation time of 2026-11-11. The last source change (`f61b38d`, 2026-11-11 00:39) predates those images.
 
 ## Pre-build verification (commit `b7c6a24`, before the version bump)
@@ -67,7 +87,7 @@ The version-bump commit `586bf5f` changes only `version` fields in the package f
 
 | ID | Issue | Affects |
 |---|---|---|
-| OPS-ARCH | The images are **linux/arm64 only**, because they were built on Apple Silicon. A typical x86-64 station server can't run them. | Production. They need an amd64 build (`docker buildx build --platform linux/amd64`, or a build on an amd64 host). |
+| OPS-ARCH | ~~The images are linux/arm64 only~~ **Resolved:** a linux/amd64 set was built and boot-tested (above). | — |
 | OPS-PROD-USERS | Station users are seeded only in `Development` and `Test` (`Program.cs:123`), and the app has no other way to provision users. In `Production`, nobody can sign in. | Staging and production configuration. |
 | OPS-SECURE-COOKIES | Outside `Development`, the session cookies are `Secure` (`Program.cs:63`). Browsers accept them on `localhost`, but a station server reached by hostname needs HTTPS. | Production. |
 | OPS-MONITORING-DEFERRED | The observability bolt (OTel Collector, Prometheus, Tempo, Loki, Grafana; `tech-stack.md`) was never planned, and there's no `observability/` folder. | Checkpoint 4. |

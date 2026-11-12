@@ -37,7 +37,7 @@ status: handoff-not-production-ready
 
 ### Status
 
-**Not production-ready.** The package installs and runs, but no one can sign in (OPS-PROD-USERS). OPS-FORWARDED-HEADERS was found and mitigated in the stack configuration. OPS-ARCH is resolved by the amd64 tarballs. The full list is in `deploy/README.md` → Known blockers.
+**Not production-ready.** The package installs and runs, but no one can sign in (OPS-PROD-USERS). OPS-FORWARDED-HEADERS was found and mitigated in the stack configuration. OPS-ARCH is resolved: the linux/amd64 tarballs were boot-tested with this runbook (containers report x86_64, healthy in 24 s). The full list is in `deploy/README.md` → Known blockers.
 
 ### Rollback
 
